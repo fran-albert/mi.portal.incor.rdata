@@ -1,0 +1,33 @@
+export interface Labs {
+  id: number;
+  GlobulosRojos: string;
+  GlobulosBlancos: string;
+  Hemoglobina: string;
+  Hematocrito: string;
+  VCM: string;
+  HCM: string;
+  CHCM: string;
+  NeutrofilosCayados: string;
+  NeutrofilosSegmentados: string;
+  Eosinofilos: string;
+  Basofilos: string;
+  Linfocitos: string;
+  Monocitos: string;
+  Eritrosedimentacion1: string;
+  Eritrosedimentacion2: string;
+  Plaquetas: string;
+  Glucemia: string;
+  Uremia: string;
+  Creatininemia: string;
+  ColesterolTotal: string;
+  ColesterolHdl: string;
+  Trigliceridos: string;
+  Uricemia: string;
+  BilirrubinaDirecta: string;
+  BilirrubinaIndirecta: string;
+  BilirrubinaTotal: string;
+  TransaminasaGlutamicoOxalac: string;
+  TransaminasaGlutamicoPiruvic: string;
+  FosfatasaAlcalina: string;
+  TirotrofinaPlamatica: string;
+}
