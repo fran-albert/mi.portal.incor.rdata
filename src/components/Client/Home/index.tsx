@@ -1,6 +1,5 @@
 "use client";
 import useRoles from "@/hooks/useRoles";
-import WelcomeCardComponent from "@/sections/Profile/WelcomeCard";
 import { CountsCards } from "@/components/Cards/Counts/card";
 import { useSession } from "next-auth/react";
 import Loading from "@/app/loading";
@@ -9,9 +8,9 @@ import { useDoctors } from "@/hooks/Doctor/useDoctors";
 import { useSpeciality } from "@/hooks/Speciality/useSpeciality";
 import { useHealthInsurance } from "@/hooks/Health-Insurance/useHealthInsurance";
 import { useStudy } from "@/hooks/Study/useStudy";
+import PatientHomePage from "@/sections/Home/Patient";
 
 const ClientHomePage = () => {
-  const { data: session, status } = useSession();
   const { isPatient, isSecretary, isDoctor } = useRoles();
   const {
     isLoadingLastPatients,
@@ -109,11 +108,7 @@ const ClientHomePage = () => {
           </div>
         )}
 
-        {isPatient && session && (
-          <div className="grid place-items-center m-8">
-            <WelcomeCardComponent session={session} />
-          </div>
-        )}
+        {isPatient && <PatientHomePage />}
       </>
     </div>
   );
