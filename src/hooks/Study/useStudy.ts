@@ -1,6 +1,5 @@
-import { getTotalEcography } from "@/actions/Ecography/get-total-ecography.action";
-import { getTotalLabs } from "@/actions/Labs/get-total-labs.action";
 import { getAllStudyType } from "@/actions/Study/get-all-study-type.action";
+import { getLastStudies } from "@/actions/Study/get-last-studies.action";
 import { getStudiesByUserId } from "@/actions/Study/get-studies-by-idUser.action";
 import { getTotalStudies } from "@/actions/Study/get-total-studies.action";
 import { useQuery } from "@tanstack/react-query"
@@ -10,10 +9,11 @@ interface Props {
     idUser?: number;
     fetchTotal?: boolean;
     fetchStudiesByUserId?: boolean;
+    studyTypeId?: number;
     studyTypeAuth?: boolean;
 }
 
-export const useStudy = ({ auth = true, idUser, fetchTotal = false, fetchStudiesByUserId = false, studyTypeAuth = false }: Props) => {
+export const useStudy = ({ auth = true, idUser, fetchTotal = false, fetchStudiesByUserId = false, studyTypeAuth = false, studyTypeId }: Props) => {
 
     const { isLoading: isLoadingTotalStudies, isError: isErrorTotalStudies, error: errorTotalStudies, data: totalStudies = 0 } = useQuery({
         queryKey: ["totalStudies"],
@@ -25,14 +25,37 @@ export const useStudy = ({ auth = true, idUser, fetchTotal = false, fetchStudies
 
     const { isLoading: isLoadingTotalLabs, isError: isErrorTotalLabs, error: errorTotalLabs, data: totalLabs = 0 } = useQuery({
         queryKey: ["totalLabs"],
-        queryFn: () => getTotalLabs(),
+        queryFn: () => getTotalStudies(1),
         staleTime: 1000 * 60,
         enabled: auth && fetchTotal
     });
 
+    const { isLoading: isLoadingLastLabs, isError: isErrorLastLabs, error: errorLastLabs, data: lastLabs = 0 } = useQuery({
+        queryKey: ["lastLabs"],
+        queryFn: () => getLastStudies(1),
+        staleTime: 1000 * 60,
+        enabled: auth && fetchTotal
+    });
+
+    const { isLoading: isLoadingLastStudies, isError: isErrorLastStudies, error: errorLastStudies, data: lastStudies = 0 } = useQuery({
+        queryKey: ["lastStudies"],
+        queryFn: () => getLastStudies(),
+        staleTime: 1000 * 60,
+        enabled: auth && fetchTotal
+    });
+
+    const { isLoading: isLoadingLastEcography, isError: isErrorLastEcography, error: errorLastEcography, data: lastEcography = 0 } = useQuery({
+        queryKey: ["lastEcography"],
+        queryFn: () => getLastStudies(2),
+        staleTime: 1000 * 60,
+        enabled: auth && fetchTotal
+    });
+
+
+
     const { isLoading: isLoadingTotalEcography, isError: isErrorTotalEcography, error: errorTotalEcography, data: totalEcography = 0 } = useQuery({
         queryKey: ["totalEcography"],
-        queryFn: () => getTotalEcography(),
+        queryFn: () => getTotalStudies(2),
         staleTime: 1000 * 60,
         enabled: auth && fetchTotal
     });
@@ -56,7 +79,10 @@ export const useStudy = ({ auth = true, idUser, fetchTotal = false, fetchStudies
         isLoadingTotalLabs, isErrorTotalLabs, errorTotalLabs, totalLabs,
         isLoadingTotalEcography, isErrorTotalEcography, errorTotalEcography, totalEcography,
         isLoadingStudiesByUserId, isErrorStudiesByUserId, errorStudiesByUserId, studiesByUserId,
-        isLoadingStudyType, isErrorStudyType, errorStudyType, studyType
+        isLoadingStudyType, isErrorStudyType, errorStudyType, studyType,
+        isLoadingLastLabs, isErrorLastLabs, errorLastLabs, lastLabs,
+        isLoadingLastStudies, isErrorLastStudies, errorLastStudies, lastStudies,
+        isLoadingLastEcography, isErrorLastEcography, errorLastEcography, lastEcography
     }
 
 }

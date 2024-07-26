@@ -15,6 +15,9 @@ interface CountsCardsProps {
   totalSpecialities: number;
   totalHealthInsurances: number;
   totalStudies: number;
+  lastEcography: number;
+  lastStudies: number;
+  lastLabs: number;
   totalLabs: number;
   totalEcography: number;
 }
@@ -23,7 +26,10 @@ export function CountsCards({
   lastedPatients,
   lastedDoctors,
   totalHealthInsurances,
+  lastEcography,
+  lastStudies,
   totalStudies,
+  lastLabs,
   totalSpecialities,
   totalDoctors,
   totalPatients,
@@ -39,9 +45,9 @@ export function CountsCards({
       <DoctorsCount lastedDoctors={lastedDoctors} totalDoctors={totalDoctors} />
       <SpectialityCount totalSpecialities={totalSpecialities} />
       <HealthInsuranceCount totalHealthInsurance={totalHealthInsurances} />
-      <StudiesCount totalStudies={totalStudies} />
-      <LabsCount totalLabs={totalLabs}/>
-      <EcographyCount totalEcography={totalEcography}/>
+      <StudiesCount totalStudies={totalStudies} lastStudies={lastStudies} />
+      <LabsCount totalLabs={totalLabs} lastLabs={lastLabs} />
+      <EcographyCount totalEcography={totalEcography} lastEcography={lastEcography} />
     </div>
   );
 }

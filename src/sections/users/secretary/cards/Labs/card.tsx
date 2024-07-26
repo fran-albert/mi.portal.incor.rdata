@@ -7,7 +7,13 @@ import {
   CardContent,
   Card,
 } from "@/components/ui/card";
-export const LabsCount = ({ totalLabs }: { totalLabs: number }) => {
+export const LabsCount = ({
+  totalLabs,
+  lastLabs,
+}: {
+  totalLabs: number;
+  lastLabs: number;
+}) => {
   return (
     <>
       <div className="rounded-lg w-84 sm:transition sm:duration-300 sm:ease-in-out sm:transform sm:hover:-translate-y-2 cursor-pointer">
@@ -22,7 +28,7 @@ export const LabsCount = ({ totalLabs }: { totalLabs: number }) => {
             <CardContent>
               <div className="text-2xl font-bold">{totalLabs}</div>
               <p className="text-xs text-muted-foreground">
-                +{1} desde la semana pasada
+                +{lastLabs} desde la semana pasada
               </p>
             </CardContent>
           </Card>

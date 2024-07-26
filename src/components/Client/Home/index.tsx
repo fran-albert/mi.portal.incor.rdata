@@ -11,7 +11,7 @@ import { useHealthInsurance } from "@/hooks/Health-Insurance/useHealthInsurance"
 import { useStudy } from "@/hooks/Study/useStudy";
 
 const ClientHomePage = () => {
-  const { data: session , status} = useSession();
+  const { data: session, status } = useSession();
   const { isPatient, isSecretary, isDoctor } = useRoles();
   const {
     isLoadingLastPatients,
@@ -38,9 +38,12 @@ const ClientHomePage = () => {
     totalStudies,
     isLoadingTotalLabs,
     totalLabs,
+    lastEcography,
+    lastStudies,
+    lastLabs,
     isLoadingTotalEcography,
     totalEcography,
-  } = useStudy({ auth: true });
+  } = useStudy({ auth: true, fetchTotal: true });
 
   // const isLoading =
   //   status === "loading" ||
@@ -73,6 +76,9 @@ const ClientHomePage = () => {
               totalHealthInsurances={Number(totalHealthInsurances)}
               lastedDoctors={Number(lastedDoctors)}
               totalEcography={Number(totalEcography)}
+              lastEcography={Number(lastEcography)}
+              lastStudies={Number(lastStudies)}
+              lastLabs={Number(lastLabs)}
               totalLabs={Number(totalLabs)}
               totalSpecialities={Number(totalSpecialities)}
               totalStudies={Number(totalStudies)}
@@ -90,7 +96,10 @@ const ClientHomePage = () => {
               lastedPatients={Number(lastedpatients)}
               totalPatients={Number(totalPatients)}
               totalHealthInsurances={Number(totalHealthInsurances)}
+              lastEcography={Number(lastEcography)}
+              lastStudies={Number(lastStudies)}
               lastedDoctors={Number(lastedDoctors)}
+              lastLabs={Number(lastLabs)}
               totalEcography={Number(totalEcography)}
               totalLabs={Number(totalLabs)}
               totalSpecialities={Number(totalSpecialities)}

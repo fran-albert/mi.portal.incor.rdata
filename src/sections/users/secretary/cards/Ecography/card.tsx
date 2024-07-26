@@ -9,8 +9,10 @@ import {
 } from "@/components/ui/card";
 export const EcographyCount = ({
   totalEcography,
+  lastEcography,
 }: {
   totalEcography: number;
+  lastEcography: number;
 }) => {
   return (
     <>
@@ -24,7 +26,7 @@ export const EcographyCount = ({
             <CardContent>
               <div className="text-2xl font-bold">{totalEcography}</div>
               <p className="text-xs text-muted-foreground">
-                +{1} desde la semana pasada
+                +{lastEcography} desde la semana pasada
               </p>
             </CardContent>
           </Card>
