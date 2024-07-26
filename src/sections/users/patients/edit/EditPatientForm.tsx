@@ -51,7 +51,6 @@ registerLocale("es", es);
 type FormValues = z.infer<typeof PatientSchema>;
 
 function EditPatientForm({ patient }: { patient: Patient }) {
-  const updatePatientToStore = usePatientStore((state) => state.updatePatient);
   const { updatePatientMutation } = usePatientMutations();
   const form = useForm<FormValues>({
     resolver: zodResolver(PatientSchema),
@@ -123,6 +122,8 @@ function EditPatientForm({ patient }: { patient: Patient }) {
       setValue("address.number", patient.address.number || "");
       setValue("address.description", patient.address.description || "");
       setValue("address.phoneNumber", patient.address.phoneNumber || "");
+      setValue("address.city", patient.address.city);
+      setValue("address.city.state", patient.address.city.state);
     }
   }, [patient, setValue]);
 
@@ -650,7 +651,11 @@ function EditPatientForm({ patient }: { patient: Patient }) {
               <Button variant="outline" type="button" onClick={goBack}>
                 Cancelar
               </Button>
-              <Button variant="incor" type="submit">
+              <Button
+                variant="incor"
+                type="submit"
+                disabled={updatePatientMutation.isPending}
+              >
                 Confirmar
               </Button>
             </CardFooter>

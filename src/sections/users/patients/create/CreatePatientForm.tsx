@@ -104,6 +104,7 @@ export function CreatePatientForm() {
 
     const payload: any = {
       ...data,
+      email: data.email || "",
       address: {
         ...data.address,
         city: selectedCity,
@@ -266,10 +267,11 @@ export function CreatePatientForm() {
                               {...field}
                               type="date"
                               value={
-                                field.value
-                                  ? new Date(field.value)
-                                      .toISOString()
-                                      .split("T")[0]
+                                field.value &&
+                                !isNaN(new Date(field.value).getTime())
+                                  ? moment(new Date(field.value)).format(
+                                      "YYYY-MM-DD"
+                                    )
                                   : ""
                               }
                               onChange={(e) =>
@@ -468,9 +470,7 @@ export function CreatePatientForm() {
                             <CitySelect
                               control={control}
                               idState={
-                                selectedState
-                                  ? Number(selectedState.id)
-                                  : 0
+                                selectedState ? Number(selectedState.id) : 0
                               }
                               onCityChange={handleCityChange}
                             />

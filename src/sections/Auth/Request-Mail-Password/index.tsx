@@ -1,7 +1,12 @@
 "use client";
-import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Label } from "@/components/ui/label";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,28 +18,31 @@ import {
 import { toast } from "sonner";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Input } from "@/components/ui/input";
-interface FormValues {
-  email: string;
-}
+import { z } from "zod";
+import { RequestEmailPasswordSchema } from "@/validators/user.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useUserMutations } from "@/hooks/User/useUserMutations";
+type FormValues = z.infer<typeof RequestEmailPasswordSchema>;
 
 function RequestEmailPassword() {
+  const form = useForm<FormValues>({
+    resolver: zodResolver(RequestEmailPasswordSchema),
+  });
   const {
-    register,
-    handleSubmit,
     formState: { errors },
-  } = useForm<FormValues>();
+  } = form;
+  const { forgotPasswordMutation } = useUserMutations();
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    // try {
-    //   const sendMailFn = forgotPassword(userRepository);
-    //   const sendMailPromise = sendMailFn(data.email);
-    //   toast.promise(sendMailPromise, {
-    //     loading: "Enviando correo electrónico...",
-    //     success: "Correo enviado éxito!",
-    //     duration: 3000,
-    //   });
-    // } catch (error) {
-    //   console.error("Error al enviar el enlace. Inténtalo de nuevo.", error);
-    // }
+    try {
+      const sendMailPromise = forgotPasswordMutation.mutateAsync(data);
+      toast.promise(sendMailPromise, {
+        loading: "Enviando correo electrónico...",
+        success: "Correo enviado éxito!",
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error("Error al enviar el enlace. Inténtalo de nuevo.", error);
+    }
   };
 
   return (
@@ -52,20 +60,34 @@ function RequestEmailPassword() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="grid gap-4">
-            <Input
-              type="email"
-              placeholder="Correo Electrónico"
-              {...register("email")}
-              className="w-full"
-            />
-            <Button className="mx-auto w-1/2 md:w-1/2" variant={"incor"}>
-              <SendIcon className="mr-2 h-4 w-4" />
-              Enviar
-            </Button>
-          </div>
-        </form>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <div className="grid gap-4">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-black">
+                      Correo Electrónico
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="Ingrese su correo electrónico..."
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button className="mx-auto w-1/2 md:w-1/2" variant={"incor"}>
+                <SendIcon className="mr-2 h-4 w-4" />
+                Enviar
+              </Button>
+            </div>
+          </form>
+        </Form>
       </CardContent>
     </Card>
   );

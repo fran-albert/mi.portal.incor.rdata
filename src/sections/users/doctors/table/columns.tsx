@@ -114,17 +114,21 @@ export const getColumns = (
       header: " ",
       cell: ({ row }) => (
         <div className="flex items-center justify-end">
-          {roles.isSecretary || roles.isDoctor && (
+          {roles.isSecretary && (
+            <>
+              <ViewButton
+                slug={String(row.original.slug)}
+                text="Ver Medico"
+                path="medicos"
+              />
+              <DeleteDoctorDialog idDoctor={row.original.userId} />
+            </>
+          )}
+          {roles.isDoctor && (
             <ViewButton
               slug={String(row.original.slug)}
               text="Ver Medico"
               path="medicos"
-            />
-          )}
-          {roles.isSecretary && (
-            <DeleteDoctorDialog
-              idDoctor={row.original.userId}
-              // onDoctorDeleted={fetchDoctors}
             />
           )}
         </div>

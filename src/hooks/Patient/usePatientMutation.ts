@@ -10,6 +10,7 @@ export const usePatientMutations = () => {
   const addPatientMutation = useMutation({
     mutationFn: createPatient,
     onSuccess: (patient, variables, context) => {
+      queryClient.invalidateQueries({ queryKey: ['patients'] });
       console.log("Patient created", patient, variables, context);
     },
 
@@ -21,7 +22,7 @@ export const usePatientMutations = () => {
   const updatePatientMutation = useMutation({
     mutationFn: ({ id, patient }: { id: number; patient: Patient }) => updatePatient(id, patient),
     onSuccess: (patient, variables, context) => {
-      queryClient.invalidateQueries({ queryKey: ['patients'] });
+      queryClient.invalidateQueries({ queryKey: ['patient', variables.id] });
       console.log("Patient updated", patient, variables, context);
     },
     onError: (error, variables, context) => {

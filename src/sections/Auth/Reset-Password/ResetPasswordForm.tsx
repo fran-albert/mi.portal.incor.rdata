@@ -1,5 +1,4 @@
 "use client";
-import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -12,27 +11,36 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-interface Inputs {
-  password: string;
-  confirmPassword: string;
-}
+import { useUserMutations } from "@/hooks/User/useUserMutations";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ResetPasswordSchema } from "@/validators/user.schema";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 
+type FormValues = z.infer<typeof ResetPasswordSchema>;
 function ResetPasswordForm() {
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const form = useForm<FormValues>({
+    resolver: zodResolver(ResetPasswordSchema),
+  });
+  const {
+    setValue,
+    control,
+    formState: { errors },
+  } = form;
+  const { resetPasswordMutation } = useUserMutations();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<Inputs>();
   const token = searchParams.get("token");
 
-  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+  async function onSubmit(data: z.infer<typeof ResetPasswordSchema>) {
     if (!token) {
       toast.error("Token de restablecimiento no proporcionado.");
       return;
@@ -44,20 +52,19 @@ function ResetPasswordForm() {
       code: token,
     };
 
-    // try {
-    //   const resetPasswordFn = resetPassword(userRepository);
-    //   const resetPasswordPromise = resetPasswordFn(payload);
+    try {
+      const resetPasswordPromise = resetPasswordMutation.mutateAsync(payload);
 
-    //   toast.promise(resetPasswordPromise, {
-    //     loading: "Cambiando contraseña...",
-    //     success: "Contraseña cambiada con éxito!",
-    //     error: "Error al cambiar la contraseña",
-    //   });
-    //   router.push("/iniciar-sesion");
-    // } catch (error) {
-    //   console.error("Error al cambiar la contraseña", error);
-    // }
-  };
+      toast.promise(resetPasswordPromise, {
+        loading: "Cambiando contraseña...",
+        success: "Contraseña cambiada con éxito!",
+        error: "Error al cambiar la contraseña",
+      });
+      router.push("/iniciar-sesion");
+    } catch (error) {
+      console.error("Error al cambiar la contraseña", error);
+    }
+  }
 
   return (
     <Card className="w-full max-w-md mt-10">
@@ -65,31 +72,58 @@ function ResetPasswordForm() {
         <CardTitle>Nueva contraseña</CardTitle>
       </CardHeader>
       <CardContent className="grid gap-4">
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
-          <div className="grid gap-2">
-            <Label htmlFor="newPassword">Nueva contraseña</Label>
-            <PasswordInput
-              value={password}
-              {...register("password")}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="new-password"
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="confirmPassword">Confirmar nueva contraseña</Label>
-            <PasswordInput
-              {...register("confirmPassword")}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              autoComplete="confirmPassword"
-            />
-          </div>
-          <CardFooter className="flex justify-center gap-2">
-            <Button type="submit" variant={"incor"}>
-              Confirmar
-            </Button>
-          </CardFooter>
-        </form>
+        <Form {...form}>
+          <form
+            className="flex flex-col gap-4"
+            onSubmit={form.handleSubmit(onSubmit)}
+          >
+            <div className="grid gap-2">
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-black">
+                      Nueva contraseña
+                    </FormLabel>
+                    <FormControl>
+                      <PasswordInput
+                        {...field}
+                        placeholder="Ingresar nueva contraseña..."
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="grid gap-2">
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-black">
+                      Confirmar nueva contraseña
+                    </FormLabel>
+                    <FormControl>
+                      <PasswordInput
+                        {...field}
+                        placeholder="Confirmar nueva contraseña..."
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <CardFooter className="flex justify-center gap-2">
+              <Button type="submit" variant={"incor"}>
+                Confirmar
+              </Button>
+            </CardFooter>
+          </form>
+        </Form>
       </CardContent>
     </Card>
   );

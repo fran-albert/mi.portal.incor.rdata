@@ -30,3 +30,12 @@ export const UserSchema = z.object({
     bloodType: z.string().optional(),
     gender: z.string({ required_error: "Este campo es obligatorio." }),
 });
+
+export const ResetPasswordSchema = z.object({
+    password: z.string({ required_error: "Este campo es obligatorio." }),
+    confirmPassword: z.string({ required_error: "Este campo es obligatorio." }),
+});
+
+export const RequestEmailPasswordSchema = z.object({
+    email: z.string({ required_error: "Este campo es obligatorio." }).email(),
+});

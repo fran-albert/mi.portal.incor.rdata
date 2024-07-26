@@ -49,10 +49,13 @@ import { DoctorSchema } from "@/validators/doctor.schema";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { City } from "@/types/City/City";
+import { handleDateChange } from "@/common/helpers/helpers";
+import { useDoctorMutations } from "@/hooks/Doctor/useDoctorMutation";
 
 type FormValues = z.infer<typeof DoctorSchema>;
 
 function CreateDoctorForm() {
+  const { addDoctorMutation } = useDoctorMutations();
   const form = useForm<FormValues>({
     resolver: zodResolver(DoctorSchema),
   });
@@ -70,7 +73,7 @@ function CreateDoctorForm() {
   const [selectedHealthInsurances, setSelectedHealthInsurances] = useState<
     HealthInsurance[]
   >([]);
-  const [startDate, setStartDate] = useState(new Date());
+  const [startDate, setStartDate] = useState<Date | undefined>();
   const [selectedCity, setSelectedCity] = useState<City | undefined>(undefined);
   const { session } = useCustomSession();
   const idSession = session?.user?.id;
@@ -113,24 +116,24 @@ function CreateDoctorForm() {
       registeredById: Number(idSession),
     };
 
-    // try {
-    //   const doctorCreationPromise = createDoctor(payload);
-    //   toast.promise(doctorCreationPromise, {
-    //     loading: "Creando médico...",
-    //     success: "Médico creado con éxito!",
-    //     error: "Error al crear el Médico",
-    //   });
+    try {
+      const doctorCreationPromise = addDoctorMutation.mutateAsync(payload);
+      toast.promise(doctorCreationPromise, {
+        loading: "Creando médico...",
+        success: "Médico creado con éxito!",
+        error: "Error al crear el Médico",
+      });
 
-    //   doctorCreationPromise
-    //     .then(() => {
-    //       goBack();
-    //     })
-    //     .catch((error) => {
-    //       console.error("Error al crear el médico", error);
-    //     });
-    // } catch (error) {
-    //   console.error("Error al crear el doctor", error);
-    // }
+      doctorCreationPromise
+        .then(() => {
+          goBack();
+        })
+        .catch((error) => {
+          console.error("Error al crear el médico", error);
+        });
+    } catch (error) {
+      console.error("Error al crear el doctor", error);
+    }
   }
 
   return (
@@ -265,11 +268,20 @@ function CreateDoctorForm() {
                               {...field}
                               type="date"
                               value={
-                                field.value
-                                  ? new Date(field.value)
-                                      .toISOString()
-                                      .split("T")[0]
+                                field.value &&
+                                !isNaN(new Date(field.value).getTime())
+                                  ? moment(new Date(field.value)).format(
+                                      "YYYY-MM-DD"
+                                    )
                                   : ""
+                              }
+                              onChange={(e) =>
+                                handleDateChange(
+                                  e,
+                                  setStartDate,
+                                  setValue,
+                                  "birthDate"
+                                )
                               }
                             />
                           </FormControl>

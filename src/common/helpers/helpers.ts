@@ -60,18 +60,17 @@ export const handleDateChange = (
   fieldName: string
 ) => {
   const value = e.target.value;
-  const dateInArgentina = moment(new Date(value)).tz(
-    "America/Argentina/Buenos_Aires"
-  );
-  const formattedDateISO = dateInArgentina.format();
+  const dateInArgentina = moment.tz(value, "America/Argentina/Buenos_Aires");
+  const formattedDateISO = dateInArgentina.toISOString();
+
   setStartDate(new Date(value));
   setValue(fieldName, formattedDateISO);
 };
 
 export const sleep = (seconds: number): Promise<boolean> => {
   return new Promise(resolve => {
-      setTimeout(() => {
-          resolve(true);
-      }, seconds * 1000);
+    setTimeout(() => {
+      resolve(true);
+    }, seconds * 1000);
   });
 }
