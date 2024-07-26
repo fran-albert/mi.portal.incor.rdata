@@ -1,9 +1,9 @@
 import { sleep } from "@/common/helpers/helpers";
-import { Patient } from "@/modules/patients/domain/Patient";
 import axiosInstance from "@/services/axiosConfig";
+import { Speciality } from "@/types/Speciality/Speciality";
 
-export const updatePatient = async (id: number, patient: Patient) => {
+export const updateSpeciality = async (id: number, newSpeciality: Speciality) => {
     await sleep(2);
-    const { data } = await axiosInstance.put<Patient>(`Patient/${id}`, patient);
+    const { data } = await axiosInstance.put<Speciality>(`Speciality/${id}`, newSpeciality);
     return data;
 }

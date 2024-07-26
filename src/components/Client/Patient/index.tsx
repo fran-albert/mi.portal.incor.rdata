@@ -2,7 +2,7 @@ import { formatDateWithTime } from "@/common/helpers/helpers";
 import StudiesCardComponent from "@/sections/users/patients/View/Studies/card";
 import PatientCardComponent from "@/sections/users/patients/View/Card/card";
 import LabCard from "@/sections/users/patients/View/Lab/card";
-import { Patient } from "@/modules/patients/domain/Patient";
+import { Patient } from "@/types/Patient/Patient";
 
 export function ClientPatientComponent({
   patient,

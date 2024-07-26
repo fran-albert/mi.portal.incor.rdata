@@ -3,7 +3,6 @@ import React, { useEffect } from "react";
 import { formatDateWithTime } from "@/common/helpers/helpers";
 import DoctorCardComponent from "@/sections/users/doctors/View/Card/card";
 import DoctorSpecialitiesComponent from "@/sections/users/doctors/View/Specialities/card";
-import { useDoctorStore } from "@/hooks/useDoctors";
 import StudiesCardComponent from "@/sections/users/patients/View/Studies/card";
 import Loading from "@/app/loading";
 import { Doctor } from "@/modules/doctors/domain/Doctor";

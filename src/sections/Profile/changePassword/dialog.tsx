@@ -15,17 +15,14 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { FaTrashAlt } from "react-icons/fa";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { User } from "@/modules/users/domain/User";
 import { toast } from "sonner";
 import axios from "axios";
-import { createApiUserRepository } from "@/modules/users/infra/ApiUserRepository";
-import { changePassword } from "@/modules/users/application/change-password/changePassword";
 import { PasswordInput } from "@/components/Input/Password/input";
+import { User } from "@/types/User/User";
 
 interface ChangePasswordDialogProps {
   id: number;
 }
-const userRepository = createApiUserRepository();
 export default function ChangePasswordDialog({
   id,
 }: ChangePasswordDialogProps) {
@@ -41,7 +38,7 @@ export default function ChangePasswordDialog({
   } = useForm<User>();
   const toggleDialog = () => setIsOpen(!isOpen);
 
-  const changePasswordFn = changePassword(userRepository);
+  // const changePasswordFn = changePassword(userRepository);
 
   const handleChangePassword = async (data: User) => {
     const dataToSend: any = {
@@ -51,25 +48,23 @@ export default function ChangePasswordDialog({
       confirmPassword: data.confirmPassword,
     };
 
-    try {
-      const response = await changePasswordFn(dataToSend);
-      if (response) {
-        toast.success("Contraseña cambiada correctamente");
-        toggleDialog();
-        clearErrors();
-        reset();
-      }
-    } catch (error) {
-      clearErrors();
-      if (axios.isAxiosError(error) && error.response) {
-        toast.error(`Error al cambiar la contraseña: ${error.response.data || 'Error desconocido'}`);
-      } else {
-        toast.error("Error al cambiar la contraseña: Error desconocido");
-      }
-      console.error(error);
-    }
-    
-    
+    // try {
+    //   const response = await changePasswordFn(dataToSend);
+    //   if (response) {
+    //     toast.success("Contraseña cambiada correctamente");
+    //     toggleDialog();
+    //     clearErrors();
+    //     reset();
+    //   }
+    // } catch (error) {
+    //   clearErrors();
+    //   if (axios.isAxiosError(error) && error.response) {
+    //     toast.error(`Error al cambiar la contraseña: ${error.response.data || 'Error desconocido'}`);
+    //   } else {
+    //     toast.error("Error al cambiar la contraseña: Error desconocido");
+    //   }
+    //   console.error(error);
+    // }
   };
 
   const onSubmit = handleSubmit((dataToSend) => {

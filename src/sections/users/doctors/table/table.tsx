@@ -1,7 +1,6 @@
 import { getColumns } from "./columns";
 import { Doctor } from "@/modules/doctors/domain/Doctor";
 import { DataTable } from "@/components/Table/table";
-import { useDoctorStore } from "@/hooks/useDoctors";
 import useRoles from "@/hooks/useRoles";
 
 interface DoctorsTableProps {

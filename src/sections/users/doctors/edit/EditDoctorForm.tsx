@@ -19,11 +19,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { City } from "@/modules/city/domain/City";
-import { HealthInsurance } from "@/modules/healthInsurance/domain/HealthInsurance";
+
+import { HealthInsurance } from "@/types/Health-Insurance/Health-Insurance";
 import { HealthPlans } from "@/modules/healthPlans/domain/HealthPlan";
-import { State } from "@/modules/state/domain/State";
-import { User } from "@/modules/users/domain/User";
+import { State } from "@/types/State/State";
+import { User } from "@/types/User/User";
 import { useParams } from "next/navigation";
 import DatePicker, { registerLocale, setDefaultLocale } from "react-datepicker";
 import moment from "moment-timezone";
@@ -35,10 +35,10 @@ import { FaCalendar, FaCamera } from "react-icons/fa";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { toast } from "sonner";
 import { Doctor } from "@/modules/doctors/domain/Doctor";
-import { Speciality } from "@/modules/speciality/domain/Speciality";
+import { Speciality } from "@/types/Speciality/Speciality";
 import { goBack } from "@/lib/utils";
-import { useDoctorStore } from "@/hooks/useDoctors";
 import { SpecialitySelect } from "@/components/Select/Speciality/select";
+import { City } from "@/types/City/City";
 
 interface Inputs extends Doctor {}
 
@@ -430,7 +430,7 @@ function EditDoctorForm({ doctor }: { doctor: Doctor }) {
                     <CitySelect
                       control={control}
                       defaultValue={doctor?.address?.city}
-                      idState={selectedState ? selectedState.id : undefined}
+                      idState={selectedState ? selectedState.id : 0}
                       onCityChange={handleCityChange}
                     />
                   </div>

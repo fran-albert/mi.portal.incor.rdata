@@ -31,12 +31,12 @@ export const EditButtonIcon: React.FC<EditButtonIconProps> = ({
 
   return (
     <div className={`flex justify-center ${className}`}>
-      <Button variant="ghost" onClick={handleEdit}>
+      <Button variant="ghost" onClick={handleEdit} size={"icon"}>
         {onClick ? (
           <Button variant="ghost" size="icon">
             <ActionIcon
               tooltip="Editar"
-              icon={<FaPencilAlt size={20} className="text-gray-600" />}
+              icon={<FaPencilAlt  className="text-gray-600 w-4 h-4" />}
             />
           </Button>
         ) : (

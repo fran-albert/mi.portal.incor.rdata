@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { HealthInsurance } from "@/modules/healthInsurance/domain/HealthInsurance";
+import { HealthInsurance } from "@/types/Health-Insurance/Health-Insurance";
 import { HealthPlans } from "@/modules/healthPlans/domain/HealthPlan";
 import { createApiHealthPlansRepository } from "@/modules/healthPlans/infra/ApiHealthPlansRepository";
 import { useEffect, useState } from "react";

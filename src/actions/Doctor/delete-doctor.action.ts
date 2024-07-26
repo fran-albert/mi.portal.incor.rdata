@@ -1,9 +1,9 @@
 import { sleep } from "@/common/helpers/helpers";
-import { Patient } from "@/modules/patients/domain/Patient";
 import axiosInstance from "@/services/axiosConfig";
+import { Doctor } from "@/modules/doctors/domain/Doctor";
 
-export const deletePatient = async (id: number) => {
+export const deleteDoctor = async (id: number) => {
     await sleep(2);
-    const { data } = await axiosInstance.delete<Patient>(`Patient/${id}`);
+    const { data } = await axiosInstance.delete<Doctor>(`Doctor/${id}`);
     return data;
 }

@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/dialog";
 import { FaRegTrashAlt, FaEye } from "react-icons/fa";
 import { toast } from "sonner";
-import { createApiPatientRepository } from "@/modules/patients/infra/ApiPatientRepository";
 import ActionIcon from "@/components/Icons/action";
 import { usePatientMutations } from "@/hooks/Patient/usePatientMutation";
 import { usePatients } from "@/hooks/Patient/usePatients";

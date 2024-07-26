@@ -21,11 +21,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import moment from "moment-timezone";
-import { City } from "@/modules/city/domain/City";
-import { HealthInsurance } from "@/modules/healthInsurance/domain/HealthInsurance";
+import { HealthInsurance } from "@/types/Health-Insurance/Health-Insurance";
 import { HealthPlans } from "@/modules/healthPlans/domain/HealthPlan";
-import { Patient } from "@/modules/patients/domain/Patient";
-import { State } from "@/modules/state/domain/State";
+import { Patient } from "@/types/Patient/Patient";
+import { State } from "@/types/State/State";
 import React, { useEffect, useRef, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import "react-datepicker/dist/react-datepicker.css";
@@ -49,6 +48,7 @@ import { z } from "zod";
 import { PatientSchema } from "@/validators/patient.schema";
 import { usePatientStore } from "@/stores/Patient/patient.store";
 import { usePatientMutations } from "@/hooks/Patient/usePatientMutation";
+import { City } from "@/types/City/City";
 registerLocale("es", es);
 
 type FormValues = z.infer<typeof PatientSchema>;
@@ -468,7 +468,9 @@ export function CreatePatientForm() {
                             <CitySelect
                               control={control}
                               idState={
-                                selectedState ? selectedState.id : undefined
+                                selectedState
+                                  ? Number(selectedState.id)
+                                  : 0
                               }
                               onCityChange={handleCityChange}
                             />

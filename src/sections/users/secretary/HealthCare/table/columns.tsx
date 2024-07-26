@@ -1,13 +1,10 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
-import { Speciality } from "@/modules/speciality/domain/Speciality";
-import { Button } from "@/components/ui/button";
 import DeleteHealthInsuranceDialog from "../delete/DeleteHealthCareDialog";
-import { HealthInsurance } from "@/modules/healthInsurance/domain/HealthInsurance";
+import { HealthInsurance } from "@/types/Health-Insurance/Health-Insurance";
 import { EditButtonIcon } from "@/components/Button/Edit/button";
 
 export const getColumns = (
-  removeHealthInsuranceFromList: (idHealthCare: number) => void,
   isDoctor: boolean,
   onEditHealthCare: (healthCare: HealthInsurance) => void
 ): ColumnDef<HealthInsurance>[] => {
@@ -35,10 +32,7 @@ export const getColumns = (
                 onClick={() => onEditHealthCare(row.original)}
                 className="mr-2"
               />
-              <DeleteHealthInsuranceDialog
-                healthInsurance={row.original}
-                removeHealthInsuranceFromList={removeHealthInsuranceFromList}
-              />
+              <DeleteHealthInsuranceDialog healthInsurance={row.original} />
             </>
           )}
         </div>

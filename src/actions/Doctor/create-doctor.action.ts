@@ -1,6 +1,6 @@
 import { sleep } from "@/common/helpers/helpers";
 import { Doctor } from "@/modules/doctors/domain/Doctor";
-import { Patient } from "@/modules/patients/domain/Patient";
+import { Patient } from "@/types/Patient/Patient";
 import axiosInstance from "@/services/axiosConfig";
 
 export const createDoctor = async (doctor: Doctor) => {

@@ -28,10 +28,10 @@ import { RHFactorSelect } from "@/components/Select/RHFactor/select";
 import { GenderSelect } from "@/components/Select/Gender/select";
 import { MaritalStatusSelect } from "@/components/Select/MaritalStatus/select";
 import { goBack } from "@/lib/utils";
-import { City } from "@/modules/city/domain/City";
-import { HealthInsurance } from "@/modules/healthInsurance/domain/HealthInsurance";
+import { City } from "@/types/City/City";
+import { HealthInsurance } from "@/types/Health-Insurance/Health-Insurance";
 import { HealthPlans } from "@/modules/healthPlans/domain/HealthPlan";
-import { State } from "@/modules/state/domain/State";
+import { State } from "@/types/State/State";
 import React, { useEffect, useState } from "react";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { toast } from "sonner";
@@ -39,13 +39,12 @@ import { registerLocale } from "react-datepicker";
 import { es } from "date-fns/locale/es";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment-timezone";
-import { usePatient } from "@/hooks/usePatients";
 import { HealthInsuranceSelect } from "@/components/Select/HealthInsurace/select";
 import Loading from "@/app/loading";
 import { z } from "zod";
 import { PatientSchema } from "@/validators/patient.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Patient } from "@/modules/patients/domain/Patient";
+import { Patient } from "@/types/Patient/Patient";
 import { usePatientStore } from "@/stores/Patient/patient.store";
 import { usePatientMutations } from "@/hooks/Patient/usePatientMutation";
 registerLocale("es", es);
@@ -555,9 +554,7 @@ function EditPatientForm({ patient }: { patient: Patient }) {
                             <CitySelect
                               control={control}
                               defaultValue={selectedCity}
-                              idState={
-                                selectedState ? selectedState.id : undefined
-                              }
+                              idState={selectedState ? selectedState.id : 0}
                               onCityChange={handleCityChange}
                             />
                           </FormControl>

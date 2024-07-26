@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,21 +11,21 @@ import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { Speciality } from "@/modules/speciality/domain/Speciality";
+import { Speciality } from "@/types/Speciality/Speciality";
+import { useSpecialityMutations } from "@/hooks/Speciality/useHealthInsuranceMutation";
 
 interface AddSpecialityDialogProps {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  onSpecialityAdded: (newSpeciality: Speciality) => void;
 }
 
 interface Inputs extends Speciality {}
 
 export default function AddSpecialityDialog({
   isOpen,
-  onSpecialityAdded,
   setIsOpen,
 }: AddSpecialityDialogProps) {
+  const { addSpecialityMutation } = useSpecialityMutations();
   const toggleDialog = () => setIsOpen(!isOpen);
   const {
     register,
@@ -36,28 +35,23 @@ export default function AddSpecialityDialog({
   } = useForm<Inputs>();
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    // try {
-    //   const specialityRepository = createApiSpecialityRepository();
-    //   const createSpecialityFn = createSpeciality(specialityRepository);
-    //   const specialityCreationPromise = createSpecialityFn(data);
-
-    //   toast.promise(specialityCreationPromise, {
-    //     loading: "Creando especialidad...",
-    //     success: "Especialidad creada con éxito!",
-    //     error: "Error al crear la Especialidad",
-    //   });
-
-    //   specialityCreationPromise
-    //     .then(() => {
-    //       setIsOpen(false);
-    //       onSpecialityAdded(data);
-    //     })
-    //     .catch((error) => {
-    //       console.error("Error al crear la Especialidad", error);
-    //     });
-    // } catch (error) {
-    //   console.error("Error al crear la Especialidad", error);
-    // }
+    try {
+      const specialityCreationPromise = addSpecialityMutation.mutateAsync(data);
+      toast.promise(specialityCreationPromise, {
+        loading: "Creando especialidad...",
+        success: "Especialidad creada con éxito!",
+        error: "Error al crear la Especialidad",
+      });
+      specialityCreationPromise
+        .then(() => {
+          setIsOpen(false);
+        })
+        .catch((error) => {
+          console.error("Error al crear la Especialidad", error);
+        });
+    } catch (error) {
+      console.error("Error al crear la Especialidad", error);
+    }
   };
 
   return (
@@ -84,7 +78,7 @@ export default function AddSpecialityDialog({
             <Button variant="outline" onClick={toggleDialog}>
               Cancelar
             </Button>
-            <Button variant="incor" type="submit">
+            <Button variant="incor" type="submit" disabled={addSpecialityMutation.isPending}>
               Confirmar
             </Button>
           </DialogFooter>

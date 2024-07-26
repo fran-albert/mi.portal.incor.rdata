@@ -1,5 +1,5 @@
 import { sleep } from "@/common/helpers/helpers";
-import { Patient } from "@/modules/patients/domain/Patient";
+import { Patient } from "@/types/Patient/Patient";
 import axiosInstance from "@/services/axiosConfig";
 
 export const createPatient = async (patient: Patient) => {

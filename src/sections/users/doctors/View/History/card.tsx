@@ -1,23 +1,6 @@
 import React, { useEffect, useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { User } from "@/modules/users/domain/User";
-import { useSession } from "next-auth/react";
-import { createApiUserRepository } from "@/modules/users/infra/ApiUserRepository";
-import { getUser } from "@/modules/users/application/get/getUser";
-import Loading from "@/components/Loading/loading";
+
 import { FaEdit, FaPlus, FaUpload } from "react-icons/fa";
-import { useParams } from "next/navigation";
-import { FaRegFilePdf } from "react-icons/fa";
-import { AiOutlineFileJpg } from "react-icons/ai";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 
 const HistoryCardComponent = () => {
   const antecedentes = [

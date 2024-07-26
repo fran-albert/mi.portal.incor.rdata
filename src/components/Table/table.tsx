@@ -89,16 +89,6 @@ export function DataTable<TData, TValue>({
     }));
   };
 
-  const handleAddClick = () => {
-    setIsAdding(true);
-    if (onAddClick) {
-      onAddClick();
-    } else {
-      setTimeout(() => {
-        setIsAdding(false);
-      }, 2000);
-    }
-  };
 
   if (isAdding) {
     return null;
@@ -141,14 +131,22 @@ export function DataTable<TData, TValue>({
                 onChange={handleSearchChange}
               />
               {canAddUser && (
-                <Link href={addLinkPath} passHref>
-                  <Button
-                    className="ml-4 bg-incor hover:bg-incor-700 text-white"
-                    onClick={handleAddClick}
-                  >
-                    {addLinkText}
-                  </Button>
-                </Link>
+                <div className="ml-4">
+                  {onAddClick ? (
+                    <Button
+                      className="bg-incor hover:bg-incor-700 text-white"
+                      onClick={onAddClick}
+                    >
+                      {addLinkText}
+                    </Button>
+                  ) : (
+                    <Link href={addLinkPath} passHref>
+                      <Button className="bg-incor hover:bg-incor-700 text-white">
+                        {addLinkText}
+                      </Button>
+                    </Link>
+                  )}
+                </div>
               )}
             </div>
           )}

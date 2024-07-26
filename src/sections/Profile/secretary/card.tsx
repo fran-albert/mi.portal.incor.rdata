@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Form,
   FormControl,
@@ -20,19 +20,16 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CitySelect } from "@/components/Select/City/select";
 import { StateSelect } from "@/components/Select/State/select";
-import { createApiUserRepository } from "@/modules/users/infra/ApiUserRepository";
-import { User } from "@/modules/users/domain/User";
+import { User } from "@/types/User/User";
 import { formatDni, handleDateChange } from "@/common/helpers/helpers";
 import useRoles from "@/hooks/useRoles";
-import { State } from "@/modules/state/domain/State";
-import { City } from "@/modules/city/domain/City";
+import { State } from "@/types/State/State";
 import DatePicker, { registerLocale, setDefaultLocale } from "react-datepicker";
 import { es } from "date-fns/locale/es";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment-timezone";
 import { useForm, SubmitHandler } from "react-hook-form";
 import ChangePasswordDialog from "../changePassword/dialog";
-import { updateUser } from "@/modules/users/application/update/updateUser";
 import { toast } from "sonner";
 import { PatientSchema } from "@/validators/patient.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -44,10 +41,11 @@ import { RHFactorSelect } from "@/components/Select/RHFactor/select";
 import { BloodSelect } from "@/components/Select/Blood/select";
 import { z } from "zod";
 import { FaEdit, FaUserEdit } from "react-icons/fa";
-import { Patient } from "@/modules/patients/domain/Patient";
+import { Patient } from "@/types/Patient/Patient";
+import { City } from "@/types/City/City";
 registerLocale("es", es);
 type FormValues = z.infer<typeof PatientSchema>;
-export default function userSecretaryCardComponent({ user }: { user: User }) {
+export default function UserSecretaryCardComponent({ user }: { user: User }) {
   const form = useForm<FormValues>({
     resolver: zodResolver(PatientSchema),
   });
@@ -82,7 +80,7 @@ export default function userSecretaryCardComponent({ user }: { user: User }) {
     }
   }, [user, setValue]);
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: any) => {
     const addressToSend = {
       ...data.address,
       id: user?.address.id,
@@ -449,9 +447,7 @@ export default function userSecretaryCardComponent({ user }: { user: User }) {
                           <FormControl>
                             <CitySelect
                               control={control}
-                              idState={
-                                selectedState ? selectedState.id : undefined
-                              }
+                              idState={selectedState ? selectedState.id : 0}
                               onCityChange={handleCityChange}
                               defaultValue={selectedCity}
                             />

@@ -12,48 +12,41 @@ import {
 } from "@/components/ui/dialog";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { toast } from "sonner";
-import { createApiSpecialityRepository } from "@/modules/speciality/infra/ApiSpecialityRepository";
-import { Speciality } from "@/modules/speciality/domain/Speciality";
+import { Speciality } from "@/types/Speciality/Speciality";
 import ActionIcon from "@/components/Icons/action";
+import { useSpecialityMutations } from "@/hooks/Speciality/useHealthInsuranceMutation";
 
 interface DeleteSpecialityDialogProps {
   speciality: Speciality;
-  removeSpecialityFromList?: (idSpeciality: number) => void;
 }
 
 export default function DeleteSpecialityDialog({
   speciality,
-  removeSpecialityFromList,
 }: DeleteSpecialityDialogProps) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const toggleDialog = () => setIsOpen(!isOpen);
-
+  const { deleteSpecialityMutation } = useSpecialityMutations();
   const handleConfirmDelete = async () => {
-    // try {
-    //   const specialityRepository = createApiSpecialityRepository();
-    //   const deleteSpecialityFn = deleteSpeciality(specialityRepository);
-    //   const specialityDeletionPromise = deleteSpecialityFn(
-    //     Number(speciality.id)
-    //   );
-    //   toast.promise(specialityDeletionPromise, {
-    //     loading: "Eliminando especialidad...",
-    //     success: "Especialidad eliminada con éxito!",
-    //     error: "Error al eliminar la Especialidad",
-    //     duration: 3000,
-    //   });
-    //   specialityDeletionPromise
-    //     .then(() => {
-    //       setIsOpen(false);
-    //       if (removeSpecialityFromList) {
-    //         removeSpecialityFromList(Number(speciality.id));
-    //       }
-    //     })
-    //     .catch((error) => {
-    //       console.error("Error al crear la Especialidad", error);
-    //     });
-    // } catch (error) {
-    //   console.error("Error al crear la Especialidad", error);
-    // }
+    try {
+      const specialityDeletionPromise = deleteSpecialityMutation.mutateAsync(
+        Number(speciality.id)
+      );
+      toast.promise(specialityDeletionPromise, {
+        loading: "Eliminando especialidad...",
+        success: "Especialidad eliminada con éxito!",
+        error: "Error al eliminar la Especialidad",
+        duration: 3000,
+      });
+      specialityDeletionPromise
+        .then(() => {
+          setIsOpen(false);
+        })
+        .catch((error) => {
+          console.error("Error al crear la Especialidad", error);
+        });
+    } catch (error) {
+      console.error("Error al crear la Especialidad", error);
+    }
   };
 
   return (
@@ -78,7 +71,11 @@ export default function DeleteSpecialityDialog({
           <Button variant="outline" onClick={toggleDialog}>
             Cancelar
           </Button>
-          <Button variant="incor" onClick={handleConfirmDelete}>
+          <Button
+            variant="incor"
+            onClick={handleConfirmDelete}
+            disabled={deleteSpecialityMutation.isPending}
+          >
             Confirmar
           </Button>
         </DialogFooter>

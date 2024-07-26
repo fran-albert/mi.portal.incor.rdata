@@ -1,7 +1,5 @@
 import { useSpeciality } from "@/hooks/Speciality/useSpeciality";
-import { Speciality } from "@/modules/speciality/domain/Speciality";
-import { SpecialityRepository } from "@/modules/speciality/domain/SpecialityRepository";
-import { createApiSpecialityRepository } from "@/modules/speciality/infra/ApiSpecialityRepository";
+import { Speciality } from "@/types/Speciality/Speciality";
 import { Listbox, Transition } from "@headlessui/react";
 import { Check, ChevronDown } from "lucide-react";
 import { Fragment, useEffect, useState } from "react";

@@ -1,5 +1,5 @@
 import { sleep } from "@/common/helpers/helpers";
-import { User } from "@/modules/users/domain/User";
+import { User } from "@/types/User/User";
 import axiosInstance from "@/services/axiosConfig";
 
 export const getRegisterBy = async (id: number) => {

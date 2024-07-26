@@ -30,13 +30,10 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CitySelect } from "@/components/Select/City/select";
 import { StateSelect } from "@/components/Select/State/select";
-import { createApiUserRepository } from "@/modules/users/infra/ApiUserRepository";
-import { User } from "@/modules/users/domain/User";
+import { User } from "@/types/User/User";
 import moment from "moment-timezone";
 import { formatDate, formatDni } from "@/common/helpers/helpers";
-import { useDoctorStore } from "@/hooks/useDoctors";
-import { State } from "@/modules/state/domain/State";
-import { City } from "@/modules/city/domain/City";
+import { State } from "@/types/State/State";
 import { Doctor } from "@/modules/doctors/domain/Doctor";
 import { createApiDoctorRepository } from "@/modules/doctors/infra/ApiDoctorRepository";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -44,17 +41,18 @@ import DatePicker, { registerLocale, setDefaultLocale } from "react-datepicker";
 import { es } from "date-fns/locale/es";
 import { toast } from "sonner";
 import "react-datepicker/dist/react-datepicker.css";
-import { HealthInsurance } from "@/modules/healthInsurance/domain/HealthInsurance";
-import { Speciality } from "@/modules/speciality/domain/Speciality";
+import { HealthInsurance } from "@/types/Health-Insurance/Health-Insurance";
+import { Speciality } from "@/types/Speciality/Speciality";
 import ChangePasswordDialog from "../changePassword/dialog";
 import Loading from "@/app/loading";
 import { DoctorSchema } from "@/validators/doctor.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { FaUserEdit } from "react-icons/fa";
+import { City } from "@/types/City/City";
 type FormValues = z.infer<typeof DoctorSchema>;
 export default function ProfileDoctorCardComponent({ data }: { data: Doctor }) {
-  const { updateDoctor } = useDoctorStore();
+  // const { updateDoctor } = useDoctorStore();
   const form = useForm<FormValues>({
     resolver: zodResolver(DoctorSchema),
   });
@@ -534,10 +532,8 @@ export default function ProfileDoctorCardComponent({ data }: { data: Doctor }) {
                           <FormControl>
                             <CitySelect
                               control={control}
-                              defaultValue={data?.address?.city.name}
-                              idState={
-                                selectedState ? selectedState.id : undefined
-                              }
+                              defaultValue={data?.address?.city}
+                              idState={selectedState ? selectedState.id : 0}
                               onCityChange={handleCityChange}
                             />
                           </FormControl>

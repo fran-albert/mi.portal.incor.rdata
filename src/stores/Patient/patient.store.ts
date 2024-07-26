@@ -1,4 +1,4 @@
-import { Patient } from '@/modules/patients/domain/Patient';
+import { Patient } from '@/types/Patient/Patient';
 import { create } from 'zustand';
 
 interface PatientState {

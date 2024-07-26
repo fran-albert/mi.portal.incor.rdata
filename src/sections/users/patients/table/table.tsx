@@ -1,5 +1,5 @@
 import { getColumns } from "./columns";
-import { Patient } from "@/modules/patients/domain/Patient";
+import { Patient } from "@/types/Patient/Patient";
 import useRoles from "@/hooks/useRoles";
 import { DataTable } from "@/components/Table/table";
 import { usePatients } from "@/hooks/Patient/usePatients";

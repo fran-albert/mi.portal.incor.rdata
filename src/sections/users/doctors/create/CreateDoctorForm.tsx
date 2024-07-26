@@ -32,25 +32,23 @@ import moment from "moment-timezone";
 import "react-datepicker/dist/react-datepicker.css";
 import { Label } from "@/components/ui/label";
 import { goBack } from "@/lib/utils";
-import { City } from "@/modules/city/domain/City";
-import { createDoctor } from "@/modules/doctors/application/create/createDoctor";
 import { Doctor } from "@/modules/doctors/domain/Doctor";
 import { createApiDoctorRepository } from "@/modules/doctors/infra/ApiDoctorRepository";
-import { HealthInsurance } from "@/modules/healthInsurance/domain/HealthInsurance";
-import { Speciality } from "@/modules/speciality/domain/Speciality";
-import { State } from "@/modules/state/domain/State";
+import { HealthInsurance } from "@/types/Health-Insurance/Health-Insurance";
+import { Speciality } from "@/types/Speciality/Speciality";
+import { State } from "@/types/State/State";
 import React, { useRef, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { FaCamera } from "react-icons/fa";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { toast } from "sonner";
-import { useDoctorStore } from "@/hooks/useDoctors";
 import { useCustomSession } from "@/context/SessionAuthProviders";
 import { HealthInsuranceDoctorSelect } from "@/components/Select/HealthInsurace/Doctor/select";
 import { SpecialitySelect } from "@/components/Select/Speciality/select";
 import { DoctorSchema } from "@/validators/doctor.schema";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { City } from "@/types/City/City";
 
 type FormValues = z.infer<typeof DoctorSchema>;
 
@@ -74,7 +72,6 @@ function CreateDoctorForm() {
   >([]);
   const [startDate, setStartDate] = useState(new Date());
   const [selectedCity, setSelectedCity] = useState<City | undefined>(undefined);
-  const { createDoctor } = useDoctorStore();
   const { session } = useCustomSession();
   const idSession = session?.user?.id;
 
@@ -116,25 +113,24 @@ function CreateDoctorForm() {
       registeredById: Number(idSession),
     };
 
+    // try {
+    //   const doctorCreationPromise = createDoctor(payload);
+    //   toast.promise(doctorCreationPromise, {
+    //     loading: "Creando médico...",
+    //     success: "Médico creado con éxito!",
+    //     error: "Error al crear el Médico",
+    //   });
 
-    try {
-      const doctorCreationPromise = createDoctor(payload);
-      toast.promise(doctorCreationPromise, {
-        loading: "Creando médico...",
-        success: "Médico creado con éxito!",
-        error: "Error al crear el Médico",
-      });
-
-      doctorCreationPromise
-        .then(() => {
-          goBack();
-        })
-        .catch((error) => {
-          console.error("Error al crear el médico", error);
-        });
-    } catch (error) {
-      console.error("Error al crear el doctor", error);
-    }
+    //   doctorCreationPromise
+    //     .then(() => {
+    //       goBack();
+    //     })
+    //     .catch((error) => {
+    //       console.error("Error al crear el médico", error);
+    //     });
+    // } catch (error) {
+    //   console.error("Error al crear el doctor", error);
+    // }
   }
 
   return (
@@ -326,11 +322,11 @@ function CreateDoctorForm() {
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="blood">Sangre </Label>
-                    <BloodSelect control={control} errors={errors} />
+                    <BloodSelect control={control} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="rhFactor">Factor R.H.</Label>
-                    <RHFactorSelect control={control} errors={errors} />
+                    <RHFactorSelect control={control} />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-6">
@@ -351,7 +347,7 @@ function CreateDoctorForm() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="maritalStatus">Estado Civil</Label>
-                    <MaritalStatusSelect control={control} errors={errors} />
+                    <MaritalStatusSelect control={control} />
                   </div>
                 </div>
               </div>
@@ -430,10 +426,7 @@ function CreateDoctorForm() {
                           <FormControl>
                             <CitySelect
                               control={control}
-                              errors={errors}
-                              idState={
-                                selectedState ? selectedState.id : undefined
-                              }
+                              idState={selectedState ? selectedState.id : 0}
                               onCityChange={handleCityChange}
                             />
                           </FormControl>

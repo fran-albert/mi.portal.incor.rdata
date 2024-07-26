@@ -3,8 +3,6 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { createApiUserRepository } from "@/modules/users/infra/ApiUserRepository";
-import { resetPassword } from "@/modules/users/application/reset-password/resetPassword";
 import { PasswordInput } from "@/components/Input/Password/input";
 import {
   Card,
@@ -21,8 +19,6 @@ interface Inputs {
   password: string;
   confirmPassword: string;
 }
-
-const userRepository = createApiUserRepository();
 
 function ResetPasswordForm() {
   const [password, setPassword] = useState("");
@@ -48,19 +44,19 @@ function ResetPasswordForm() {
       code: token,
     };
 
-    try {
-      const resetPasswordFn = resetPassword(userRepository);
-      const resetPasswordPromise = resetPasswordFn(payload);
+    // try {
+    //   const resetPasswordFn = resetPassword(userRepository);
+    //   const resetPasswordPromise = resetPasswordFn(payload);
 
-      toast.promise(resetPasswordPromise, {
-        loading: "Cambiando contraseña...",
-        success: "Contraseña cambiada con éxito!",
-        error: "Error al cambiar la contraseña",
-      });
-      router.push("/iniciar-sesion");
-    } catch (error) {
-      console.error("Error al cambiar la contraseña", error);
-    }
+    //   toast.promise(resetPasswordPromise, {
+    //     loading: "Cambiando contraseña...",
+    //     success: "Contraseña cambiada con éxito!",
+    //     error: "Error al cambiar la contraseña",
+    //   });
+    //   router.push("/iniciar-sesion");
+    // } catch (error) {
+    //   console.error("Error al cambiar la contraseña", error);
+    // }
   };
 
   return (

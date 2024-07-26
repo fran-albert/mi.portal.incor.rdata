@@ -1,39 +1,40 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Patient } from "@/modules/patients/domain/Patient";
-import { createPatient } from "@/actions/Patient/create-patient.action";
-import { updatePatient } from "@/actions/Patient/update-patient.action";
-import { deletePatient } from "@/actions/Patient/delete-patient.action";
+import { createDoctor } from "@/actions/Doctor/create-doctor.action";
+import { updateDoctor } from "@/actions/Doctor/update-doctor.action";
+import { Doctor } from "@/modules/doctors/domain/Doctor";
+import { deleteDoctor } from "@/actions/Doctor/delete-doctor.action";
 
 export const useDoctorMutations = () => {
   const queryClient = useQueryClient();
 
-  const addPatientMutation = useMutation({
-    mutationFn: createPatient,
-    onSuccess: (patient, variables, context) => {
-      console.log("Patient created", patient, variables, context);
+  const addDoctorMutation = useMutation({
+    mutationFn: createDoctor,
+    onSuccess: (doctor, variables, context) => {
+      queryClient.invalidateQueries({ queryKey: ['doctors'] })
+      console.log("OK", doctor, variables, context);
     },
 
     onError: (error, variables, context) => {
-      console.log("Error creating patient", error, variables, context);
+      console.log("Error", error, variables, context);
     },
   });
 
-  const updatePatientMutation = useMutation({
-    mutationFn: ({ id, patient }: { id: number; patient: Patient }) => updatePatient(id, patient),
-    onSuccess: (patient, variables, context) => {
-      queryClient.invalidateQueries({ queryKey: ['patients'] })
-      console.log("Patient updated", patient, variables, context);
+  const updateDoctorMutation = useMutation({
+    mutationFn: ({ id, doctor }: { id: number; doctor: Doctor }) => updateDoctor(id, doctor),
+    onSuccess: (doctor, variables, context) => {
+      queryClient.invalidateQueries({ queryKey: ['doctors'] })
+      console.log("OK", doctor, variables, context);
     },
     onError: (error, variables, context) => {
-      console.log("Error updating patient", error, variables, context);
+      console.log("Error", error, variables, context);
     },
   });
 
-  const deletePatientMutation = useMutation({
-    mutationFn: (id: number) => deletePatient(id),
-    onSuccess: (patient, variables, context) => {
-      queryClient.invalidateQueries({ queryKey: ['patients'] })
-      console.log("Patient deleted", patient, variables, context);
+  const deleteDoctorMutation = useMutation({
+    mutationFn: (id: number) => deleteDoctor(id),
+    onSuccess: (doctor, variables, context) => {
+      queryClient.invalidateQueries({ queryKey: ['doctors'] })
+      console.log("ok", doctor, variables, context);
     },
     onError: (error, variables, context) => {
       console.log("Error deleting patient", error, variables, context);
@@ -42,5 +43,5 @@ export const useDoctorMutations = () => {
 
 
 
-  return { addPatientMutation, updatePatientMutation, deletePatientMutation };
+  return { addDoctorMutation, updateDoctorMutation, deleteDoctorMutation };
 };

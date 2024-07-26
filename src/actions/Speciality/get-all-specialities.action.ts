@@ -1,4 +1,4 @@
-import { Speciality } from "@/modules/speciality/domain/Speciality";
+import { Speciality } from "@/types/Speciality/Speciality";
 import axiosInstance from "@/services/axiosConfig";
 
 export const getSpecialities = async (): Promise<Speciality[]> => {

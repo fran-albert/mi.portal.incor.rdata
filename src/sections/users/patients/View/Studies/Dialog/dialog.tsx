@@ -21,7 +21,7 @@ import DatePicker, { registerLocale, setDefaultLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { es } from "date-fns/locale/es";
 registerLocale("es", es);
-import { Patient } from "@/modules/patients/domain/Patient";
+import { Patient } from "@/types/Patient/Patient";
 import moment from "moment-timezone";
 import { Study } from "@/modules/study/domain/Study";
 import { SubmitHandler, useForm } from "react-hook-form";

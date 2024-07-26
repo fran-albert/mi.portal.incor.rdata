@@ -13,12 +13,9 @@ import {
 import { toast } from "sonner";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Input } from "@/components/ui/input";
-import { createApiUserRepository } from "@/modules/users/infra/ApiUserRepository";
-import { forgotPassword } from "@/modules/users/application/forgot-password/forgotPassword";
 interface FormValues {
   email: string;
 }
-const userRepository = createApiUserRepository();
 
 function RequestEmailPassword() {
   const {
@@ -27,17 +24,17 @@ function RequestEmailPassword() {
     formState: { errors },
   } = useForm<FormValues>();
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    try {
-      const sendMailFn = forgotPassword(userRepository);
-      const sendMailPromise = sendMailFn(data.email);
-      toast.promise(sendMailPromise, {
-        loading: "Enviando correo electrónico...",
-        success: "Correo enviado éxito!",
-        duration: 3000,
-      });
-    } catch (error) {
-      console.error("Error al enviar el enlace. Inténtalo de nuevo.", error);
-    }
+    // try {
+    //   const sendMailFn = forgotPassword(userRepository);
+    //   const sendMailPromise = sendMailFn(data.email);
+    //   toast.promise(sendMailPromise, {
+    //     loading: "Enviando correo electrónico...",
+    //     success: "Correo enviado éxito!",
+    //     duration: 3000,
+    //   });
+    // } catch (error) {
+    //   console.error("Error al enviar el enlace. Inténtalo de nuevo.", error);
+    // }
   };
 
   return (

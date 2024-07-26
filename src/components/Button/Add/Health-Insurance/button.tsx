@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,39 +12,37 @@ import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { HealthInsurance } from "@/modules/healthInsurance/domain/HealthInsurance";
-import { createApiHealthInsuranceRepository } from "@/modules/healthInsurance/infra/ApiHealthInsuranceRepository";
-import { createHealthInsurance } from "@/modules/healthInsurance/application/create/createHealthInsurance";
+import { HealthInsurance } from "@/types/Health-Insurance/Health-Insurance";
+import { useHealthInsuranceStore } from "@/stores/Health-Insurance/health-insurance.store";
+import { useHealthInsuranceMutations } from "@/hooks/Health-Insurance/useHealthInsuranceMutation";
 
 interface AddHealthInsuranceDialogProps {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  onHealthInsuranceAdded: (newHealthInsurance: HealthInsurance) => void;
 }
 
 interface Inputs extends HealthInsurance {}
 
-const healthInsuranceRepository = createApiHealthInsuranceRepository();
-
 export default function AddHealthInsuranceDialog({
   isOpen,
-  onHealthInsuranceAdded,
   setIsOpen,
 }: AddHealthInsuranceDialogProps) {
+  const addHealthInsuranceToStore = useHealthInsuranceStore(
+    (state) => state.addHealthInsurance
+  );
+  const { addHealthInsuranceMutation } = useHealthInsuranceMutations();
+
   const toggleDialog = () => setIsOpen(!isOpen);
   const {
     register,
     handleSubmit,
     reset,
-    watch,
     formState: { errors },
   } = useForm<Inputs>();
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
-      const createHCFn = createHealthInsurance(healthInsuranceRepository);
-      const hcCreationPromise = createHCFn(data);
-
+      const hcCreationPromise = addHealthInsuranceMutation.mutateAsync(data);
       toast.promise(hcCreationPromise, {
         loading: "Creando Obra Social...",
         success: "Obra Social creada con éxito!",
@@ -52,10 +50,10 @@ export default function AddHealthInsuranceDialog({
       });
 
       hcCreationPromise
-        .then(() => {
+        .then((data) => {
           setIsOpen(false);
           reset();
-          onHealthInsuranceAdded(data);
+          addHealthInsuranceToStore(data);
         })
         .catch((error) => {
           console.error("Error al crear la Obra Social", error);
@@ -81,6 +79,7 @@ export default function AddHealthInsuranceDialog({
                     {...register("name", { required: true })}
                     className="bg-gray-200 text-gray-700"
                   />
+                  {errors.name && <span>Este campo es obligatorio</span>}
                 </div>
               </div>
             </div>

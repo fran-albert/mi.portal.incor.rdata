@@ -114,7 +114,7 @@ export const getColumns = (
       header: " ",
       cell: ({ row }) => (
         <div className="flex items-center justify-end">
-          {roles.isSecretary && (
+          {roles.isSecretary || roles.isDoctor && (
             <ViewButton
               slug={String(row.original.slug)}
               text="Ver Medico"

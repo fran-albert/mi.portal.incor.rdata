@@ -1,9 +1,9 @@
 import { sleep } from "@/common/helpers/helpers";
-import { Patient } from "@/modules/patients/domain/Patient";
 import axiosInstance from "@/services/axiosConfig";
+import { HealthInsurance } from "@/types/Health-Insurance/Health-Insurance";
 
-export const createPatient = async (patient: Patient) => {
+export const createHealthInsurance = async (healthInsurance: HealthInsurance) => {
     await sleep(2);
-    const { data } = await axiosInstance.post<Patient>(`/Patient/create`, patient);
+    const { data } = await axiosInstance.post<HealthInsurance>(`/HealthInsurance/create`, healthInsurance);
     return data;
 }

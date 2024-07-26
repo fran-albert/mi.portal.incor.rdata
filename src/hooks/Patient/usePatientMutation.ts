@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Patient } from "@/modules/patients/domain/Patient";
 import { createPatient } from "@/actions/Patient/create-patient.action";
 import { updatePatient } from "@/actions/Patient/update-patient.action";
 import { deletePatient } from "@/actions/Patient/delete-patient.action";
+import { Patient } from "@/types/Patient/Patient";
 
 export const usePatientMutations = () => {
   const queryClient = useQueryClient();

@@ -7,7 +7,6 @@ import {
   CardContent,
   Card,
 } from "@/components/ui/card";
-import { useDoctorStore } from "@/hooks/useDoctors";
 export const DoctorsCount = ({
   lastedDoctors,
   totalDoctors,

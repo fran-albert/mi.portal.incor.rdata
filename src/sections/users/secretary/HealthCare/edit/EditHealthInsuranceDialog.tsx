@@ -12,31 +12,26 @@ import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { DialogTrigger } from "@radix-ui/react-dialog";
-import ActionIcon from "@/components/ui/actionIcon";
-import { FaPencil } from "react-icons/fa6";
-import { HealthInsurance } from "@/modules/healthInsurance/domain/HealthInsurance";
-import { createApiHealthInsuranceRepository } from "@/modules/healthInsurance/infra/ApiHealthInsuranceRepository";
-import { createHealthInsurance } from "@/modules/healthInsurance/application/create/createHealthInsurance";
-import { updateHealthInsurance } from "@/modules/healthInsurance/application/update/updateHealthInsurance";
+import { HealthInsurance } from "@/types/Health-Insurance/Health-Insurance";
+import { useHealthInsuranceStore } from "@/stores/Health-Insurance/health-insurance.store";
+import { useHealthInsuranceMutations } from "@/hooks/Health-Insurance/useHealthInsuranceMutation";
 
 interface EditHealthCareDialogProps {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   healthInsurance: HealthInsurance;
-  updateHealthInsuranceInList: (
-    updatedSpeciality: HealthInsurance
-  ) => void | undefined;
 }
-const healthInsuranceRepository = createApiHealthInsuranceRepository();
 interface Inputs extends HealthInsurance {}
 
 export default function EditHealthInsuranceDialog({
   isOpen,
   setIsOpen,
   healthInsurance,
-  updateHealthInsuranceInList,
 }: EditHealthCareDialogProps) {
+  const updateHealthInsuranceToStore = useHealthInsuranceStore(
+    (state) => state.updateHealthInsurance
+  );
+  const { updateHealthInsuranceMutation } = useHealthInsuranceMutations();
   const toggleDialog = () => setIsOpen(!isOpen);
   const {
     register,
@@ -53,11 +48,11 @@ export default function EditHealthInsuranceDialog({
 
   const onSubmit: SubmitHandler<Inputs> = async (data: HealthInsurance) => {
     try {
-      const updateHCFn = updateHealthInsurance(healthInsuranceRepository);
-      const specialityCreationPromise = updateHCFn(
-        Number(healthInsurance.id),
-        data
-      );
+      const specialityCreationPromise =
+        updateHealthInsuranceMutation.mutateAsync({
+          id: healthInsurance.id,
+          healthInsurance: data,
+        });
 
       toast.promise(specialityCreationPromise, {
         loading: "Editando obra social...",
@@ -66,9 +61,9 @@ export default function EditHealthInsuranceDialog({
       });
 
       specialityCreationPromise
-        .then(() => {
+        .then((data) => {
           setIsOpen(false);
-          if (updateHealthInsuranceInList) updateHealthInsuranceInList(data);
+          updateHealthInsuranceToStore(data.id, data);
         })
         .catch((error) => {
           console.error("Error al editar la Obra Social", error);
@@ -102,7 +97,7 @@ export default function EditHealthInsuranceDialog({
             <Button variant="outline" onClick={toggleDialog}>
               Cancelar
             </Button>
-            <Button variant="teal" type="submit">
+            <Button variant="incor" type="submit">
               Confirmar
             </Button>
           </DialogFooter>

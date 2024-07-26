@@ -12,17 +12,16 @@ import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { Speciality } from "@/modules/speciality/domain/Speciality";
-import { createApiSpecialityRepository } from "@/modules/speciality/infra/ApiSpecialityRepository";
+import { Speciality } from "@/types/Speciality/Speciality";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { FaPencil } from "react-icons/fa6";
 import ActionIcon from "@/components/Icons/action";
+import { useSpecialityMutations } from "@/hooks/Speciality/useHealthInsuranceMutation";
 
 interface EditSpecialityDialogProps {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   speciality: Speciality;
-  updateSpecialityInList: (updatedSpeciality: Speciality) => void | undefined;
 }
 
 interface Inputs extends Speciality {}
@@ -31,8 +30,8 @@ export default function EditSpecialityDialog({
   isOpen,
   setIsOpen,
   speciality,
-  updateSpecialityInList,
 }: EditSpecialityDialogProps) {
+  const { updateSpecialityMutation } = useSpecialityMutations();
   const toggleDialog = () => setIsOpen(!isOpen);
   const {
     register,
@@ -48,28 +47,26 @@ export default function EditSpecialityDialog({
   }, [isOpen, speciality, reset]);
 
   const onSubmit: SubmitHandler<Inputs> = async (data: Speciality) => {
-    // try {
-    //   const specialityRepository = createApiSpecialityRepository();
-    //   const updateSpecialityFn = updateSpeciality(specialityRepository);
-    //   const specialityCreationPromise = updateSpecialityFn(Number(speciality.id), data);
-
-    //   toast.promise(specialityCreationPromise, {
-    //     loading: "Editando especialidad...",
-    //     success: "Especialidad editada con éxito!",
-    //     error: "Error al editar la Especialidad",
-    //   });
-
-    //   specialityCreationPromise
-    //     .then(() => {
-    //       setIsOpen(false);
-    //       if (updateSpecialityInList) updateSpecialityInList(data);
-    //     })
-    //     .catch((error) => {
-    //       console.error("Error al editar la Especialidad", error);
-    //     });
-    // } catch (error) {
-    //   console.error("Error al editar la Especialidad", error);
-    // }
+    try {
+      const specialityCreationPromise = updateSpecialityMutation.mutateAsync({
+        id: Number(speciality.id),
+        speciality: data,
+      });
+      toast.promise(specialityCreationPromise, {
+        loading: "Editando especialidad...",
+        success: "Especialidad editada con éxito!",
+        error: "Error al editar la Especialidad",
+      });
+      specialityCreationPromise
+        .then(() => {
+          setIsOpen(false);
+        })
+        .catch((error) => {
+          console.error("Error al editar la Especialidad", error);
+        });
+    } catch (error) {
+      console.error("Error al editar la Especialidad", error);
+    }
   };
 
   return (
@@ -105,7 +102,7 @@ export default function EditSpecialityDialog({
             <Button variant="outline" onClick={toggleDialog}>
               Cancelar
             </Button>
-            <Button variant="incor" type="submit">
+            <Button variant="incor" type="submit"  disabled={updateSpecialityMutation.isPending}>
               Confirmar
             </Button>
           </DialogFooter>

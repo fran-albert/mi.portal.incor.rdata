@@ -6,9 +6,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { State } from "@/modules/state/domain/State";
 import { Controller } from "react-hook-form";
-import { useStateStore } from "@/hooks/useState";
+import { useState } from "@/hooks/State/useState";
+import { State } from "@/types/State/State";
 
 interface StateSelectProps {
   control: any;
@@ -21,11 +21,7 @@ export const StateSelect = ({
   defaultValue,
   onStateChange,
 }: StateSelectProps) => {
-  const { states, fetchStates, isLoading } = useStateStore();
-
-  useEffect(() => {
-    fetchStates();
-  }, [fetchStates]);
+  const { states } = useState();
   const handleValueChange = (selectedId: string) => {
     const selectedState = states.find(
       (state) => String(state.id) === selectedId

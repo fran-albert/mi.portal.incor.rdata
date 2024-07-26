@@ -1,4 +1,4 @@
-import { User } from "@/modules/users/domain/User";
+import { User } from "@/types/User/User";
 import { create } from "zustand";
 
 interface SessionState {

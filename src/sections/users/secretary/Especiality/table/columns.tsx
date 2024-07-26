@@ -1,13 +1,12 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
-import { Speciality } from "@/modules/speciality/domain/Speciality";
+import { Speciality } from "@/types/Speciality/Speciality";
 import DeleteSpecialityDialog from "../delete/DeleteSpecialityDialog";
 import EditSpecialityDialog from "../edit/EditSpecialityDialog";
 import { Button } from "@/components/ui/button";
 import { EditButtonIcon } from "@/components/Button/Edit/button";
 
 export const getColumns = (
-  removeSpecialityFromList: (idSpeciality: number) => void,
   isDoctor: boolean,
   onEditSpeciality: (speciality: Speciality) => void
 ): ColumnDef<Speciality>[] => {
@@ -35,10 +34,7 @@ export const getColumns = (
                 onClick={() => onEditSpeciality(row.original)}
                 className="mr-2"
               />
-              <DeleteSpecialityDialog
-                speciality={row.original}
-                removeSpecialityFromList={removeSpecialityFromList}
-              />
+              <DeleteSpecialityDialog speciality={row.original} />
             </>
           )}
         </div>

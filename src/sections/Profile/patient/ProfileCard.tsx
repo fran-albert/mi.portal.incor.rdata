@@ -30,15 +30,13 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CitySelect } from "@/components/Select/City/select";
 import { StateSelect } from "@/components/Select/State/select";
-import { createApiUserRepository } from "@/modules/users/infra/ApiUserRepository";
-import { HealthInsurance } from "@/modules/healthInsurance/domain/HealthInsurance";
+import { HealthInsurance } from "@/types/Health-Insurance/Health-Insurance";
 import { HealthPlans } from "@/modules/healthPlans/domain/HealthPlan";
-import { User } from "@/modules/users/domain/User";
+import { User } from "@/types/User/User";
 import { formatDni } from "@/common/helpers/helpers";
 import useRoles from "@/hooks/useRoles";
-import { Patient } from "@/modules/patients/domain/Patient";
-import { State } from "@/modules/state/domain/State";
-import { City } from "@/modules/city/domain/City";
+import { Patient } from "@/types/Patient/Patient";
+import { State } from "@/types/State/State";
 import { HealthPlanSelect } from "@/components/Select/HealthPlan/select";
 import ChangePasswordDialog from "../changePassword/dialog";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -52,6 +50,7 @@ import Loading from "@/app/loading";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PatientSchema } from "@/validators/patient.schema";
 import { z } from "zod";
+import { City } from "@/types/City/City";
 registerLocale("es", es);
 type FormValues = z.infer<typeof PatientSchema>;
 export default function ProfileCardComponent({ data }: { data: Patient }) {
@@ -132,7 +131,6 @@ export default function ProfileCardComponent({ data }: { data: Patient }) {
       registeredById: data.registeredById,
       healthPlans: healthPlansToSend,
     };
-
 
     // try {
     //   const patientCreationPromise = updatePatient(
@@ -503,9 +501,7 @@ export default function ProfileCardComponent({ data }: { data: Patient }) {
                               <CitySelect
                                 control={control}
                                 defaultValue={selectedCity}
-                                idState={
-                                  selectedState ? selectedState.id : undefined
-                                }
+                                idState={selectedState ? selectedState.id : 0}
                                 onCityChange={handleCityChange}
                               />
                             </FormControl>

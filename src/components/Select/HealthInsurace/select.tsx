@@ -6,7 +6,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useHealthInsurance } from "@/hooks/Health-Insurance/useHealthInsurance";
-import { HealthInsurance } from "@/modules/healthInsurance/domain/HealthInsurance";
+import { HealthInsurance } from "@/types/Health-Insurance/Health-Insurance";
 import { useEffect } from "react";
 
 interface HealthInsuranceSelectProps {

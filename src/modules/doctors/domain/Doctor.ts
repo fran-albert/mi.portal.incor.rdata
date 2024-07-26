@@ -1,5 +1,5 @@
-import { HealthInsurance } from "@/modules/healthInsurance/domain/HealthInsurance";
-import { User } from "@/modules/users/domain/User";
+import { HealthInsurance } from "@/types/Health-Insurance/Health-Insurance";
+import { User } from "@/types/User/User";
 
 
 export interface Doctor extends User {
