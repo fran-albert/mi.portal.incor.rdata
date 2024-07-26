@@ -32,7 +32,7 @@ export const useUserMutations = () => {
     });
 
     const requestSupportMutation = useMutation({
-        mutationFn: (user: User) => requestSupport(user),
+        mutationFn: (user: any) => requestSupport(user),
         onSuccess: (patient, variables, context) => {
             console.log("OK", patient, variables, context);
         },

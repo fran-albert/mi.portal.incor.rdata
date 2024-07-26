@@ -24,10 +24,12 @@ import {
 import { z } from "zod";
 import { ReportSchema } from "@/validators/report.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useUserMutations } from "@/hooks/User/useUserMutations";
 
 type FormValues = z.infer<typeof ReportSchema>;
 
 export default function ClientReportComponent({ id }: { id: number }) {
+  const { requestSupportMutation } = useUserMutations();
   const form = useForm<FormValues>({
     resolver: zodResolver(ReportSchema),
   });
@@ -47,30 +49,31 @@ export default function ClientReportComponent({ id }: { id: number }) {
     setValue("module", selected);
   };
 
-
   async function onSubmit(data: z.infer<typeof ReportSchema>) {
     const dataToSend = {
-      ...data,
+      priority: String(data.priority),
+      module: String(data.module),
+      description: String(data.description),
       userId: String(id),
     };
-    // try {
-    //   const requestPromise = createReport(dataToSend);
-    //   toast.promise(requestPromise, {
-    //     loading: "Enviando ticket...",
-    //     success: "Ticket enviado correctamente",
-    //     error: "Error al enviar el ticket",
-    //   });
+    try {
+      const requestPromise = requestSupportMutation.mutateAsync(dataToSend);
+      toast.promise(requestPromise, {
+        loading: "Enviando ticket...",
+        success: "Ticket enviado correctamente",
+        error: "Error al enviar el ticket",
+      });
 
-    //   await requestPromise;
+      await requestPromise;
 
-    //   reset({
-    //     priority: "Media",
-    //     module: "",
-    //     description: "",
-    //   });
-    // } catch (error) {
-    //   console.error("Error al crear el ticket", error);
-    // }
+      reset({
+        priority: "Media",
+        module: "",
+        description: "",
+      });
+    } catch (error) {
+      console.error("Error al crear el ticket", error);
+    }
   }
 
   return (
