@@ -41,7 +41,7 @@ import React, { useEffect, useState } from "react";
 import { FaCalendar, FaCamera } from "react-icons/fa";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { toast } from "sonner";
-import { Doctor } from "@/modules/doctors/domain/Doctor";
+import { Doctor } from "@/types/Doctor/Doctor";
 import { Speciality } from "@/types/Speciality/Speciality";
 import { goBack } from "@/lib/utils";
 import { SpecialitySelect } from "@/components/Select/Speciality/select";

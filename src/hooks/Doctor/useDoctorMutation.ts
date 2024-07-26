@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createDoctor } from "@/actions/Doctor/create-doctor.action";
 import { updateDoctor } from "@/actions/Doctor/update-doctor.action";
-import { Doctor } from "@/modules/doctors/domain/Doctor";
+import { Doctor } from "@/types/Doctor/Doctor";
 import { deleteDoctor } from "@/actions/Doctor/delete-doctor.action";
 
 export const useDoctorMutations = () => {

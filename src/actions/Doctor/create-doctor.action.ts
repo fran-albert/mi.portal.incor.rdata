@@ -1,5 +1,5 @@
 import { sleep } from "@/common/helpers/helpers";
-import { Doctor } from "@/modules/doctors/domain/Doctor";
+import { Doctor } from "@/types/Doctor/Doctor";
 import { Patient } from "@/types/Patient/Patient";
 import axiosInstance from "@/services/axiosConfig";
 

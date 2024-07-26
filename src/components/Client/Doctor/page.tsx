@@ -5,7 +5,7 @@ import DoctorCardComponent from "@/sections/users/doctors/View/Card/card";
 import DoctorSpecialitiesComponent from "@/sections/users/doctors/View/Specialities/card";
 import StudiesCardComponent from "@/sections/users/patients/View/Studies/card";
 import Loading from "@/app/loading";
-import { Doctor } from "@/modules/doctors/domain/Doctor";
+import { Doctor } from "@/types/Doctor/Doctor";
 export function DoctorComponent({ doctor }: { doctor: Doctor | undefined }) {
   const registerByText =
     doctor?.registerBy?.firstName +

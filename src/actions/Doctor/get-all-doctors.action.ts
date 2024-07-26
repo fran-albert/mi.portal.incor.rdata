@@ -1,6 +1,6 @@
 import { sleep } from "@/common/helpers/helpers";
 import { slugify } from "@/lib/utils";
-import { Doctor } from "@/modules/doctors/domain/Doctor";
+import { Doctor } from "@/types/Doctor/Doctor";
 import axiosInstance from "@/services/axiosConfig";
 
 export const getDoctors = async (page?: number): Promise<Doctor[]> => {

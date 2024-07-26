@@ -10,11 +10,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { AiOutlineDelete } from "react-icons/ai";
 import { toast } from "sonner";
-import useStudyStore from "@/hooks/useStudy";
-import { Study } from "@/modules/study/domain/Study";
+import { Study } from "@/types/Study/Study";
 import ActionIcon from "@/components/Icons/action";
+import { FaRegTrashAlt } from "react-icons/fa";
+import { useStudyMutations } from "@/hooks/Study/useStudyMutations";
 
 interface DeleteStudyDialogProps {
   idStudy: number;
@@ -27,11 +27,10 @@ export default function DeleteStudyDialog({
 }: DeleteStudyDialogProps) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const toggleDialog = () => setIsOpen(!isOpen);
-  const deleteStudy = useStudyStore((state) => state.deleteStudy);
-
+  const { deleteStudyMutation } = useStudyMutations();
   const handleConfirmDelete = async () => {
     try {
-      toast.promise(deleteStudy(idStudy), {
+      toast.promise(deleteStudyMutation.mutateAsync(idStudy), {
         loading: "Eliminando estudio...",
         success: "Estudio eliminado con éxito!",
         error: "Error al eliminar el estudio",
@@ -50,7 +49,7 @@ export default function DeleteStudyDialog({
         <Button variant="ghost" size="icon" onClick={toggleDialog}>
           <ActionIcon
             tooltip="Eliminar"
-            icon={<AiOutlineDelete size={20} className="text-red-600" />}
+            icon={<FaRegTrashAlt size={15} className="text-red-600" />}
           />
         </Button>
       </DialogTrigger>

@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import DeleteDoctorDialog from "../delete/DeleteDoctorDialog";
-import { Doctor } from "@/modules/doctors/domain/Doctor";
+import { Doctor } from "@/types/Doctor/Doctor";
 import { formatDni, formatMatricula } from "@/common/helpers/helpers";
 import { ViewButton } from "@/components/Button/View/button";
 import Link from "next/link";

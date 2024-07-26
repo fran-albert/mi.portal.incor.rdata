@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/dialog";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { toast } from "sonner";
-import { createApiDoctorRepository } from "@/modules/doctors/infra/ApiDoctorRepository";
 import ActionIcon from "@/components/Icons/action";
 
 interface DeleteDoctorDialogProps {

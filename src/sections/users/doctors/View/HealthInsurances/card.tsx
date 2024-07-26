@@ -13,7 +13,7 @@ import { useParams } from "next/navigation";
 import { FaIdCard, FaUser } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Doctor } from "@/modules/doctors/domain/Doctor";
+import { Doctor } from "@/types/Doctor/Doctor";
 import { calculateAge, formatDate, formatDni } from "@/common/helpers/helpers";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MdDateRange } from "react-icons/md";

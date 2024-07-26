@@ -1,59 +1,39 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
 import { MyStudiesComponent } from "@/sections/users/patients/MyStudies/component";
-import { Study } from "@/modules/study/domain/Study";
+import { Study } from "@/types/Study/Study";
 import Loading from "@/app/loading";
 import { Session } from "next-auth";
-import useStudyStore from "@/hooks/useStudy";
-
-interface UrlMap {
-  [key: number]: string;
-}
+import { useStudy } from "@/hooks/Study/useStudy";
+import { useStudyUrls } from "@/hooks/Study/useStudyUrl";
 
 function ClientMyStudiesComponent({ session }: { session: Session }) {
   const userId = session?.user?.id ? Number(session.user.id) : undefined;
   const [labs, setLabs] = useState<Study[]>([]);
   const [ecography, setEcography] = useState<Study[]>([]);
-  const [urls, setUrls] = useState<UrlMap>({});
-  const [areUrlsLoaded, setAreUrlsLoaded] = useState<boolean>(false);
-  const {
-    fetchStudiesByPatient,
-    isLoading: isLoadingStudies,
-    fetchStudyUrl,
-  } = useStudyStore();
+  const { studiesByUserId, isLoadingStudiesByUserId } = useStudy({
+    idUser: userId,
+    fetchStudiesByUserId: true,
+  });
+
+  const { data: urls = {}, isLoading: isLoadingUrls } = useStudyUrls(
+    userId,
+    studiesByUserId || []
+  );
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const studiesResult = await fetchStudiesByPatient(Number(userId));
+    if (studiesByUserId) {
+      const labs = studiesByUserId.filter((study) => study.studyType?.id === 1);
+      const ecography = studiesByUserId.filter(
+        (study) => study.studyType?.id === 2
+      );
 
-        const labs = studiesResult.filter((study) => study.studyType?.id === 1);
-        const ecography = studiesResult.filter(
-          (study) => study.studyType?.id === 2
-        );
+      setLabs(labs);
+      setEcography(ecography);
+    }
+  }, [studiesByUserId]);
 
-        setLabs(labs);
-        setEcography(ecography);
-
-        const newUrls: UrlMap = {};
-        await Promise.all(
-          studiesResult.map(async (study) => {
-            const url = await fetchStudyUrl(Number(userId), study.locationS3);
-            newUrls[study.id] = url;
-          })
-        );
-        setUrls(newUrls);
-        setAreUrlsLoaded(true);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchData();
-  }, [userId, fetchStudiesByPatient, fetchStudyUrl]);
-
-  if (isLoadingStudies || !areUrlsLoaded) {
+  if (isLoadingStudiesByUserId || isLoadingUrls) {
     return <Loading isLoading={true} />;
   }
 

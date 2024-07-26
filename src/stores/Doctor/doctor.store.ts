@@ -1,4 +1,4 @@
-import { Doctor } from '@/modules/doctors/domain/Doctor';
+import { Doctor } from '@/types/Doctor/Doctor';
 import { create } from 'zustand';
 
 interface DoctorState {

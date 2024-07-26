@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { FaRegFilePdf } from "react-icons/fa";
-import { Study } from "@/modules/study/domain/Study";
+import { Study } from "@/types/Study/Study";
 import { formatDate } from "@/common/helpers/helpers";
 import { FaFileDownload } from "react-icons/fa";
 interface EcographyProps {

@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { Study } from "@/modules/study/domain/Study";
+import { Study } from "@/types/Study/Study";
 import { formatDate } from "@/common/helpers/helpers";
 import { FaRegFilePdf } from "react-icons/fa";
 

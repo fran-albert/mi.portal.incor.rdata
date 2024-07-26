@@ -1,8 +1,8 @@
 import { sleep } from "@/common/helpers/helpers";
 import axiosInstance from "@/services/axiosConfig";
 import { getRegisterBy } from "../User/get-register-by-id.action";
-import { Doctor } from "@/modules/doctors/domain/Doctor";
 import { slugify } from "@/lib/utils";
+import { Doctor } from "@/types/Doctor/Doctor";
 
 export const getDoctorById = async (id: number) => {
     await sleep(2);

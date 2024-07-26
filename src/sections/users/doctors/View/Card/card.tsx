@@ -17,7 +17,7 @@ import {
   FaVenus,
 } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
-import { Doctor } from "@/modules/doctors/domain/Doctor";
+import { Doctor } from "@/types/Doctor/Doctor";
 import { calculateAge, formatDate, formatDni } from "@/common/helpers/helpers";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MdDateRange } from "react-icons/md";

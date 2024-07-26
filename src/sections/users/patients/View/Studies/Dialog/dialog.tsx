@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -21,14 +21,11 @@ import DatePicker, { registerLocale, setDefaultLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { es } from "date-fns/locale/es";
 registerLocale("es", es);
-import { Patient } from "@/types/Patient/Patient";
 import moment from "moment-timezone";
-import { Study } from "@/modules/study/domain/Study";
+import { Study } from "@/types/Study/Study";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { createApiStudyRepository } from "@/modules/study/infra/ApiStudyRepository";
-import { uploadStudy } from "@/modules/study/application/upload-study/uploadStudy";
-import useStudyStore from "@/hooks/useStudy";
 import { StudyTypeSelect } from "@/components/Select/Study/select";
+import { useStudyMutations } from "@/hooks/Study/useStudyMutations";
 interface AddStudyProps {
   idUser: number | null;
 }
@@ -45,8 +42,7 @@ export default function StudyDialog({ idUser }: AddStudyProps) {
     setValue,
   } = useForm();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const uploadStudy = useStudyStore((state) => state.uploadStudy);
-
+  const { uploadStudyMutation } = useStudyMutations();
   const onSubmit: SubmitHandler<any> = async (data) => {
     const formData = new FormData();
 
@@ -65,7 +61,7 @@ export default function StudyDialog({ idUser }: AddStudyProps) {
     formData.append("Note", data.Note);
 
     try {
-      toast.promise(uploadStudy(formData), {
+      toast.promise(uploadStudyMutation.mutateAsync(formData), {
         loading: "Subiendo estudio...",
         success: "Estudio subido con éxito!",
         error: "Error al agregar el estudio",

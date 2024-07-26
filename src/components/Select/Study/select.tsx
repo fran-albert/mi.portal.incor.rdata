@@ -6,9 +6,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { createApiStudyRepository } from "@/modules/study/infra/ApiStudyRepository";
-import { Study } from "@/modules/study/domain/Study";
-import { useForm } from "react-hook-form";
+import { Study } from "@/types/Study/Study";
+import { useStudy } from "@/hooks/Study/useStudy";
 
 interface StudySelectProps {
   selected?: Study;
@@ -19,24 +18,10 @@ export const StudyTypeSelect = ({
   selected,
   onStudyChange,
 }: StudySelectProps) => {
-  const [studies, setStudies] = useState<Study[]>([]);
-  const studyRepository = createApiStudyRepository();
-
-  useEffect(() => {
-    const loadStudies = async () => {
-      try {
-        const studies = await studyRepository.getAllStudyType();
-        setStudies(studies);
-      } catch (error) {
-        console.error("Error al obtener los estados:", error);
-      }
-    };
-
-    loadStudies();
-  }, []);
+  const { studyType } = useStudy({ studyTypeAuth: true });
 
   const handleValueChange = (selectedId: string) => {
-    const selectedState = studies.find(
+    const selectedState = studyType?.find(
       (state) => String(state.id) === selectedId
     );
     if (onStudyChange && selectedState) {
@@ -50,7 +35,7 @@ export const StudyTypeSelect = ({
         <SelectValue placeholder="Seleccione tipo de estudio..." />
       </SelectTrigger>
       <SelectContent>
-        {studies.map((studie) => (
+        {studyType?.map((studie) => (
           <SelectItem key={String(studie.id)} value={String(studie.id)}>
             {studie.name}
           </SelectItem>

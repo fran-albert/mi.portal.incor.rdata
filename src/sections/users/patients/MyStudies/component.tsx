@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { FaRegFilePdf } from "react-icons/fa";
 import { Separator } from "@/components/ui/separator";
 import { LabsCard } from "../labs/card";
-import { Study } from "@/modules/study/domain/Study";
+import { Study } from "@/types/Study/Study";
 import { Ecography } from "../ecography/card";
 
 interface MyStudiesComponentProps {
