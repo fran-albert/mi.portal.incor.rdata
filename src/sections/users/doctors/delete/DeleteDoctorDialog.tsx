@@ -13,39 +13,33 @@ import {
 import { FaRegTrashAlt } from "react-icons/fa";
 import { toast } from "sonner";
 import ActionIcon from "@/components/Icons/action";
+import { useDoctorMutations } from "@/hooks/Doctor/useDoctorMutation";
 
 interface DeleteDoctorDialogProps {
   idDoctor: number;
-  onDoctorDeleted?: () => void;
 }
 
 export default function DeleteDoctorDialog({
   idDoctor,
-  onDoctorDeleted,
 }: DeleteDoctorDialogProps) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const toggleDialog = () => setIsOpen(!isOpen);
-
+  const { deleteDoctorMutation } = useDoctorMutations();
   const handleConfirmDelete = async () => {
-    // try {
-    //   const doctorRepository = createApiDoctorRepository();
-    //   const deleteDoctorFn = deleteDoctor(doctorRepository);
-    //   const doctorDeletionPromise = deleteDoctorFn(idDoctor);
-    //   toast.promise(doctorDeletionPromise, {
-    //     loading: "Eliminando médico...",
-    //     success: "Médico eliminado con éxito!",
-    //     error: "Error al eliminar el médico",
-    //     duration: 3000,
-    //   });
-    //   if (onDoctorDeleted) {
-    //     onDoctorDeleted();
-    //   }
-    // } catch (error) {
-    //   console.error("Error al eliminar el médico", error);
-    //   toast.error("Error al eliminar el médico");
-    // } finally {
-    //   setIsOpen(false);
-    // }
+    try {
+      const doctorDeletionPromise = deleteDoctorMutation.mutateAsync(idDoctor);
+      toast.promise(doctorDeletionPromise, {
+        loading: "Eliminando médico...",
+        success: "Médico eliminado con éxito!",
+        error: "Error al eliminar el médico",
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error("Error al eliminar el médico", error);
+      toast.error("Error al eliminar el médico");
+    } finally {
+      setIsOpen(false);
+    }
   };
 
   return (
@@ -69,7 +63,11 @@ export default function DeleteDoctorDialog({
           <Button variant="outline" onClick={toggleDialog}>
             Cancelar
           </Button>
-          <Button variant="incor" onClick={handleConfirmDelete}>
+          <Button
+            variant="incor"
+            onClick={handleConfirmDelete}
+            disabled={deleteDoctorMutation.isPending}
+          >
             Confirmar
           </Button>
         </DialogFooter>
