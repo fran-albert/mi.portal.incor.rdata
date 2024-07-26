@@ -10,11 +10,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import ActionIcon from "@/components/ui/actionIcon";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { toast } from "sonner";
 import { createApiDoctorRepository } from "@/modules/doctors/infra/ApiDoctorRepository";
-import { deleteDoctor } from "@/modules/doctors/application/delete/deleteDoctor";
+import ActionIcon from "@/components/Icons/action";
 
 interface DeleteDoctorDialogProps {
   idDoctor: number;
@@ -29,25 +28,25 @@ export default function DeleteDoctorDialog({
   const toggleDialog = () => setIsOpen(!isOpen);
 
   const handleConfirmDelete = async () => {
-    try {
-      const doctorRepository = createApiDoctorRepository();
-      const deleteDoctorFn = deleteDoctor(doctorRepository);
-      const doctorDeletionPromise = deleteDoctorFn(idDoctor);
-      toast.promise(doctorDeletionPromise, {
-        loading: "Eliminando médico...",
-        success: "Médico eliminado con éxito!",
-        error: "Error al eliminar el médico",
-        duration: 3000,
-      });
-      if (onDoctorDeleted) {
-        onDoctorDeleted();
-      }
-    } catch (error) {
-      console.error("Error al eliminar el médico", error);
-      toast.error("Error al eliminar el médico");
-    } finally {
-      setIsOpen(false);
-    }
+    // try {
+    //   const doctorRepository = createApiDoctorRepository();
+    //   const deleteDoctorFn = deleteDoctor(doctorRepository);
+    //   const doctorDeletionPromise = deleteDoctorFn(idDoctor);
+    //   toast.promise(doctorDeletionPromise, {
+    //     loading: "Eliminando médico...",
+    //     success: "Médico eliminado con éxito!",
+    //     error: "Error al eliminar el médico",
+    //     duration: 3000,
+    //   });
+    //   if (onDoctorDeleted) {
+    //     onDoctorDeleted();
+    //   }
+    // } catch (error) {
+    //   console.error("Error al eliminar el médico", error);
+    //   toast.error("Error al eliminar el médico");
+    // } finally {
+    //   setIsOpen(false);
+    // }
   };
 
   return (
@@ -71,7 +70,7 @@ export default function DeleteDoctorDialog({
           <Button variant="outline" onClick={toggleDialog}>
             Cancelar
           </Button>
-          <Button variant="teal" onClick={handleConfirmDelete}>
+          <Button variant="incor" onClick={handleConfirmDelete}>
             Confirmar
           </Button>
         </DialogFooter>

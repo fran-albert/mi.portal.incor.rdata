@@ -2,13 +2,16 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { EditButton } from "@/components/Button/Edit/button";
 import DeleteDoctorDialog from "../delete/DeleteDoctorDialog";
 import { Doctor } from "@/modules/doctors/domain/Doctor";
 import { formatDni, formatMatricula } from "@/common/helpers/helpers";
 import { ViewButton } from "@/components/Button/View/button";
+import Link from "next/link";
 
-export const getColumns = (fetchDoctors: () => void): ColumnDef<Doctor>[] => {
+export const getColumns = (
+  prefetchDoctors: (id: number) => void,
+  roles: { isSecretary: boolean; isDoctor: boolean; isAdmin: boolean }
+): ColumnDef<Doctor>[] => {
   const columns: ColumnDef<Doctor>[] = [
     {
       accessorKey: "#",
@@ -22,10 +25,11 @@ export const getColumns = (fetchDoctors: () => void): ColumnDef<Doctor>[] => {
       accessorKey: "firstName",
       header: "Médico",
       cell: ({ row }) => (
-        <div
+        <Link
+          href={`/usuarios/medicos/${row.original.slug}`}
           className="flex items-center cursor-pointer"
-          onClick={() =>
-            (window.location.href = `/usuarios/medicos/${row.original.userId}`)
+          onMouseEnter={
+            prefetchDoctors && (() => prefetchDoctors(row.original.userId))
           }
         >
           <Avatar>
@@ -38,9 +42,11 @@ export const getColumns = (fetchDoctors: () => void): ColumnDef<Doctor>[] => {
               alt="@username"
             />
             <AvatarFallback>
-              {`${row.original.firstName.charAt(
-                0
-              )}${row.original.lastName.charAt(0)}`}
+              {`${row.original.firstName
+                .charAt(0)
+                .toLocaleUpperCase()}${row.original.lastName
+                .charAt(0)
+                .toLocaleUpperCase()}`}
             </AvatarFallback>
           </Avatar>
 
@@ -56,7 +62,7 @@ export const getColumns = (fetchDoctors: () => void): ColumnDef<Doctor>[] => {
               {row.original.email}
             </span>{" "}
           </div>
-        </div>
+        </Link>
       ),
     },
     {
@@ -108,15 +114,19 @@ export const getColumns = (fetchDoctors: () => void): ColumnDef<Doctor>[] => {
       header: " ",
       cell: ({ row }) => (
         <div className="flex items-center justify-end">
-          <ViewButton
-            id={row.original.userId}
-            text="Ver Medico"
-            path="medicos"
-          />
-          <DeleteDoctorDialog
-            idDoctor={row.original.userId}
-            onDoctorDeleted={fetchDoctors}
-          />
+          {roles.isSecretary && (
+            <ViewButton
+              slug={String(row.original.slug)}
+              text="Ver Medico"
+              path="medicos"
+            />
+          )}
+          {roles.isSecretary && (
+            <DeleteDoctorDialog
+              idDoctor={row.original.userId}
+              // onDoctorDeleted={fetchDoctors}
+            />
+          )}
         </div>
       ),
     },

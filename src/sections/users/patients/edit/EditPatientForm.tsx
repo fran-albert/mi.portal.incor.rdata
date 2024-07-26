@@ -1,13 +1,12 @@
 "use client";
-import { formatDni } from "@/common/helpers/helpers";
+import { formatDni, handleDateChange } from "@/common/helpers/helpers";
 import { CitySelect } from "@/components/Select/City/select";
-import { HealthInsuranceSelect } from "@/components/Select/Health Insurance/select";
 import { HealthPlanSelect } from "@/components/Select/HealthPlan/select";
 import { StateSelect } from "@/components/Select/State/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import {
   CardTitle,
   CardDescription,
@@ -16,9 +15,14 @@ import {
   CardFooter,
   Card,
 } from "@/components/ui/card";
-import { capitalizeWords } from "@/common/helpers/helpers";
-import "@/styles/custom.datepicker.css";
-import { FaCalendar } from "react-icons/fa6";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { BloodSelect } from "@/components/Select/Blood/select";
 import { RHFactorSelect } from "@/components/Select/RHFactor/select";
 import { GenderSelect } from "@/components/Select/Gender/select";
@@ -27,55 +31,54 @@ import { goBack } from "@/lib/utils";
 import { City } from "@/modules/city/domain/City";
 import { HealthInsurance } from "@/modules/healthInsurance/domain/HealthInsurance";
 import { HealthPlans } from "@/modules/healthPlans/domain/HealthPlan";
-import { getPatient } from "@/modules/patients/application/get/getPatient";
-import { createApiPatientRepository } from "@/modules/patients/infra/ApiPatientRepository";
 import { State } from "@/modules/state/domain/State";
-import { useParams } from "next/navigation";
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { FaCamera } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
 import { IoMdArrowRoundBack } from "react-icons/io";
-import { updatePatient } from "@/modules/patients/application/update/updatePatient";
 import { toast } from "sonner";
-import DatePicker, { registerLocale, setDefaultLocale } from "react-datepicker";
+import { registerLocale } from "react-datepicker";
 import { es } from "date-fns/locale/es";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment-timezone";
-import { Patient } from "@/modules/patients/domain/Patient";
 import { usePatient } from "@/hooks/usePatients";
-import Loading from "@/components/Loading/loading";
+import { HealthInsuranceSelect } from "@/components/Select/HealthInsurace/select";
+import Loading from "@/app/loading";
+import { z } from "zod";
+import { PatientSchema } from "@/validators/patient.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Patient } from "@/modules/patients/domain/Patient";
+import { usePatientStore } from "@/stores/Patient/patient.store";
+import { usePatientMutations } from "@/hooks/Patient/usePatientMutation";
 registerLocale("es", es);
-interface Inputs extends Patient {}
+type FormValues = z.infer<typeof PatientSchema>;
 
-function EditPatientForm({ id }: { id: number }) {
-  const { selectedPatient, getPatientById, isLoading, updatePatient } =
-    usePatient();
-  useEffect(() => {
-    getPatientById(id);
-  }, [id, getPatientById]);
+function EditPatientForm({ patient }: { patient: Patient }) {
+  const updatePatientToStore = usePatientStore((state) => state.updatePatient);
+  const { updatePatientMutation } = usePatientMutations();
+  const form = useForm<FormValues>({
+    resolver: zodResolver(PatientSchema),
+  });
+  const {
+    setValue,
+    control,
+    formState: { errors },
+  } = form;
 
   const [selectedState, setSelectedState] = useState<State | undefined>(
-    selectedPatient?.address?.city?.state
+    patient?.address?.city?.state
   );
   const [selectedCity, setSelectedCity] = useState<City | undefined>(
-    selectedPatient?.address?.city
+    patient?.address?.city
   );
   const [selectedHealthInsurance, setSelectedHealthInsurance] = useState<
     HealthInsurance | undefined
-  >(selectedPatient?.healthPlans?.[0]?.healthInsurance);
+  >(patient?.healthPlans?.[0]?.healthInsurance);
   const [selectedPlan, setSelectedPlan] = useState<any | null>(
-    selectedPatient?.healthPlans?.[0]
+    patient?.healthPlans?.[0]
   );
-  const {
-    register,
-    handleSubmit,
-    control,
-    setValue,
-    formState: { errors },
-  } = useForm<Inputs>();
+  const [startDate, setStartDate] = useState<Date | undefined>(() =>
+    patient?.birthDate ? new Date(patient.birthDate.toString()) : undefined
+  );
   const removeDotsFromDni = (dni: any) => dni.replace(/\./g, "");
-  const [startDate, setStartDate] = useState<Date>(
-    new Date(selectedPatient?.birthDate ?? new Date())
-  );
 
   const handleStateChange = (state: State) => {
     setSelectedState(state);
@@ -89,82 +92,77 @@ function EditPatientForm({ id }: { id: number }) {
     }
   };
   useEffect(() => {
-    if (selectedPatient) {
+    if (patient) {
       if (selectedCity) {
         setValue("address.city", selectedCity, { shouldValidate: true });
       }
       setValue("healthPlans", selectedPlan ? [selectedPlan] : []);
     }
-  }, [selectedPatient, selectedCity, selectedPlan, setValue]);
+  }, [patient, selectedCity, selectedPlan, setValue]);
 
   const handleHealthInsuranceChange = (healthInsurance: HealthInsurance) => {
     setSelectedHealthInsurance(healthInsurance);
   };
+  useEffect(() => {
+    if (patient) {
+      setValue("firstName", patient.firstName);
+      setValue("lastName", patient.lastName);
+      setValue("email", patient.email);
+      setValue("userName", formatDni(String(patient.dni)));
+      if (patient?.birthDate) {
+        setStartDate(new Date(patient.birthDate.toString()));
+        setValue("birthDate", patient.birthDate.toString());
+      }
+      setValue("phoneNumber", patient.phoneNumber);
+      setValue("phoneNumber2", patient.phoneNumber2 || "");
+      setValue("bloodType", String(patient.bloodType) || "");
+      setValue("rhFactor", String(patient.rhFactor) || "");
+      setValue("gender", String(patient.gender) || "");
+      setValue("maritalStatus", String(patient.maritalStatus) || "");
+      setValue("observations", patient.observations || "");
+      setValue("address.street", patient.address.street || "");
+      setValue("address.number", patient.address.number || "");
+      setValue("address.description", patient.address.description || "");
+      setValue("address.phoneNumber", patient.address.phoneNumber || "");
+    }
+  }, [patient, setValue]);
 
   const handlePlanChange = (plan: HealthPlans | null) => {
     setSelectedPlan(plan ? plan : null);
   };
 
-  const handleDateChange = (date: Date) => {
-    const dateInArgentina = moment(date).tz("America/Argentina/Buenos_Aires");
-    const formattedDateISO = dateInArgentina.format();
-    setStartDate(date);
-    setValue("birthDate", formattedDateISO);
-  };
-
-  useEffect(() => {
-    if (selectedPatient) {
-      const patientBirthDate = new Date(
-        selectedPatient?.birthDate ?? new Date()
-      );
-      setStartDate(patientBirthDate);
-
-      const dateInArgentina = moment(patientBirthDate).tz(
-        "America/Argentina/Buenos_Aires"
-      );
-      const formattedDateISO = dateInArgentina.format();
-      setValue("birthDate", formattedDateISO);
-    }
-  }, [selectedPatient, setValue]);
-
-  const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    const { address, ...rest } = data;
-    const formattedUserName = removeDotsFromDni(data.userName);
+  const onSubmit: SubmitHandler<any> = async (formData) => {
+    const formattedUserName = removeDotsFromDni(formData.userName);
+    const { address, ...rest } = formData;
     const addressToSend = {
       ...address,
-      id: selectedPatient?.address.id,
+      id: patient?.address?.id,
       city: {
         ...selectedCity,
         state: selectedState,
       },
     };
-    const dataToSend: any = {
+    const healthPlansToSend = patient?.healthPlans?.map((plan) => ({
+      id: plan.id,
+      name: plan.name,
+      healthInsurance: {
+        id: plan.healthInsurance.id,
+        name: plan.healthInsurance.name,
+      },
+    }));
+    const dataToSend = {
       ...rest,
       userName: formattedUserName,
       address: addressToSend,
-      healthPlans: selectedPlan
-        ? [
-            {
-              id: selectedPlan.id,
-              name: selectedPlan.name,
-              healthInsurance: {
-                id: selectedHealthInsurance?.id || 0,
-                name: selectedHealthInsurance?.name || "",
-              },
-            },
-          ]
-        : [],
-      photo: selectedPatient?.photo,
-      registeredById: selectedPatient?.registeredById,
+      photo: patient.photo,
+      registeredById: patient.registeredById,
+      healthPlans: healthPlansToSend,
     };
-
-    console.log("Data to send", dataToSend);
-
     try {
-      const patientCreationPromise = updatePatient(
-        Number(selectedPatient?.userId),
-        dataToSend
-      );
+      const patientCreationPromise = updatePatientMutation.mutateAsync({
+        id: Number(patient?.userId),
+        patient: dataToSend,
+      });
 
       toast.promise(patientCreationPromise, {
         loading: "Actualizando datos del paciente...",
@@ -184,15 +182,11 @@ function EditPatientForm({ id }: { id: number }) {
     }
   };
 
-  if (isLoading) {
-    return <Loading isLoading={true} />;
-  }
-
   return (
-    <>
-      <div key="1" className="w-full">
-        <Card>
-          <form onSubmit={handleSubmit(onSubmit)}>
+    <div key="1" className="w-full container px-4 sm:px-6 lg:px-8 mt-2">
+      <Card>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} id="profileForm">
             <CardHeader>
               <CardTitle>
                 <button
@@ -209,220 +203,270 @@ function EditPatientForm({ id }: { id: number }) {
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-6">
-              <div className="grid grid-cols-2 gap-6">
-                {/* <div className="col-span-2 flex flex-col items-center gap-4">
-              <Avatar className="h-24 w-24">
-                <AvatarImage
-                  alt="Patient Avatar"
-                  src="/placeholder-avatar.jpg"
-                />
-                <AvatarFallback>JP</AvatarFallback>
-              </Avatar>
-              <Button variant="outline">Upload Photo</Button>
-            </div> */}
-                {/* <div className="space-y-2">
-                <Label htmlFor="firstName">Nombre</Label>
-                
-              </div> */}
-                <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="firstName">Nombre</Label>
-                    <Input
-                      id="firstName"
-                      placeholder="Ingresar nombre"
-                      defaultValue={selectedPatient?.firstName}
-                      {...register("firstName", {
-                        required: "Este campo es obligatorio",
-                        minLength: {
-                          value: 2,
-                          message: "El nombre debe tener al menos 2 caracteres",
-                        },
-                        onChange: (e) => {
-                          const capitalized = capitalizeWords(e.target.value);
-                          setValue("firstName", capitalized, {
-                            shouldValidate: true,
-                          });
-                        },
-                      })}
+                    <FormField
+                      control={form.control}
+                      name="firstName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">Nombre</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              placeholder="Ingresar nombre..."
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
-                    {errors.firstName && (
-                      <p className="text-red-500 text-xs italic">
-                        {errors.firstName.message}
-                      </p>
-                    )}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="lastName">Apellido</Label>
-                    <Input
-                      id="lastName"
-                      placeholder="Ingresar apellido"
-                      defaultValue={selectedPatient?.lastName}
-                      {...register("lastName", {
-                        required: "Este campo es obligatorio",
-                        minLength: {
-                          value: 2,
-                          message:
-                            "El apellido debe tener al menos 2 caracteres",
-                        },
-                        onChange: (e) => {
-                          const capitalized = capitalizeWords(e.target.value);
-                          setValue("lastName", capitalized, {
-                            shouldValidate: true,
-                          });
-                        },
-                      })}
+                    <FormField
+                      control={form.control}
+                      name="lastName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">Apellido</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              placeholder="Ingresar apellido..."
+                              defaultValue={patient?.lastName}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
-                    {errors.lastName && (
-                      <p className="text-red-500 text-xs italic">
-                        {errors.lastName.message}
-                      </p>
-                    )}
                   </div>
                 </div>
                 <div className="grid grid-cols-1 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="healthInsurancePlan">
-                      Correo Electrónico
-                    </Label>
-                    <Input
-                      id="email"
-                      placeholder="Ingresar correo electrónico"
-                      defaultValue={selectedPatient?.email}
-                      {...register("email", {
-                        required: "Este campo es obligatorio",
-                        pattern: {
-                          value:
-                            /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/,
-                          message: "Introduce un correo electrónico válido",
-                        },
-                      })}
-                      type="email"
-                    />
-                    {errors.email && (
-                      <p className="text-red-500 text-xs italic">
-                        {errors.email.message}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="phoneNumber">D.N.I.</Label>
-                    <Input
-                      id="username"
-                      placeholder="Ingresar D.N.I."
-                      defaultValue={selectedPatient?.dni}
-                      {...register("userName", {
-                        required: "Este campo es obligatorio",
-                        pattern: {
-                          value: /^[0-9]+$/,
-                          message: "El D.N.I. debe contener solo números",
-                        },
-                      })}
-                    />
-                    {errors.userName && (
-                      <p className="text-red-500 text-xs italic">
-                        {errors.userName.message}
-                      </p>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="dob">Fecha de Nacimiento</Label>
-                    <DatePicker
-                      showIcon
-                      selected={startDate}
-                      onChange={handleDateChange}
-                      locale="es"
-                      className="max-w-full"
-                      icon={<FaCalendar color="#0f766e" />}
-                      customInput={<Input className="input-custom-style" />}
-                      dateFormat="d MMMM yyyy"
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">
+                            Correo Electrónico
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              placeholder="Ingresar correo electrónico..."
+                              defaultValue={patient?.email}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="phoneNumber">Teléfono</Label>
-                    <Input
-                      id="phoneNumber"
-                      defaultValue={selectedPatient?.phoneNumber}
-                      placeholder="Ingresar teléfono"
-                      {...register("phoneNumber", {
-                        required: "Este campo es obligatorio",
-                        pattern: {
-                          value: /^[0-9]+$/,
-                          message: "El Teléfono debe contener solo números",
-                        },
-                      })}
+                    <FormField
+                      control={form.control}
+                      name="userName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">D.N.I.</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              placeholder="Ingresar D.N.I..."
+                              defaultValue={formatDni(String(patient?.dni))}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
-                    {errors.phoneNumber && (
-                      <p className="text-red-500 text-xs italic">
-                        {errors.phoneNumber.message}
-                      </p>
-                    )}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Teléfono 2</Label>
-                    <Input
-                      id="phone"
-                      placeholder="Ingresar teléfono 2"
-                      defaultValue={selectedPatient?.phoneNumber2}
-                      type="tel"
-                      {...register("phoneNumber2", {
-                        pattern: {
-                          value: /^[0-9]+$/,
-                          message: "El teléfono debe contener solo números",
-                        },
-                      })}
+                    <FormField
+                      control={form.control}
+                      name="birthDate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">
+                            Fecha de Nacimiento
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type="date"
+                              value={
+                                startDate
+                                  ? startDate.toISOString().split("T")[0]
+                                  : ""
+                              }
+                              onChange={(e) =>
+                                handleDateChange(
+                                  e,
+                                  setStartDate,
+                                  setValue,
+                                  "birthDate"
+                                )
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="bloodType">Sangre </Label>
-                    <BloodSelect
-                      control={control}
-                      errors={errors}
-                      defaultValue={String(selectedPatient?.bloodType) || ""}
+                    <FormField
+                      control={form.control}
+                      name="phoneNumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">Teléfono</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              placeholder="Ingresar teléfono..."
+                              defaultValue={patient?.phoneNumber}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="rhFactor">Factor R.H.</Label>
-                    <RHFactorSelect
-                      control={control}
-                      errors={errors}
-                      defaultValue={String(selectedPatient?.rhFactor) || ""}
+                    <FormField
+                      control={form.control}
+                      name="phoneNumber2"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">
+                            Teléfono 2
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              defaultValue={patient?.phoneNumber2}
+                              placeholder="Ingresar teléfono..."
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="gender">Sexo</Label>
-                    <GenderSelect
-                      control={control}
-                      errors={errors}
-                      defaultValue={String(selectedPatient?.gender) || ""}
+                    <FormField
+                      control={form.control}
+                      name="bloodType"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">Sangre</FormLabel>
+                          <FormControl>
+                            <BloodSelect
+                              control={control}
+                              defaultValue={String(patient?.bloodType) || ""}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="maritalStatus">Estado Civil</Label>
-                    <MaritalStatusSelect
-                      control={control}
-                      errors={errors}
-                      defaultValue={
-                        String(selectedPatient?.maritalStatus) || ""
-                      }
+                    <FormField
+                      control={form.control}
+                      name="rhFactor"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">
+                            Factor R.H.
+                          </FormLabel>
+                          <FormControl>
+                            <RHFactorSelect
+                              control={control}
+                              defaultValue={String(patient?.rhFactor) || ""}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="gender"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">Sexo</FormLabel>
+                          <FormControl>
+                            <GenderSelect
+                              control={control}
+                              defaultValue={String(patient?.gender) || ""}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="maritalStatus"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">
+                            Estado Civil
+                          </FormLabel>
+                          <FormControl>
+                            <MaritalStatusSelect
+                              control={control}
+                              defaultValue={
+                                String(patient?.maritalStatus) || ""
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="healthCareProvider">Obra Social</Label>
-                    <HealthInsuranceSelect
-                      onHealthInsuranceChange={handleHealthInsuranceChange}
-                      selected={selectedHealthInsurance}
+                    <FormField
+                      control={form.control}
+                      name="healthPlans"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">
+                            Obra Social
+                          </FormLabel>
+                          <FormControl>
+                            <HealthInsuranceSelect
+                              onHealthInsuranceChange={
+                                handleHealthInsuranceChange
+                              }
+                              selected={selectedHealthInsurance}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
                   </div>
                   <div className="space-y-2">
@@ -434,123 +478,172 @@ function EditPatientForm({ id }: { id: number }) {
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="affiliationNumber">
-                      Número de Obra Social
-                    </Label>
-                    <Input
-                      id="affiliationNumber"
-                      placeholder="Ingresar N° de Obra Social"
-                      {...register("affiliationNumber", {
-                        // required: "Este campo es obligatorio",
-                        pattern: {
-                          value: /^[0-9]+$/,
-                          message: "Este campo debe contener solo números",
-                        },
-                      })}
-                    />
-                    {errors.affiliationNumber && (
-                      <p className="text-red-500 text-xs italic">
-                        {errors.affiliationNumber.message}
-                      </p>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="observations">Observaciones</Label>
-                    <Input
-                      id="observations"
-                      placeholder="Ingresar observaciones"
-                      {...register("observations")}
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="state">Provincia</Label>
-                    <StateSelect
-                      control={control}
-                      defaultValue={selectedPatient?.address?.city?.state}
-                      errors={errors}
-                      onStateChange={handleStateChange}
+                    <FormField
+                      control={form.control}
+                      name="affiliationNumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">
+                            Número de Obra Social
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              defaultValue={patient?.affiliationNumber}
+                              placeholder="Ingresar número de obra social..."
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="city">Ciudad</Label>
-                    <CitySelect
-                      control={control}
-                      errors={errors}
-                      defaultValue={selectedPatient?.address?.city}
-                      idState={selectedState ? selectedState.id : undefined}
-                      onCityChange={handleCityChange}
+                    <FormField
+                      control={form.control}
+                      name="observations"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">
+                            Observaciones
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              placeholder="Ingresar observaciones..."
+                              defaultValue={patient?.observations || undefined}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="street">Calle</Label>
-                    <Input
-                      id="street"
-                      placeholder="Ingresar calle"
-                      defaultValue={selectedPatient?.address.street}
-                      {...register("address.street", {
-                        onChange: (e) => {
-                          const capitalized = capitalizeWords(e.target.value);
-                          setValue("address.street", capitalized, {
-                            shouldValidate: true,
-                          });
-                        },
-                      })}
+                    <FormField
+                      control={form.control}
+                      name="address.city.state"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">
+                            Provincia
+                          </FormLabel>
+                          <FormControl>
+                            <StateSelect
+                              control={control}
+                              defaultValue={patient?.address?.city?.state}
+                              onStateChange={handleStateChange}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="number">N°</Label>
-                    <Input
-                      id="number"
-                      type="number"
-                      defaultValue={selectedPatient?.address.number}
-                      placeholder="Ingresar número"
-                      {...register("address.number", {
-                        onChange: (e) => {
-                          const capitalized = capitalizeWords(e.target.value);
-                          setValue("address.number", capitalized, {
-                            shouldValidate: true,
-                          });
-                        },
-                      })}
+                    <FormField
+                      control={form.control}
+                      name="address.city"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">Ciudad</FormLabel>
+                          <FormControl>
+                            <CitySelect
+                              control={control}
+                              defaultValue={selectedCity}
+                              idState={
+                                selectedState ? selectedState.id : undefined
+                              }
+                              onCityChange={handleCityChange}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                  <div className="space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="address.street"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">Calle</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              placeholder="Ingresar calle"
+                              defaultValue={patient?.address?.street}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="floor">Piso</Label>
-                    <Input
-                      id="floor"
-                      defaultValue={selectedPatient?.address.description}
-                      type="number"
-                      placeholder="Ingresar piso"
-                      {...register("address.description", {
-                        onChange: (e) => {
-                          const capitalized = capitalizeWords(e.target.value);
-                          setValue("address.description", capitalized, {
-                            shouldValidate: true,
-                          });
-                        },
-                      })}
+                    <FormField
+                      control={form.control}
+                      name="address.number"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">N°</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              placeholder="Ingresar número"
+                              defaultValue={patient?.address?.number}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="department">Departamento</Label>
-                    <Input
-                      id="department"
-                      placeholder="Ingresar departamento"
-                      defaultValue={selectedPatient?.address.phoneNumber}
-                      {...register("address.phoneNumber", {
-                        onChange: (e) => {
-                          const capitalized = capitalizeWords(e.target.value);
-                          setValue("address.phoneNumber", capitalized, {
-                            shouldValidate: true,
-                          });
-                        },
-                      })}
+                    <FormField
+                      control={form.control}
+                      name="address.description"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">Piso</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              placeholder="Ingresar número"
+                              defaultValue={patient?.address?.description}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="address.phoneNumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">
+                            Departamento
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              placeholder="Ingresar departamento"
+                              defaultValue={patient?.address?.phoneNumber}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
                   </div>
                 </div>
@@ -560,14 +653,14 @@ function EditPatientForm({ id }: { id: number }) {
               <Button variant="outline" type="button" onClick={goBack}>
                 Cancelar
               </Button>
-              <Button variant="teal" type="submit">
+              <Button variant="incor" type="submit">
                 Confirmar
               </Button>
             </CardFooter>
           </form>
-        </Card>
-      </div>
-    </>
+        </Form>
+      </Card>
+    </div>
   );
 }
 

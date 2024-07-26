@@ -67,7 +67,6 @@ HistoryDialogProps) {
   };
 
   const onSubmit: SubmitHandler<any> = async (data) => {
-    console.log(data);
 
     //   try {
     //     const uploadStudyPromise = uploadStudyFn(formData);

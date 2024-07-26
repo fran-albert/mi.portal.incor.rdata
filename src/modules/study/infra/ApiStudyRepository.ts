@@ -41,10 +41,22 @@ export function createApiStudyRepository(): StudyRepository {
     return studies;
   }
 
+  async function getTotalStudies(): Promise<number> {
+    const response = await axiosInstance.get("Study/all");
+    const totalStudies = response.data;
+    return totalStudies;
+  }
+
+  async function getTotalEcography(): Promise<number> {
+    const response = await axiosInstance.get("Study/all/ecografia");
+    const totalStudies = response.data;
+    return totalStudies;
+  }
+
 
   return {
     getAllStudyType, getUrlByPatient, deleteStudy,
-    getAllStudyByPatient,
+    getAllStudyByPatient, getTotalStudies, getTotalEcography,
     uploadStudy,
   };
 }

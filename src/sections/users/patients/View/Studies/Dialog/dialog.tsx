@@ -11,7 +11,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import ActionIcon from "@/components/ui/actionIcon";
 import { FaCalendar, FaCamera, FaFilePdf, FaUpload } from "react-icons/fa";
 import axios from "axios";
 import { toast } from "sonner";
@@ -24,12 +23,12 @@ import { es } from "date-fns/locale/es";
 registerLocale("es", es);
 import { Patient } from "@/modules/patients/domain/Patient";
 import moment from "moment-timezone";
-import { StudyTypeSelect } from "@/components/Select/Study/select";
 import { Study } from "@/modules/study/domain/Study";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { createApiStudyRepository } from "@/modules/study/infra/ApiStudyRepository";
 import { uploadStudy } from "@/modules/study/application/upload-study/uploadStudy";
 import useStudyStore from "@/hooks/useStudy";
+import { StudyTypeSelect } from "@/components/Select/Study/select";
 interface AddStudyProps {
   idUser: number | null;
 }
@@ -46,14 +45,7 @@ export default function StudyDialog({ idUser }: AddStudyProps) {
     setValue,
   } = useForm();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [startDate, setStartDate] = useState(new Date());
   const uploadStudy = useStudyStore((state) => state.uploadStudy);
-  const handleDateChange = (date: Date) => {
-    const dateInArgentina = moment(date).tz("America/Argentina/Buenos_Aires");
-    const formattedDateISO = dateInArgentina.format();
-    setStartDate(date);
-    setValue("Date", formattedDateISO);
-  };
 
   const onSubmit: SubmitHandler<any> = async (data) => {
     const formData = new FormData();
@@ -67,7 +59,8 @@ export default function StudyDialog({ idUser }: AddStudyProps) {
     if (selectedFile) {
       formData.append("StudyFile", selectedFile);
     }
-    const formattedDateISO = moment(startDate).toISOString();
+    const date = data.date;
+    const formattedDateISO = moment(date).toISOString();
     formData.append("Date", formattedDateISO);
     formData.append("Note", data.Note);
 
@@ -101,83 +94,62 @@ export default function StudyDialog({ idUser }: AddStudyProps) {
           <span className="text-teal-600">Nuevo Estudio</span>
         </button>
       </DialogTrigger>
-      <DialogContent className="max-w-[325px] rounded-lg">
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Nuevo Estudio </DialogTitle>
+          <DialogTitle>Agregar Nuevo Estudio</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <DialogDescription>
-            <div className="w-full max-w-md mx-auto px-4 py-2">
-              <div className="mb-6">
-                <Label
-                  htmlFor="studyType"
-                  className="block text-black font-medium mb-2"
-                >
-                  Tipo de Estudio
-                </Label>
-                <StudyTypeSelect onStudyChange={handleStudyChange} />
-              </div>
-              <div className="mb-6">
-                <Label
-                  htmlFor="comment"
-                  className="block text-black font-medium mb-2"
-                >
-                  Comentario
-                </Label>
-                <Input
-                  {...register("Note", { required: true })}
-                  className="text-black"
-                />
-              </div>
-              <div className="grid grid-cols-1 gap-6 mb-6">
-                <div>
-                  <Label
-                    htmlFor="file"
-                    className="block text-black font-medium mb-2"
-                  >
-                    Archivo
-                  </Label>
-                  <Input
-                    type="file"
-                    className="text-black"
-                    onChange={(e) =>
-                      setSelectedFile(e.target.files && e.target.files[0])
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="dob"
-                    className="block text-black font-medium mb-2"
-                  >
-                    Fecha
-                  </Label>
-                  <DatePicker
-                    showIcon
-                    selected={startDate}
-                    onChange={handleDateChange}
-                    locale="es"
-                    className="max-w-full"
-                    icon={<FaCalendar color="#0f766e" />}
-                    customInput={
-                      <Input className="input-custom-style text-black" />
-                    }
-                    dateFormat="d MMMM yyyy"
-                  />
-                </div>
-              </div>
+          <div className="grid gap-4 py-4">
+            <div className="space-y-2">
+              <Label
+                htmlFor="studyType"
+                className="block text-black font-medium mb-2"
+              >
+                Tipo de Estudio
+              </Label>
+              <StudyTypeSelect onStudyChange={handleStudyChange} />
             </div>
-          </DialogDescription>
-
+            <div className="space-y-2">
+              <Label htmlFor="file">Archivo</Label>
+              <Input
+                type="file"
+                className="text-black"
+                onChange={(e) =>
+                  setSelectedFile(e.target.files && e.target.files[0])
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <Label
+                htmlFor="comment"
+                className="block text-black font-medium mb-2"
+              >
+                Comentario
+              </Label>
+              <Input
+                {...register("Note", { required: true })}
+                placeholder="Ingresar un comentario..."
+                className="text-black"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="mb-2" htmlFor="date">
+                Fecha
+              </Label>
+              <Input
+                id="date"
+                type="date"
+                {...register("date", { required: true })}
+              />
+            </div>
+          </div>
           <DialogFooter>
-            <div className="mx-auto items-center">
-              <Button variant="teal" type="submit">
-                Confirmar
-              </Button>{" "}
-              <Button variant="outline" type="button" onClick={toggleDialog}>
-                Cancelar
-              </Button>
-            </div>
+            <Button variant="outline" type="button" onClick={toggleDialog}>
+              Cancelar
+            </Button>
+            <Button type="submit" variant="incor">
+              Agregar Estudio
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

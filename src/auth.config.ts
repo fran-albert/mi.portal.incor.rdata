@@ -1,57 +1,65 @@
+import axios from "axios";
 import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-var jwt = require("jsonwebtoken");
 
 export default {
-  providers: [
-    Credentials({
-      name: "Credentials",
-      credentials: {
-        userName: { label: "UserName", type: "text" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials) {
-        console.log("Credenciales recibidas:", credentials);
-        const userName = credentials?.userName;
-        const password = credentials?.password;
+    providers: [
+        Credentials({
+            credentials: {
+                userName: { label: "Email", type: "text" },
+                password: { label: "Password", type: "password" },
+            },
+            authorize: async (credentials) => {
+                try {
+                    const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_API}account/login`, {
+                        userName: credentials.userName,
+                        password: credentials.password,
+                    });
+                    const user = response.data;
+                    if (user && user.token) {
+                        // Decoding JWT to extract user details
+                        const decodedToken = JSON.parse(Buffer.from(user.token.split('.')[1], 'base64').toString());
 
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API}account/login`, {
-          method: "POST",
-          body: JSON.stringify({
-            userName,
-            password,
-          }),
-          headers: { "Content-Type": "application/json" },
-        });
-
-        if (!res.ok) {
-          console.error("Respuesta del servidor no OK:", res);
-          throw new Error("No se pudo iniciar sesión. Credenciales incorrectas.");
-        }
-
-        const data = await res.json();
-        console.log("Datos recibidos del backend:", data);
-
-        if (!data.token) {
-          console.error("Token no recibido del backend.");
-          throw new Error("No se pudo iniciar sesión");
-        }
-
-        const decoded = jwt.decode(data.token);
-        console.log("Token decodificado:", decoded);
-
-        if (!decoded) {
-          console.error("Error al decodificar el token.");
-          throw new Error("Error al decodificar el token");
-        }
-
-        return {
-          token: data.token,
-          id: decoded.Id,
-          email: decoded.Email,
-          roles: decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"],
-        };
-      },
-    }),
-  ],
+                        return {
+                            id: decodedToken.Id,
+                            email: decodedToken.Email,
+                            role: decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"],
+                            token: user.token
+                        };
+                    } else {
+                        return null;
+                    }
+                } catch (error) {
+                    console.error("Error during authentication", error);
+                    return null;
+                }
+            },
+        }),
+    ],
+    session: { strategy: "jwt" },
+    callbacks: {
+        async jwt({ token, user }) {
+            if (user) {
+                token.id = user.id;
+                token.email = user.email;
+                token.role = user.role;
+                token.accessToken = user.token;
+            }
+            return token;
+        },
+        async session({ session, token }) {
+            if (token) {
+                session.user = {
+                    id: token.id,
+                    email: token.email,
+                    role: token.role,
+                };
+                session.accessToken = token.accessToken as string;
+            }
+            return session;
+        },
+    },
+    pages: {
+        signIn: "/iniciar-sesion",
+    },
 } satisfies NextAuthConfig;

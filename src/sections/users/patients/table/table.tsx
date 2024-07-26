@@ -1,19 +1,23 @@
-import { DataTable } from "@/components/Table/dateTable";
 import { getColumns } from "./columns";
-import { useEffect } from "react";
 import { Patient } from "@/modules/patients/domain/Patient";
-import Loading from "@/components/Loading/loading";
 import useRoles from "@/hooks/useRoles";
-import { usePatient } from "@/hooks/usePatients";
+import { DataTable } from "@/components/Table/table";
+import { usePatients } from "@/hooks/Patient/usePatients";
 
-export const PatientTable = () => {
+interface PatientTableProps {
+  patients: Patient[];
+  prefetchPatients: (id: number) => void;
+  isLoading?: boolean;
+}
+
+export const PatientsTable: React.FC<PatientTableProps> = ({
+  patients,
+  isLoading,
+  prefetchPatients,
+}) => {
   const { isSecretary, isDoctor, isAdmin } = useRoles();
-  const { patients, isLoading, fetchPatients } = usePatient();
-  useEffect(() => {
-    fetchPatients();
-  }, [fetchPatients]);
 
-  const patientColumns = getColumns(fetchPatients, {
+  const patientColumns = getColumns(prefetchPatients, {
     isSecretary,
     isDoctor,
     isAdmin,
@@ -23,12 +27,8 @@ export const PatientTable = () => {
     patient.lastName.toLowerCase().includes(query.toLowerCase()) ||
     patient.dni.toLowerCase().includes(query.toLowerCase());
 
-  if (isLoading) {
-    return <Loading isLoading />;
-  }
-
   return (
-    <>
+    <div className="container">
       <h2 className="text-2xl font-semibold text-center mt-6">
         Lista de Pacientes
       </h2>
@@ -41,9 +41,10 @@ export const PatientTable = () => {
           addLinkPath="pacientes/agregar"
           customFilter={customFilterFunction}
           addLinkText="Agregar Paciente"
+          isLoading={isLoading}
           canAddUser={isSecretary}
         />
       </div>
-    </>
+    </div>
   );
 };

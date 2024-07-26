@@ -3,18 +3,6 @@ import { HealthInsuranceRepository } from "../domain/HealthInsuranceRepository";
 import { HealthInsurance } from "../domain/HealthInsurance";
 
 export function createApiHealthInsuranceRepository(): HealthInsuranceRepository {
-  async function getAll(): Promise<HealthInsurance[]> {
-    const response = await axiosInstance.get(`HealthInsurance/all`);
-    const healthInsurance = response.data as HealthInsurance[];
-    return healthInsurance;
-  }
-
-  async function getTotalHealthInsurances(): Promise<number> {
-    const response = await axiosInstance.get(`HealthInsurance/all`, {});
-    const hc = response.data as HealthInsurance[];
-    const totalHC = hc.length;
-    return totalHC;
-  }
 
   async function updateHealthInsurance(
     idHc: number,
@@ -47,6 +35,6 @@ export function createApiHealthInsuranceRepository(): HealthInsuranceRepository 
 
 
   return {
-    getAll, getTotalHealthInsurances, updateHealthInsurance, createHealthInsurance, deleteHealthInsurance
+    updateHealthInsurance, createHealthInsurance, deleteHealthInsurance
   };
 }

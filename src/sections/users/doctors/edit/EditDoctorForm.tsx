@@ -19,7 +19,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { SpecialitySelect } from "@/components/Select/Specialty/select";
 import { City } from "@/modules/city/domain/City";
 import { HealthInsurance } from "@/modules/healthInsurance/domain/HealthInsurance";
 import { HealthPlans } from "@/modules/healthPlans/domain/HealthPlan";
@@ -37,30 +36,25 @@ import { IoMdArrowRoundBack } from "react-icons/io";
 import { toast } from "sonner";
 import { Doctor } from "@/modules/doctors/domain/Doctor";
 import { Speciality } from "@/modules/speciality/domain/Speciality";
-import { HealthInsuranceDoctorSelect } from "@/components/Select/Health Insurance/selectDoctor";
 import { goBack } from "@/lib/utils";
 import { useDoctorStore } from "@/hooks/useDoctors";
+import { SpecialitySelect } from "@/components/Select/Speciality/select";
 
 interface Inputs extends Doctor {}
 
-function EditDoctorForm({ id }: { id: number }) {
-  const { selectedDoctor, getDoctorById, updateDoctor } = useDoctorStore();
-  useEffect(() => {
-    getDoctorById(id);
-  }, [id, getDoctorById]);
-
+function EditDoctorForm({ doctor }: { doctor: Doctor }) {
   const [selectedState, setSelectedState] = useState<State | undefined>(
-    selectedDoctor?.address?.city?.state
+    doctor?.address?.city?.state
   );
   const [selectedCity, setSelectedCity] = useState<City | undefined>(
-    selectedDoctor?.address?.city
+    doctor?.address?.city
   );
   const [selectedHealthInsurances, setSelectedHealthInsurances] = useState<
     HealthInsurance[]
-  >(selectedDoctor?.healthInsurances || []);
+  >(doctor?.healthInsurances || []);
   const [selectedSpecialities, setSelectedSpecialities] = useState<
     Speciality[]
-  >(selectedDoctor?.specialities || []);
+  >(doctor?.specialities || []);
 
   const {
     register,
@@ -72,7 +66,7 @@ function EditDoctorForm({ id }: { id: number }) {
   } = useForm<Inputs>();
   const removeDotsFromDni = (dni: any) => dni.replace(/\./g, "");
   const [startDate, setStartDate] = useState(
-    selectedDoctor ? new Date(String(selectedDoctor.birthDate)) : new Date()
+    doctor ? new Date(String(doctor.birthDate)) : new Date()
   );
 
   const handleStateChange = (state: State) => {
@@ -81,13 +75,6 @@ function EditDoctorForm({ id }: { id: number }) {
 
   const handleCityChange = (city: City) => {
     setSelectedCity(city);
-  };
-
-  const handleDateChange = (date: Date) => {
-    const dateInArgentina = moment(date).tz("America/Argentina/Buenos_Aires");
-    const formattedDateISO = dateInArgentina.format();
-    setStartDate(date);
-    setValue("birthDate", formattedDateISO);
   };
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
@@ -117,32 +104,32 @@ function EditDoctorForm({ id }: { id: number }) {
       address: addressToSend,
       specialities: specialitiesToSend,
       healthInsurances: healthInsuranceToSend,
-      photo: selectedDoctor?.photo,
-      registeredById: selectedDoctor?.registeredById,
+      photo: doctor?.photo,
+      registeredById: doctor?.registeredById,
     };
 
-    try {
-      const doctorCreationPromise = updateDoctor(
-        dataToSend,
-        Number(selectedDoctor?.userId)
-      );
+    // try {
+    //   const doctorCreationPromise = updateDoctor(
+    //     dataToSend,
+    //     Number(doctor?.userId)
+    //   );
 
-      toast.promise(doctorCreationPromise, {
-        loading: "Actualizando médico...",
-        success: "Médico actualizado con éxito!",
-        error: "Error al actualizar el médico",
-      });
+    //   toast.promise(doctorCreationPromise, {
+    //     loading: "Actualizando médico...",
+    //     success: "Médico actualizado con éxito!",
+    //     error: "Error al actualizar el médico",
+    //   });
 
-      doctorCreationPromise
-        .then(() => {
-          goBack();
-        })
-        .catch((error) => {
-          console.error("Error al actualizar el médico", error);
-        });
-    } catch (error) {
-      console.error("Error al actualizar el médico", error);
-    }
+    //   doctorCreationPromise
+    //     .then(() => {
+    //       goBack();
+    //     })
+    //     .catch((error) => {
+    //       console.error("Error al actualizar el médico", error);
+    //     });
+    // } catch (error) {
+    //   console.error("Error al actualizar el médico", error);
+    // }
   };
 
   return (
@@ -187,7 +174,7 @@ function EditDoctorForm({ id }: { id: number }) {
                     <Input
                       id="firstName"
                       placeholder="Ingresar nombre"
-                      defaultValue={selectedDoctor?.firstName}
+                      defaultValue={doctor?.firstName}
                       {...register("firstName", {
                         required: "Este campo es obligatorio",
                         minLength: {
@@ -213,7 +200,7 @@ function EditDoctorForm({ id }: { id: number }) {
                     <Input
                       id="lastName"
                       placeholder="Ingresar apellido"
-                      defaultValue={selectedDoctor?.lastName}
+                      defaultValue={doctor?.lastName}
                       {...register("lastName", {
                         required: "Este campo es obligatorio",
                         minLength: {
@@ -244,7 +231,7 @@ function EditDoctorForm({ id }: { id: number }) {
                     <Input
                       id="email"
                       placeholder="Ingresar correo electrónico"
-                      defaultValue={selectedDoctor?.email}
+                      defaultValue={doctor?.email}
                       {...register("email", {
                         required: "Este campo es obligatorio",
                         pattern: {
@@ -266,7 +253,7 @@ function EditDoctorForm({ id }: { id: number }) {
                     <Input
                       id="matricula"
                       placeholder="Ingresar matrícula"
-                      defaultValue={selectedDoctor?.matricula}
+                      defaultValue={doctor?.matricula}
                       {...register("matricula", {
                         required: "Este campo es obligatorio",
                         pattern: {
@@ -282,7 +269,7 @@ function EditDoctorForm({ id }: { id: number }) {
                     <Label htmlFor="userName">D.N.I.</Label>
                     <Input
                       id="userName"
-                      defaultValue={selectedDoctor?.dni}
+                      defaultValue={doctor?.dni}
                       placeholder="Ingresar D.N.I."
                       {...register("userName", {
                         required: "Este campo es obligatorio",
@@ -300,7 +287,7 @@ function EditDoctorForm({ id }: { id: number }) {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="dob">Fecha de Nacimiento</Label>
-                    <DatePicker
+                    {/* <DatePicker
                       showIcon
                       selected={startDate}
                       onChange={handleDateChange}
@@ -309,7 +296,7 @@ function EditDoctorForm({ id }: { id: number }) {
                       icon={<FaCalendar color="#0f766e" />}
                       customInput={<Input className="input-custom-style" />}
                       dateFormat="d MMMM yyyy"
-                    />
+                    /> */}
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-6">
@@ -318,7 +305,7 @@ function EditDoctorForm({ id }: { id: number }) {
                     <Input
                       id="phoneNumber"
                       placeholder="Ingresar teléfono"
-                      defaultValue={selectedDoctor?.phoneNumber}
+                      defaultValue={doctor?.phoneNumber}
                       {...register("phoneNumber", {
                         required: "Este campo es obligatorio",
                         pattern: {
@@ -338,7 +325,7 @@ function EditDoctorForm({ id }: { id: number }) {
                     <Input
                       id="phoneNumber2"
                       placeholder="Ingresar teléfono 2"
-                      defaultValue={selectedDoctor?.phoneNumber2}
+                      defaultValue={doctor?.phoneNumber2}
                       type="tel"
                       {...register("phoneNumber2", {
                         pattern: {
@@ -354,16 +341,14 @@ function EditDoctorForm({ id }: { id: number }) {
                     <Label htmlFor="blood">Sangre </Label>
                     <BloodSelect
                       control={control}
-                      errors={errors}
-                      defaultValue={String(selectedDoctor?.bloodType) || ""}
+                      defaultValue={String(doctor?.bloodType) || ""}
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="rhFactor">Factor R.H.</Label>
                     <RHFactorSelect
                       control={control}
-                      errors={errors}
-                      defaultValue={String(selectedDoctor?.rhFactor) || ""}
+                      defaultValue={String(doctor?.rhFactor) || ""}
                     />
                   </div>
                 </div>
@@ -372,16 +357,14 @@ function EditDoctorForm({ id }: { id: number }) {
                     <Label htmlFor="gender">Sexo</Label>
                     <GenderSelect
                       control={control}
-                      errors={errors}
-                      defaultValue={String(selectedDoctor?.gender) || ""}
+                      defaultValue={String(doctor?.gender) || ""}
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="maritalStatus">Estado Civil</Label>
                     <MaritalStatusSelect
                       control={control}
-                      errors={errors}
-                      defaultValue={String(selectedDoctor?.maritalStatus) || ""}
+                      defaultValue={String(doctor?.maritalStatus) || ""}
                     />
                   </div>
                 </div>
@@ -391,12 +374,12 @@ function EditDoctorForm({ id }: { id: number }) {
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="healthCareProvider">Obra Social</Label>
-                    <HealthInsuranceDoctorSelect
+                    {/* <HealthInsuranceDoctorSelect
                       selected={selectedHealthInsurances}
                       onHealthInsuranceChange={(newSelection) =>
                         setSelectedHealthInsurances(newSelection)
                       }
-                    />
+                    /> */}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="healthInsurancePlan">Especialidades</Label>
@@ -427,7 +410,7 @@ function EditDoctorForm({ id }: { id: number }) {
                     <Label htmlFor="state">Observaciones</Label>
                     <Input
                       id="observations"
-                      defaultValue={selectedDoctor?.observations}
+                      defaultValue={doctor?.observations}
                       placeholder="Ingresar observaciones"
                       {...register("observations")}
                     />
@@ -438,8 +421,7 @@ function EditDoctorForm({ id }: { id: number }) {
                     <Label htmlFor="state">Provincia</Label>
                     <StateSelect
                       control={control}
-                      defaultValue={selectedDoctor?.address?.city?.state}
-                      errors={errors}
+                      defaultValue={doctor?.address?.city?.state}
                       onStateChange={handleStateChange}
                     />
                   </div>
@@ -447,8 +429,7 @@ function EditDoctorForm({ id }: { id: number }) {
                     <Label htmlFor="city">Ciudad</Label>
                     <CitySelect
                       control={control}
-                      errors={errors}
-                      defaultValue={selectedDoctor?.address?.city}
+                      defaultValue={doctor?.address?.city}
                       idState={selectedState ? selectedState.id : undefined}
                       onCityChange={handleCityChange}
                     />
@@ -460,7 +441,7 @@ function EditDoctorForm({ id }: { id: number }) {
                     <Input
                       id="street"
                       placeholder="Ingresar calle"
-                      defaultValue={selectedDoctor?.address.street}
+                      defaultValue={doctor?.address.street}
                       {...register("address.street", {
                         onChange: (e) => {
                           const capitalized = capitalizeWords(e.target.value);
@@ -476,7 +457,7 @@ function EditDoctorForm({ id }: { id: number }) {
                     <Input
                       id="number"
                       type="number"
-                      defaultValue={selectedDoctor?.address.number}
+                      defaultValue={doctor?.address.number}
                       placeholder="Ingresar número"
                       {...register("address.number", {
                         onChange: (e) => {
@@ -494,7 +475,7 @@ function EditDoctorForm({ id }: { id: number }) {
                       id="floor"
                       type="number"
                       placeholder="Ingresar piso"
-                      defaultValue={selectedDoctor?.address.phoneNumber}
+                      defaultValue={doctor?.address.phoneNumber}
                       {...register("address.description", {
                         onChange: (e) => {
                           const capitalized = capitalizeWords(e.target.value);
@@ -510,7 +491,7 @@ function EditDoctorForm({ id }: { id: number }) {
                     <Input
                       id="department"
                       placeholder="Ingresar departamento"
-                      defaultValue={selectedDoctor?.address.description}
+                      defaultValue={doctor?.address.description}
                       {...register("address.phoneNumber", {
                         onChange: (e) => {
                           const capitalized = capitalizeWords(e.target.value);
@@ -528,7 +509,7 @@ function EditDoctorForm({ id }: { id: number }) {
               <Button variant="outline" type="button" onClick={goBack}>
                 Cancelar
               </Button>
-              <Button variant="teal" type="submit">
+              <Button variant="incor" type="submit">
                 Confirmar
               </Button>
             </CardFooter>

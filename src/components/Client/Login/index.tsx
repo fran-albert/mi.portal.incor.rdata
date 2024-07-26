@@ -16,32 +16,43 @@ import {
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/Input/Password/input";
 import Link from "next/link";
-import { loginAction } from "@/actions/auth.action";
 import { useRouter } from "next/navigation";
+import { signIn as signInNextAuth } from "next-auth/react";
+import useSessionStore from "@/stores/Session/session.store";
+import Loading from "@/app/loading";
 
 const LoginComponent = () => {
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
   });
   const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string[] | null>(null);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const router = useRouter();
+  const setSession = useSessionStore((state) => state.setSession);
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     setError(null);
-    console.log(values);
     startTransition(async () => {
-      const response = await loginAction(values);
-      if (response.error) {
-        setError(response.error);
+      const result: any = await signInNextAuth("credentials", {
+        userName: values.userName,
+        password: values.password,
+        redirect: false,
+      });
+      if (result?.error) {
+        setError([result.error]);
       } else {
-        router.push("/inicio");
+        if (result?.ok) {
+          setSession(result.user);
+          setIsRedirecting(true);
+          router.push("/inicio");
+        }
       }
     });
   }
 
   return (
-    <div className="w-96">
-      <div className="flex items-center justify-center min-h-screen bg-background">
+    <div className="mt-10">
+      <div className="flex items-center justify-center bg-background md:w-96">
         <div className="w-full max-w-md p-6 space-y-6 bg-card rounded-lg shadow-lg">
           <div className="text-center">
             <h1 className="text-3xl font-bold text-primary">Bienvenido</h1>

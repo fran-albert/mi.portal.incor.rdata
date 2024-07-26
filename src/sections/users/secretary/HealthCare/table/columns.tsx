@@ -4,6 +4,7 @@ import { Speciality } from "@/modules/speciality/domain/Speciality";
 import { Button } from "@/components/ui/button";
 import DeleteHealthInsuranceDialog from "../delete/DeleteHealthCareDialog";
 import { HealthInsurance } from "@/modules/healthInsurance/domain/HealthInsurance";
+import { EditButtonIcon } from "@/components/Button/Edit/button";
 
 export const getColumns = (
   removeHealthInsuranceFromList: (idHealthCare: number) => void,
@@ -30,12 +31,10 @@ export const getColumns = (
         <div className="flex items-center justify-end">
           {!isDoctor && (
             <>
-              <Button
+              <EditButtonIcon
                 onClick={() => onEditHealthCare(row.original)}
-                className="bg-teal-700 hover:bg-teal-500"
-              >
-                Editar
-              </Button>
+                className="mr-2"
+              />
               <DeleteHealthInsuranceDialog
                 healthInsurance={row.original}
                 removeHealthInsuranceFromList={removeHealthInsuranceFromList}

@@ -1,55 +1,79 @@
-import { DataTable } from "@/components/Table/dateTable";
-import { getColumns } from "./columns";
 import { useEffect, useState } from "react";
-import Loading from "@/components/Loading/loading";
-import { createApiLabRepository } from "@/modules/labs/infra/ApiLabRepository";
-import { getLabsDetail } from "@/modules/labs/application/get-labs-detail/getLabsDetail";
-import { Labs } from "@/modules/labs/domain/Labs";
+import Loading from "@/app/loading";
+import { DataTable } from "@/components/Table/table";
+import useLabStore from "@/hooks/useLabs";
+import { ColumnDef } from "@tanstack/react-table";
+import { formatDate } from "@/common/helpers/helpers";
 
 const transformLabData = (labData: any) => {
   let results = [];
-  for (const [key, value] of Object.entries(labData)) {
-    if (key !== "id" && typeof value !== "object") {
-      results.push({ testName: key, value: value?.toString() });
+  const { date, ...rest } = labData;
+  for (const [key, value] of Object.entries(rest)) {
+    if (key !== "id") {
+      results.push({ testName: key, value: value?.toString(), date });
     }
   }
   return results;
 };
 
-const labRepository = createApiLabRepository();
+const groupByDate = (data: any[]) => {
+  const groupedData: { [date: string]: any[] } = {};
+  data.forEach((item) => {
+    if (!groupedData[item.date]) {
+      groupedData[item.date] = [];
+    }
+    groupedData[item.date].push(item);
+  });
+  return groupedData;
+};
+
 export const LabPatientTable = ({ id }: { id: number }) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [labs, setLabs] = useState<any[]>([]);
-  const loadAllLabsDetail = getLabsDetail(labRepository);
-
-  const fetchLabsDetail = async () => {
-    try {
-      setIsLoading(true);
-      const labPatientData = await loadAllLabsDetail(id);
-      const transformedData = transformLabData(labPatientData[3]);
-      console.log(transformedData);
-      setLabs(transformedData);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  const labsColumns = getColumns();
+  const [groupedLabs, setGroupedLabs] = useState<{ [date: string]: any[] }>({});
+  const { fetchLabsDetails, labsDetails } = useLabStore();
 
   useEffect(() => {
-    fetchLabsDetail();
-  }, []);
+    const fetchData = async () => {
+      await fetchLabsDetails(id);
+      setIsLoading(false);
+    };
+    fetchData();
+  }, [fetchLabsDetails, id]);
+
+  useEffect(() => {
+    if (labsDetails && labsDetails.length > 0) {
+      const transformedLabs = labsDetails.flatMap(transformLabData);
+      const grouped = groupByDate(transformedLabs);
+      setGroupedLabs(grouped);
+    }
+  }, [labsDetails]);
 
   if (isLoading) {
     return <Loading isLoading />;
   }
 
-  return (
-    <>
-      <div className="w-full">
-        <DataTable columns={labsColumns} data={labs} showSearch={false} />
+  if (!labsDetails || labsDetails.length === 0) {
+    return (
+      <div className="text-gray-900 text-sm">
+        Los laboratorios del paciente no se pudieron insertar en la tabla.
       </div>
-    </>
+    );
+  }
+
+  return (
+    <div className="w-full">
+      {Object.keys(groupedLabs).map((date) => (
+        <div key={date}>
+          <DataTable
+            columns={[
+              { header: "", accessorKey: "testName" },
+              { header: formatDate(date), accessorKey: "value" },
+            ]}
+            data={groupedLabs[date]}
+            showSearch={false}
+          />
+        </div>
+      ))}
+    </div>
   );
 };

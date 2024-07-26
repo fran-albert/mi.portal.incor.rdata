@@ -1,6 +1,4 @@
-"use client";
 import Link from "next/link";
-import { useEffect } from "react";
 import { FaUserDoctor } from "react-icons/fa6";
 import {
   CardTitle,
@@ -10,15 +8,13 @@ import {
   Card,
 } from "@/components/ui/card";
 import { useDoctorStore } from "@/hooks/useDoctors";
-export const DoctorsCount = () => {
-  const { fetchLastDoctors, fetchTotalDoctors, lastedDoctors, totalDoctors } =
-    useDoctorStore();
-
-  useEffect(() => {
-    fetchTotalDoctors();
-    fetchLastDoctors();
-  }, [fetchTotalDoctors, fetchLastDoctors]);
-
+export const DoctorsCount = ({
+  lastedDoctors,
+  totalDoctors,
+}: {
+  lastedDoctors: number;
+  totalDoctors: number;
+}) => {
   return (
     <>
       <div className="rounded-lg w-84 sm:transition sm:duration-300 sm:ease-in-out sm:transform sm:hover:-translate-y-2 cursor-pointer">

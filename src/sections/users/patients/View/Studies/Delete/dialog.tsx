@@ -14,6 +14,7 @@ import { AiOutlineDelete } from "react-icons/ai";
 import { toast } from "sonner";
 import useStudyStore from "@/hooks/useStudy";
 import { Study } from "@/modules/study/domain/Study";
+import ActionIcon from "@/components/Icons/action";
 
 interface DeleteStudyDialogProps {
   idStudy: number;
@@ -46,11 +47,12 @@ export default function DeleteStudyDialog({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <AiOutlineDelete
-          className="text-red-600 cursor-pointer"
-          size={30}
-          onClick={toggleDialog}
-        />
+        <Button variant="ghost" size="icon" onClick={toggleDialog}>
+          <ActionIcon
+            tooltip="Eliminar"
+            icon={<AiOutlineDelete size={20} className="text-red-600" />}
+          />
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -66,7 +68,7 @@ export default function DeleteStudyDialog({
           <Button variant="outline" onClick={toggleDialog}>
             Cancelar
           </Button>
-          <Button variant="teal" onClick={handleConfirmDelete}>
+          <Button variant="incor" onClick={handleConfirmDelete}>
             Confirmar
           </Button>
         </DialogFooter>

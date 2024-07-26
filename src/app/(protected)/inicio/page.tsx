@@ -1,12 +1,11 @@
 import React from "react";
-import { auth } from "@/auth";
+import { Metadata } from "next";
+import ClientHomePage from "@/components/Client/Home";
+
+export const metadata: Metadata = {
+  title: "Inicio",
+};
 
 export default async function HomePage() {
-  const session = await auth();
-
-  if (!session) {
-    return <div>loading...</div>;
-  }
-
-  return <div>{JSON.stringify(session, null, 2)}</div>;
+  return <ClientHomePage />;
 }

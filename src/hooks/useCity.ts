@@ -9,12 +9,10 @@ interface CityState {
     selectedCity: City | null;
     isLoading: boolean;
     error: string | null;
-    fetchCities: () => Promise<void>;
     getCitiesByState: (stateId: number) => Promise<City[] | null>;
 }
 
 const cityRepository = createApiCityRepository();
-const loadAllCities = getAll(cityRepository);
 const loadCitiesByStateFn = getAllCitiesByState(cityRepository);
 
 export const useCityStore = create<CityState>((set) => ({
@@ -22,18 +20,6 @@ export const useCityStore = create<CityState>((set) => ({
     selectedCity: null,
     isLoading: false,
     error: null,
-
-    fetchCities: async () => {
-        set({ isLoading: true });
-        try {
-            const cityData = await loadAllCities();
-            set({ cities: cityData, isLoading: false });
-        } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : String(error);
-            set({ error: errorMessage, isLoading: false });
-        }
-    },
-
 
     getCitiesByState: async (stateId) => {
         set({ isLoading: true });

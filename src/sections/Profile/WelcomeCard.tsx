@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useEffect, useState } from "react";
 import {
   Card,
@@ -9,32 +9,30 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-// import { useCustomSession } from "@/context/SessionAuthProviders";
+import { auth } from "@/auth";
 import { FaHeartbeat, FaSmile } from "react-icons/fa";
 import { Separator } from "@/components/ui/separator";
 import { User } from "@/modules/users/domain/User";
 import { useSession } from "next-auth/react";
 import { createApiUserRepository } from "@/modules/users/infra/ApiUserRepository";
-import { getUser } from "@/modules/users/application/get/getUser";
-import Loading from "@/components/Loading/loading";
-import { getPatient } from "@/modules/patients/application/get/getPatient";
-import { createApiPatientRepository } from "@/modules/patients/infra/ApiPatientRepository";
+import { Session } from "next-auth";
 
-const WelcomeCardComponent = () => {
-  const { data: session } = useSession();
+export default async function WelcomeCardComponent({
+  session,
+}: {
+  session: Session;
+}) {
   const [profile, setProfile] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-
   useEffect(() => {
     setIsLoading(true);
-    const userRepository = createApiPatientRepository();
-    const loadUser = getPatient(userRepository);
+    // const userRepository = createApiPatientRepository();
 
     const fetchUsers = async () => {
       try {
         setIsLoading(true);
-        const userData = await loadUser(session?.user?.id);
-        setProfile(userData ?? null);
+        // const userData = await loadUser(Number(session?.user?.id));
+        // setProfile(userData ?? null);
       } catch (error) {
         console.log(error);
       } finally {
@@ -68,7 +66,7 @@ const WelcomeCardComponent = () => {
               />
               <AvatarFallback>Imagen del Usuario</AvatarFallback>
             </Avatar>
-            <CardTitle className="text-teal-700">
+            <CardTitle className="text-incor">
               Hola, {profile?.firstName}!
             </CardTitle>
           </CardHeader>
@@ -87,6 +85,4 @@ const WelcomeCardComponent = () => {
       </div>
     </>
   );
-};
-
-export default WelcomeCardComponent;
+}

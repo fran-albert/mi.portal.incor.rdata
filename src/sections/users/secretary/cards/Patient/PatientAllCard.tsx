@@ -1,7 +1,4 @@
-"use client";
-import { createApiPatientRepository } from "@/modules/patients/infra/ApiPatientRepository";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { FaUser } from "react-icons/fa";
 import {
   CardTitle,
@@ -10,19 +7,13 @@ import {
   CardContent,
   Card,
 } from "@/components/ui/card";
-import { usePatient } from "@/hooks/usePatients";
-export const PatientCount = () => {
-  const {
-    fetchLastPatients,
-    lastedPatients,
-    totalPatients,
-    fetchTotalPatients,
-  } = usePatient();
-
-  useEffect(() => {
-    fetchTotalPatients();
-    fetchLastPatients();
-  }, [fetchTotalPatients, fetchLastPatients]);
+export const PatientCount = ({
+  lastedPatients,
+  totalPatients,
+}: {
+  lastedPatients: number;
+  totalPatients: number;
+}) => {
   return (
     <>
       <div className="rounded-lg w-84 sm:transition sm:duration-300 sm:ease-in-out sm:transform sm:hover:-translate-y-2 cursor-pointer">

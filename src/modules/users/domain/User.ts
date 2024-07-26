@@ -8,7 +8,8 @@ export interface User {
   firstName: string;
   lastName: string;
   email: string;
-  birthDate: Date | string | undefined;
+  slug?: string;
+  birthDate: Date | string | undefined | readonly string[];
   phoneNumber: string;
   phoneNumber2: string;
   photo: string;
@@ -23,7 +24,7 @@ export interface User {
   description: string;
   currentPassword: string;
   password: string;
-  registerBy: string;
+  registerBy: any;
   newPassword: string;
   code: string;
   confirmPassword: string;

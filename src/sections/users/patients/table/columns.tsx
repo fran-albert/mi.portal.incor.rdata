@@ -1,19 +1,14 @@
 "use client";
-
 import { ColumnDef } from "@tanstack/react-table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { EditButton } from "@/components/Button/Edit/button";
-import AddLabDialog from "@/components/Button/Add/Lab/button";
 import { formatDni } from "@/common/helpers/helpers";
-import { FaRegEye } from "react-icons/fa";
 import DeletePatientDialog from "../delete/DeletePatientDialog";
-import { Button } from "@/components/ui/button";
-import { ViewButton } from "@/components/Button/View/button";
 import { Patient } from "@/modules/patients/domain/Patient";
 import Link from "next/link";
+import { ViewButton } from "@/components/Button/View/button";
 
 export const getColumns = (
-  fetchPatients: () => void,
+  prefetchPatients: (id: number) => void,
   roles: { isSecretary: boolean; isDoctor: boolean; isAdmin: boolean }
 ): ColumnDef<Patient>[] => {
   const columns: ColumnDef<Patient>[] = [
@@ -30,8 +25,11 @@ export const getColumns = (
       header: "Paciente",
       cell: ({ row }) => (
         <Link
-          href={`/usuarios/pacientes/${row.original.userId}`}
+          href={`/usuarios/pacientes/${row.original.slug}`}
           className="flex items-center cursor-pointer"
+          onMouseEnter={() =>
+            prefetchPatients && prefetchPatients(row.original.userId)
+          }
         >
           <Avatar>
             <AvatarImage
@@ -49,7 +47,6 @@ export const getColumns = (
             </AvatarFallback>
           </Avatar>
           <div className="flex flex-col ml-2">
-            {" "}
             <p className="text-sm font-medium">
               {row.original.lastName}, {row.original.firstName}
             </p>
@@ -58,7 +55,7 @@ export const getColumns = (
               className="text-gray-800 font-bold"
             >
               {row.original.email}
-            </span>{" "}
+            </span>
           </div>
         </Link>
       ),
@@ -101,16 +98,13 @@ export const getColumns = (
         <div className="flex items-center justify-end">
           {(roles.isSecretary || roles.isDoctor) && (
             <ViewButton
-              id={row.original.userId}
+              slug={String(row.original.slug)}
               text="Ver Paciente"
               path="pacientes"
             />
           )}
           {roles.isSecretary && (
-            <DeletePatientDialog
-              idPatient={row.original.userId}
-              onPatientDeleted={fetchPatients}
-            />
+            <DeletePatientDialog idPatient={row.original.userId} />
           )}
         </div>
       ),

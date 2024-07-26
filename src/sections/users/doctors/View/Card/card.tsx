@@ -10,8 +10,6 @@ import {
 import { User } from "@/modules/users/domain/User";
 import { useSession } from "next-auth/react";
 import { createApiUserRepository } from "@/modules/users/infra/ApiUserRepository";
-import { getUser } from "@/modules/users/application/get/getUser";
-import Loading from "@/components/Loading/loading";
 import { useParams } from "next/navigation";
 import { CiMail } from "react-icons/ci";
 import {
@@ -24,11 +22,11 @@ import {
 import { FaLocationDot } from "react-icons/fa6";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { EditButton } from "@/components/Button/Edit/button";
 import { Doctor } from "@/modules/doctors/domain/Doctor";
 import { calculateAge, formatDate, formatDni } from "@/common/helpers/helpers";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MdDateRange } from "react-icons/md";
+import { EditButtonIcon } from "@/components/Button/Edit/button";
 const DoctorCardComponent = ({
   doctor,
   registerBy,
@@ -40,10 +38,16 @@ const DoctorCardComponent = ({
     <>
       <Card>
         <CardHeader>
-          <Avatar className="w-16 h-16 border">
+          {/* <Avatar className="w-16 h-16 border">
             <AvatarImage alt="Dr. John Doe" src="/placeholder-user.jpg" />
-            <AvatarFallback>JD</AvatarFallback>
-          </Avatar>
+            <AvatarFallback>
+              {`${doctor?.firstName
+                .charAt(0)
+                .toLocaleUpperCase()}${doctor?.lastName
+                .charAt(0)
+                .toLocaleUpperCase()}`}
+            </AvatarFallback>
+          </Avatar> */}
           <div className="space-y-1">
             <CardTitle>
               {doctor?.gender === "Masculino" ? "Dr. " : "Dra. "}{" "}
@@ -53,7 +57,11 @@ const DoctorCardComponent = ({
               Creado por {registerBy || "Desconocido"}
             </CardDescription>
             <div className="text-blue-600 hover:text-blue-800 cursor-pointer">
-              <EditButton id={Number(doctor?.userId)} path="usuarios/medicos" />
+              <EditButtonIcon
+                id={Number(doctor?.userId)}
+                path="usuarios/medicos"
+                slug={doctor?.slug}
+              />
             </div>
           </div>
         </CardHeader>

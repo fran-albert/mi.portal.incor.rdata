@@ -40,9 +40,9 @@ export function MyStudiesComponent({
                   Download
                 </Link>
               </Card> */}
-              <Separator className="my-4" />
+              <Separator />
               <Ecography ecography={ecography} urls={urls} />
-              <Separator className="my-4" />
+              <Separator />
               <LabsCard labs={labs} urls={urls} />
             </div>
           </div>

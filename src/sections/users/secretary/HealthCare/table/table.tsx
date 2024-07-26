@@ -1,7 +1,5 @@
-import { DataTable } from "@/components/Table/dateTable";
 import { getColumns } from "./columns";
 import { useEffect, useState } from "react";
-import Loading from "@/components/Loading/loading";
 import { Speciality } from "@/modules/speciality/domain/Speciality";
 import { createApiSpecialityRepository } from "@/modules/speciality/infra/ApiSpecialityRepository";
 import { getAllSpecialities } from "@/modules/speciality/application/get-all/getAllSpecialities";
@@ -11,8 +9,10 @@ import { createApiHealthInsuranceRepository } from "@/modules/healthInsurance/in
 import { getAll } from "@/modules/healthInsurance/application/get-all/getAllHealthInsurance";
 import { HealthInsurance } from "@/modules/healthInsurance/domain/HealthInsurance";
 import useRoles from "@/hooks/useRoles";
-import AddHealthInsuranceDialog from "@/components/Button/Add/HealthInsurance/button";
 import EditHealthInsuranceDialog from "../edit/EditHealthInsuranceDialog";
+import Loading from "@/app/loading";
+import { DataTable } from "@/components/Table/table";
+import AddHealthInsuranceDialog from "@/components/Button/Add/Health-Insurance/button";
 
 export const HealthInsuranceTable = () => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -89,43 +89,37 @@ export const HealthInsuranceTable = () => {
   }
 
   return (
-    <div className="mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col">
-        <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-            <h2 className="text-2xl font-semibold text-center mb-2">
-              Lista de Obras Sociales
-            </h2>
-            <div className="overflow-hidden sm:rounded-lg">
-              <DataTable
-                columns={healthInsuranceColumns}
-                data={healthInsurance}
-                searchPlaceholder="Buscar obra social..."
-                showSearch={true}
-                onAddClick={openAddHealthInsuranceDialog}
-                searchColumn="name"
-                addLinkPath=""
-                addLinkText="Agregar Obra Social"
-                customFilter={customFilterFunction}
-                canAddUser={isSecretary}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-      <AddHealthInsuranceDialog
-        isOpen={isAddHealthInsuranceDialogOpen}
-        setIsOpen={setIsAddHealthInsuranceDialogOpen}
-        onHealthInsuranceAdded={addHealthInsuranceToList}
-      />
-      {isEditDialogOpen && editingHealthInsurance && (
-        <EditHealthInsuranceDialog
-          isOpen={isEditDialogOpen}
-          setIsOpen={setIsEditDialogOpen}
-          healthInsurance={editingHealthInsurance}
-          updateHealthInsuranceInList={updateHealthInsuranceInList}
+    <div className="container">
+      <h2 className="text-2xl font-semibold text-center mt-6">
+        Lista de Obras Sociales
+      </h2>
+      <div className="overflow-hidden sm:rounded-lg p-4 ">
+        <DataTable
+          columns={healthInsuranceColumns}
+          data={healthInsurance}
+          searchPlaceholder="Buscar obra social..."
+          showSearch={true}
+          onAddClick={openAddHealthInsuranceDialog}
+          searchColumn="name"
+          addLinkPath=""
+          addLinkText="Agregar Obra Social"
+          customFilter={customFilterFunction}
+          canAddUser={isSecretary}
         />
-      )}
+        <AddHealthInsuranceDialog
+          isOpen={isAddHealthInsuranceDialogOpen}
+          setIsOpen={setIsAddHealthInsuranceDialogOpen}
+          onHealthInsuranceAdded={addHealthInsuranceToList}
+        />
+        {isEditDialogOpen && editingHealthInsurance && (
+          <EditHealthInsuranceDialog
+            isOpen={isEditDialogOpen}
+            setIsOpen={setIsEditDialogOpen}
+            healthInsurance={editingHealthInsurance}
+            updateHealthInsuranceInList={updateHealthInsuranceInList}
+          />
+        )}
+      </div>
     </div>
   );
 };

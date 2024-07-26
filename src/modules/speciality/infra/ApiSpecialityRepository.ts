@@ -3,19 +3,6 @@ import { SpecialityRepository } from "../domain/SpecialityRepository";
 import { Speciality } from "../domain/Speciality";
 
 export function createApiSpecialityRepository(): SpecialityRepository {
-  async function getAllSpecialities(): Promise<Speciality[]> {
-    const response = await axiosInstance.get(`Speciality/all`, {});
-    const speciality = response.data as Speciality[];
-    return speciality;
-  }
-
-  async function getTotalSpecialities(): Promise<number> {
-    const response = await axiosInstance.get(`Speciality/all`, {});
-    const speciality = response.data as Speciality[];
-    const totalSpecialities = speciality.length;
-    return totalSpecialities;
-  }
-
   async function updateSpeciality(
     idSpeciality: number,
     newSpeciality: Speciality
@@ -46,8 +33,6 @@ export function createApiSpecialityRepository(): SpecialityRepository {
   }
 
   return {
-    getAllSpecialities,
-    getTotalSpecialities,
     updateSpeciality,
     createSpeciality,
     deleteSpeciality,

@@ -14,6 +14,8 @@ import { toast } from "sonner";
 import { HealthInsurance } from "@/modules/healthInsurance/domain/HealthInsurance";
 import { createApiHealthInsuranceRepository } from "@/modules/healthInsurance/infra/ApiHealthInsuranceRepository";
 import { deleteHealthInsurance } from "@/modules/healthInsurance/application/delete/deleteHealthInsurance";
+import ActionIcon from "@/components/Icons/action";
+import { FaRegTrashAlt } from "react-icons/fa";
 
 interface DeleteHealthInsuranceDialogProps {
   healthInsurance: HealthInsurance;
@@ -60,11 +62,11 @@ export default function DeleteHealthInsuranceDialog({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button
-          className="bg-red-700 hover:bg-red-500 ml-2"
-          onClick={toggleDialog}
-        >
-          Eliminar
+        <Button variant="ghost" size="icon" onClick={toggleDialog}>
+          <ActionIcon
+            tooltip="Eliminar"
+            icon={<FaRegTrashAlt className="w-4 h-4" color="red" />}
+          />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
@@ -79,7 +81,7 @@ export default function DeleteHealthInsuranceDialog({
           <Button variant="outline" onClick={toggleDialog}>
             Cancelar
           </Button>
-          <Button variant="teal" onClick={handleConfirmDelete}>
+          <Button variant="incor" onClick={handleConfirmDelete}>
             Confirmar
           </Button>
         </DialogFooter>

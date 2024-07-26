@@ -14,10 +14,9 @@ import { Input } from "@/components/ui/input";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Speciality } from "@/modules/speciality/domain/Speciality";
 import { createApiSpecialityRepository } from "@/modules/speciality/infra/ApiSpecialityRepository";
-import { updateSpeciality } from "@/modules/speciality/application/update/updateSpeciality";
 import { DialogTrigger } from "@radix-ui/react-dialog";
-import ActionIcon from "@/components/ui/actionIcon";
 import { FaPencil } from "react-icons/fa6";
+import ActionIcon from "@/components/Icons/action";
 
 interface EditSpecialityDialogProps {
   isOpen: boolean;
@@ -49,28 +48,28 @@ export default function EditSpecialityDialog({
   }, [isOpen, speciality, reset]);
 
   const onSubmit: SubmitHandler<Inputs> = async (data: Speciality) => {
-    try {
-      const specialityRepository = createApiSpecialityRepository();
-      const updateSpecialityFn = updateSpeciality(specialityRepository);
-      const specialityCreationPromise = updateSpecialityFn(Number(speciality.id), data);
+    // try {
+    //   const specialityRepository = createApiSpecialityRepository();
+    //   const updateSpecialityFn = updateSpeciality(specialityRepository);
+    //   const specialityCreationPromise = updateSpecialityFn(Number(speciality.id), data);
 
-      toast.promise(specialityCreationPromise, {
-        loading: "Editando especialidad...",
-        success: "Especialidad editada con éxito!",
-        error: "Error al editar la Especialidad",
-      });
+    //   toast.promise(specialityCreationPromise, {
+    //     loading: "Editando especialidad...",
+    //     success: "Especialidad editada con éxito!",
+    //     error: "Error al editar la Especialidad",
+    //   });
 
-      specialityCreationPromise
-        .then(() => {
-          setIsOpen(false);
-          if (updateSpecialityInList) updateSpecialityInList(data);
-        })
-        .catch((error) => {
-          console.error("Error al editar la Especialidad", error);
-        });
-    } catch (error) {
-      console.error("Error al editar la Especialidad", error);
-    }
+    //   specialityCreationPromise
+    //     .then(() => {
+    //       setIsOpen(false);
+    //       if (updateSpecialityInList) updateSpecialityInList(data);
+    //     })
+    //     .catch((error) => {
+    //       console.error("Error al editar la Especialidad", error);
+    //     });
+    // } catch (error) {
+    //   console.error("Error al editar la Especialidad", error);
+    // }
   };
 
   return (
@@ -106,7 +105,7 @@ export default function EditSpecialityDialog({
             <Button variant="outline" onClick={toggleDialog}>
               Cancelar
             </Button>
-            <Button variant="teal" type="submit">
+            <Button variant="incor" type="submit">
               Confirmar
             </Button>
           </DialogFooter>

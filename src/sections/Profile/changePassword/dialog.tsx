@@ -12,16 +12,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import ActionIcon from "@/components/ui/actionIcon";
 import { FaTrashAlt } from "react-icons/fa";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { PasswordInput } from "@/components/ui/passwordInput";
 import { User } from "@/modules/users/domain/User";
 import { toast } from "sonner";
 import axios from "axios";
 import { createApiUserRepository } from "@/modules/users/infra/ApiUserRepository";
 import { changePassword } from "@/modules/users/application/change-password/changePassword";
+import { PasswordInput } from "@/components/Input/Password/input";
 
 interface ChangePasswordDialogProps {
   id: number;

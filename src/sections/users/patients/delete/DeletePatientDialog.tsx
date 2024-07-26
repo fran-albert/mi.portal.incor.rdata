@@ -10,35 +10,44 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import ActionIcon from "@/components/ui/actionIcon";
 import { FaRegTrashAlt, FaEye } from "react-icons/fa";
 import { toast } from "sonner";
 import { createApiPatientRepository } from "@/modules/patients/infra/ApiPatientRepository";
-import { deletePatient } from "@/modules/patients/application/delete/deletePatient";
+import ActionIcon from "@/components/Icons/action";
+import { usePatientMutations } from "@/hooks/Patient/usePatientMutation";
+import { usePatients } from "@/hooks/Patient/usePatients";
+import { usePatientStore } from "@/stores/Patient/patient.store";
 
 interface DeletePatientDialogProps {
   idPatient: number;
-  onPatientDeleted?: () => void;
 }
 
 export default function DeletePatientDialog({
   idPatient,
-  onPatientDeleted,
 }: DeletePatientDialogProps) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const toggleDialog = () => setIsOpen(!isOpen);
-
+  const { deletePatientMutation } = usePatientMutations();
+  const deletePatientFromStore = usePatientStore(
+    (state) => state.deletePatient
+  );
   const handleConfirmDelete = async () => {
+    const deletePromise = deletePatientMutation.mutateAsync(idPatient);
+
+    toast.promise(deletePromise, {
+      loading: "Eliminando paciente...",
+      success: "Paciente eliminado con éxito!",
+      error: (err) => {
+        console.error("Error al eliminar el Paciente", err);
+        return "Error al eliminar el Paciente";
+      },
+    });
+
     try {
-      const patientRepository = createApiPatientRepository();
-      await deletePatient(patientRepository)(idPatient);
-      toast.success("Paciente eliminado con éxito!");
-      if (onPatientDeleted) {
-        onPatientDeleted();
-      }
+      await deletePromise;
+      deletePatientFromStore(idPatient);
     } catch (error) {
       console.error("Error al eliminar el Paciente", error);
-      toast.error("Error al eliminar el Paciente");
     } finally {
       setIsOpen(false);
     }
@@ -65,8 +74,12 @@ export default function DeletePatientDialog({
           <Button variant="outline" onClick={toggleDialog}>
             Cancelar
           </Button>
-          <Button variant="teal" onClick={handleConfirmDelete}>
-            Confirmar
+          <Button
+            variant="incor"
+            onClick={handleConfirmDelete}
+            disabled={deletePatientMutation.isPending}
+          >
+            {deletePatientMutation.isPending ? "Eliminando..." : "Eliminar"}
           </Button>
         </DialogFooter>
       </DialogContent>

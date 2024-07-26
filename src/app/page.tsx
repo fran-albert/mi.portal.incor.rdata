@@ -1,7 +1,13 @@
+"use client";
 import React from "react";
-
-const HomePage = () => {
-  return <div>HomePage</div>;
-};
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+function HomePage() {
+  const router = useRouter();
+  useEffect(() => {
+    router.push("/inicio");
+  }, [router]);
+  return <div></div>;
+}
 
 export default HomePage;

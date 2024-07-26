@@ -21,8 +21,10 @@ interface UrlMap {
 const StudiesCardComponent = ({ idUser }: { idUser: number }) => {
   const [urls, setUrls] = useState<UrlMap>({});
   const { isSecretary } = useRoles();
-  const { studies, fetchStudiesByPatient, fetchStudyUrl } = useStudyStore();
+  const { studies, fetchStudiesByPatient, fetchStudyUrl, clearStudies } =
+    useStudyStore();
   useEffect(() => {
+    clearStudies();
     fetchStudiesByPatient(idUser);
   }, [idUser, fetchStudiesByPatient]);
   useEffect(() => {
@@ -46,7 +48,7 @@ const StudiesCardComponent = ({ idUser }: { idUser: number }) => {
           <CardTitle>Estudios</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col justify-between h-full">
+          <div className="flex flex-col justify-between">
             <div>
               {studies?.length > 0 ? (
                 <div className="rounded-lg overflow-hidden">

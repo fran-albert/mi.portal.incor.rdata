@@ -1,29 +1,34 @@
-"use client"
-import { DataTable } from "@/components/Table/dateTable";
 import { getColumns } from "./columns";
-import { useEffect } from "react";
 import { Doctor } from "@/modules/doctors/domain/Doctor";
-import Loading from "@/components/Loading/loading";
+import { DataTable } from "@/components/Table/table";
 import { useDoctorStore } from "@/hooks/useDoctors";
-export const DoctorsTable = () => {
-  const { doctors, isLoading, fetchDoctors } = useDoctorStore();
+import useRoles from "@/hooks/useRoles";
 
-  useEffect(() => {
-    fetchDoctors();
-  }, [fetchDoctors]);
-  const doctorColumns = getColumns(fetchDoctors);
+interface DoctorsTableProps {
+  doctors: Doctor[];
+  prefetchDoctors: (id: number) => void;
+  isLoading?: boolean;
+}
 
+export const DoctorsTable: React.FC<DoctorsTableProps> = ({
+  doctors,
+  isLoading,
+  prefetchDoctors,
+}) => {
   const customFilterFunction = (doctor: Doctor, query: string) =>
     doctor.firstName.toLowerCase().includes(query.toLowerCase()) ||
     doctor.lastName.toLowerCase().includes(query.toLowerCase()) ||
     doctor.dni.toLowerCase().includes(query.toLowerCase());
+  const { isSecretary, isDoctor, isAdmin } = useRoles();
 
-  if (isLoading) {
-    return <Loading isLoading />;
-  }
+  const doctorColumns = getColumns(prefetchDoctors, {
+    isSecretary,
+    isDoctor,
+    isAdmin,
+  });
 
   return (
-    <>
+    <div className="container">
       <h2 className="text-2xl font-semibold text-center mt-6">
         Lista de Médicos
       </h2>
@@ -36,9 +41,11 @@ export const DoctorsTable = () => {
           customFilter={customFilterFunction}
           searchColumn="firstName"
           addLinkPath="medicos/agregar"
+          isLoading={isLoading}
           addLinkText="Agregar Médico"
+          canAddUser={isSecretary || isAdmin}
         />
       </div>
-    </>
+    </div>
   );
 };
