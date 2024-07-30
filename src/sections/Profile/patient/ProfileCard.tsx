@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FaCamera, FaPencilAlt, FaUserEdit } from "react-icons/fa";
+import { FaUserEdit } from "react-icons/fa";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -19,42 +19,36 @@ import {
   CardFooter,
   Card,
 } from "@/components/ui/card";
-import { goBack } from "@/lib/utils";
-import { capitalizeWords, handleDateChange } from "@/common/helpers/helpers";
-import { FaCalendar } from "react-icons/fa6";
+import { handleDateChange } from "@/common/helpers/helpers";
 import { BloodSelect } from "@/components/Select/Blood/select";
 import { RHFactorSelect } from "@/components/Select/RHFactor/select";
 import { GenderSelect } from "@/components/Select/Gender/select";
 import { MaritalStatusSelect } from "@/components/Select/MaritalStatus/select";
-import { Separator } from "@/components/ui/separator";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CitySelect } from "@/components/Select/City/select";
 import { StateSelect } from "@/components/Select/State/select";
-import { HealthInsurance } from "@/types/Health-Insurance/Health-Insurance";
-import { HealthPlans } from "@/modules/healthPlans/domain/HealthPlan";
-import { User } from "@/types/User/User";
 import { formatDni } from "@/common/helpers/helpers";
-import useRoles from "@/hooks/useRoles";
 import { Patient } from "@/types/Patient/Patient";
 import { State } from "@/types/State/State";
-import { HealthPlanSelect } from "@/components/Select/HealthPlan/select";
 import ChangePasswordDialog from "../changePassword/dialog";
 import { SubmitHandler, useForm } from "react-hook-form";
 import DatePicker, { registerLocale, setDefaultLocale } from "react-datepicker";
 import { es } from "date-fns/locale/es";
 import "react-datepicker/dist/react-datepicker.css";
-import moment from "moment-timezone";
-import { toast } from "sonner";
-import { IoMdArrowRoundBack } from "react-icons/io";
 import Loading from "@/app/loading";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PatientSchema } from "@/validators/patient.schema";
 import { z } from "zod";
 import { City } from "@/types/City/City";
+import { usePatientMutations } from "@/hooks/Patient/usePatientMutation";
+import { toast } from "sonner";
 registerLocale("es", es);
 type FormValues = z.infer<typeof PatientSchema>;
-export default function ProfileCardComponent({ data }: { data: Patient }) {
-  // const { updatePatient } = usePatient();
+export default function ProfileCardComponent({
+  data,
+}: {
+  data: Patient | undefined;
+}) {
+  const { updatePatientMutation } = usePatientMutations();
   const form = useForm<FormValues>({
     resolver: zodResolver(PatientSchema),
   });
@@ -76,6 +70,7 @@ export default function ProfileCardComponent({ data }: { data: Patient }) {
   const removeDotsFromDni = (dni: any) => dni.replace(/\./g, "");
   const handleStateChange = (state: State) => {
     setSelectedState(state);
+    setSelectedCity(undefined);
   };
   const handleCityChange = (city: City) => {
     setSelectedCity(city);
@@ -85,7 +80,7 @@ export default function ProfileCardComponent({ data }: { data: Patient }) {
       setValue("firstName", data.firstName);
       setValue("lastName", data.lastName);
       setValue("email", data.email);
-      setValue("userName", formatDni(String(data.dni)));
+      setValue("userName", data.dni);
       if (data?.birthDate) {
         setStartDate(new Date(data.birthDate.toString()));
         setValue("birthDate", data.birthDate.toString());
@@ -110,6 +105,10 @@ export default function ProfileCardComponent({ data }: { data: Patient }) {
     const addressToSend = {
       ...address,
       id: data?.address?.id,
+      street: address.street,
+      number: address.number,
+      description: address.description,
+      phoneNumber: address.phoneNumber,
       city: {
         ...selectedCity,
         state: selectedState,
@@ -127,28 +126,30 @@ export default function ProfileCardComponent({ data }: { data: Patient }) {
       ...rest,
       userName: formattedUserName,
       address: addressToSend,
-      photo: data.photo,
-      registeredById: data.registeredById,
+      photo: data?.photo,
+      registeredById: data?.registeredById,
       healthPlans: healthPlansToSend,
+      affiliationNumber: data?.affiliationNumber,
     };
 
-    // try {
-    //   const patientCreationPromise = updatePatient(
-    //     Number(data?.userId),
-    //     dataToSend
-    //   );
-    //   toast.promise(patientCreationPromise, {
-    //     loading: "Actualizando datos...",
-    //     success: "Datos actualizados con éxito!",
-    //     error: "Error al actualizar los datos",
-    //   });
+    try {
+      const patientCreationPromise = updatePatientMutation.mutateAsync({
+        id: Number(data?.userId),
+        patient: dataToSend,
+      });
 
-    //   patientCreationPromise.catch((error) => {
-    //     console.error("Error al actualizar los datos", error);
-    //   });
-    // } catch (error) {
-    //   console.error("Error al actualizar los datos", error);
-    // }
+      toast.promise(patientCreationPromise, {
+        loading: "Actualizando datos...",
+        success: "Datos actualizados con éxito!",
+        error: "Error al actualizar los datos",
+      });
+
+      patientCreationPromise.catch((error) => {
+        console.error("Error al actualizar los datos", error);
+      });
+    } catch (error) {
+      console.error("Error al actualizar los datos", error);
+    }
   };
 
   if (!data) {
@@ -498,12 +499,14 @@ export default function ProfileCardComponent({ data }: { data: Patient }) {
                           <FormItem>
                             <FormLabel className="text-black">Ciudad</FormLabel>
                             <FormControl>
-                              <CitySelect
-                                control={control}
-                                defaultValue={selectedCity}
-                                idState={selectedState ? selectedState.id : 0}
-                                onCityChange={handleCityChange}
-                              />
+                              {selectedState && (
+                                <CitySelect
+                                  control={control}
+                                  defaultValue={selectedCity}
+                                  idState={selectedState.id}
+                                  onCityChange={handleCityChange}
+                                />
+                              )}
                             </FormControl>
                             <FormMessage />
                           </FormItem>

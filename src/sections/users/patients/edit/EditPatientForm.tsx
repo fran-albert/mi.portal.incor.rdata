@@ -157,6 +157,7 @@ function EditPatientForm({ patient }: { patient: Patient }) {
       photo: patient.photo,
       registeredById: patient.registeredById,
       healthPlans: healthPlansToSend,
+      
     };
     try {
       const patientCreationPromise = updatePatientMutation.mutateAsync({
