@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/select";
 import { useHealthInsurance } from "@/hooks/Health-Insurance/useHealthInsurance";
 import { HealthInsurance } from "@/types/Health-Insurance/Health-Insurance";
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 
 interface HealthInsuranceSelectProps {
   selected?: HealthInsurance;
@@ -20,11 +20,18 @@ export const HealthInsuranceSelect = ({
 }: HealthInsuranceSelectProps) => {
   const { healthInsurances } = useHealthInsurance({});
 
+  const handleHealthInsuranceChange = useCallback(
+    (value: HealthInsurance) => {
+      onHealthInsuranceChange(value);
+    },
+    [onHealthInsuranceChange]
+  );
+
   useEffect(() => {
     if (!selected && healthInsurances.length > 0) {
-      onHealthInsuranceChange(healthInsurances[0]);
+      handleHealthInsuranceChange(healthInsurances[0]);
     }
-  }, [healthInsurances]);
+  }, [healthInsurances, selected, handleHealthInsuranceChange]);
 
   return (
     <Select
@@ -33,8 +40,8 @@ export const HealthInsuranceSelect = ({
         const selectedHealthInsurance = healthInsurances.find(
           (hi) => String(hi.id) === selectedId
         );
-        if (onHealthInsuranceChange && selectedHealthInsurance) {
-          onHealthInsuranceChange(selectedHealthInsurance);
+        if (selectedHealthInsurance) {
+          handleHealthInsuranceChange(selectedHealthInsurance);
         }
       }}
     >

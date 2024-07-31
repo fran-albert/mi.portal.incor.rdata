@@ -29,7 +29,6 @@ import { es } from "date-fns/locale/es";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment-timezone";
 import { useForm, SubmitHandler } from "react-hook-form";
-import ChangePasswordDialog from "../changePassword/dialog";
 import { toast } from "sonner";
 import { PatientSchema } from "@/validators/patient.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -43,11 +42,15 @@ import { z } from "zod";
 import { FaEdit, FaUserEdit } from "react-icons/fa";
 import { Patient } from "@/types/Patient/Patient";
 import { City } from "@/types/City/City";
+import ChangePasswordDialog from "../Change-Password/dialog";
+import { useUserMutations } from "@/hooks/User/useUserMutations";
+import { UserSchema } from "@/validators/user.schema";
 registerLocale("es", es);
-type FormValues = z.infer<typeof PatientSchema>;
+type FormValues = z.infer<typeof UserSchema>;
 export default function UserSecretaryCardComponent({ user }: { user: User }) {
+  const { updateUserMutation } = useUserMutations();
   const form = useForm<FormValues>({
-    resolver: zodResolver(PatientSchema),
+    resolver: zodResolver(UserSchema),
   });
   const {
     setValue,
@@ -55,7 +58,6 @@ export default function UserSecretaryCardComponent({ user }: { user: User }) {
     formState: { errors },
   } = form;
 
-  const { isPatient, isSecretary, isDoctor } = useRoles();
   const [selectedState, setSelectedState] = useState<State | undefined>(
     user?.address?.city?.state
   );
@@ -67,33 +69,74 @@ export default function UserSecretaryCardComponent({ user }: { user: User }) {
   );
   useEffect(() => {
     if (user) {
-      setValue("firstName", user?.firstName ?? "");
-      setValue("lastName", user?.lastName ?? "");
-      setValue("email", user?.email ?? "");
-      setValue("phoneNumber", user?.phoneNumber ?? "");
-      setValue("address.street", user?.address.street ?? "");
-      setValue("address.number", user?.address.number ?? "");
-      setValue("address.description", user?.address.description ?? "");
-      setValue("address.phoneNumber", user?.address.phoneNumber ?? "");
-      setValue("address.city.state", user?.address?.city?.state ?? "");
-      setValue("address.city", user?.address.city ?? "");
+      setValue("firstName", user.firstName);
+      setValue("lastName", user.lastName);
+      setValue("email", user.email);
+      setValue("userName", user.dni);
+      if (user?.birthDate) {
+        setStartDate(new Date(user.birthDate.toString()));
+        setValue("birthDate", user.birthDate.toString());
+      }
+      setValue("phoneNumber", user.phoneNumber);
+      setValue("phoneNumber2", user.phoneNumber2 || "");
+      setValue("bloodType", String(user.bloodType));
+      setValue("rhFactor", String(user.rhFactor));
+      setValue("gender", String(user.gender));
+      setValue("maritalStatus", String(user.maritalStatus));
+      setValue("observations", user.observations || "");
+      setValue("address.city.state", user?.address?.city?.state);
+      setValue("address.city", user?.address?.city);
+      setValue("address.street", user?.address?.street);
+      setValue("address.number", user?.address?.number);
+      setValue("address.description", user?.address?.description);
+      setValue("address.phoneNumber", user?.address?.phoneNumber);
+      // setValue("affiliationNumber", user?.affiliationNumber);
+      setSelectedState(user?.address?.city?.state);
+      setSelectedCity(user?.address?.city);
     }
   }, [user, setValue]);
-
-  const onSubmit = async (data: any) => {
+  const removeDotsFromDni = (dni: any) => dni.replace(/\./g, "");
+  const onSubmit: SubmitHandler<any> = async (data) => {
+    const formattedUserName = removeDotsFromDni(data.userName);
+    const { address, ...rest } = data;
     const addressToSend = {
-      ...data.address,
-      id: user?.address.id,
-      city: selectedCity,
-      state: selectedState,
+      ...address,
+      id: user?.address?.id,
+      street: address.street,
+      number: address.number,
+      description: address.description,
+      phoneNumber: address.phoneNumber,
+      city: {
+        ...selectedCity,
+        state: selectedState,
+      },
     };
 
-    const dataToSend: any = {
-      ...data,
-      userName: user?.dni,
+    const dataToSend = {
+      ...rest,
+      userName: formattedUserName,
       address: addressToSend,
-      photo: user?.photo || "default2.png",
+      photo: user?.photo,
     };
+
+    try {
+      const patientCreationPromise = updateUserMutation.mutateAsync({
+        id: Number(user?.id),
+        user: dataToSend,
+      });
+
+      toast.promise(patientCreationPromise, {
+        loading: "Actualizando datos...",
+        success: "Datos actualizados con éxito!",
+        error: "Error al actualizar los datos",
+      });
+
+      patientCreationPromise.catch((error) => {
+        console.error("Error al actualizar los datos", error);
+      });
+    } catch (error) {
+      console.error("Error al actualizar los datos", error);
+    }
   };
 
   const handleStateChange = (state: State) => {
@@ -109,7 +152,7 @@ export default function UserSecretaryCardComponent({ user }: { user: User }) {
   };
 
   return (
-    <div key="1" className="container mt-2">
+    <div key="1" className="w-full container px-4 sm:px-6 lg:px-8 mt-2">
       <Card>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -128,8 +171,8 @@ export default function UserSecretaryCardComponent({ user }: { user: User }) {
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-6">
-              <div className="grid grid-cols-2 gap-6">
-                <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <FormField
                       control={form.control}
@@ -138,7 +181,11 @@ export default function UserSecretaryCardComponent({ user }: { user: User }) {
                         <FormItem>
                           <FormLabel className="text-black">Nombre</FormLabel>
                           <FormControl>
-                            <Input {...field} defaultValue={user?.firstName} />
+                            <Input
+                              {...field}
+                              defaultValue={user?.firstName}
+                              placeholder="Ingresar nombre..."
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -188,7 +235,7 @@ export default function UserSecretaryCardComponent({ user }: { user: User }) {
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <FormField
                       control={form.control}
@@ -197,7 +244,13 @@ export default function UserSecretaryCardComponent({ user }: { user: User }) {
                         <FormItem>
                           <FormLabel className="text-black">D.N.I.</FormLabel>
                           <FormControl>
-                            <Input {...field} defaultValue={user?.dni} />
+                            <Input
+                              {...field}
+                              placeholder="Ingresar D.N.I..."
+                              defaultValue={formatDni(String(user?.dni))}
+                              readOnly
+                              className="w-full text-gray-800 cursor-not-allowed"
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -238,7 +291,7 @@ export default function UserSecretaryCardComponent({ user }: { user: User }) {
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <FormField
                       control={form.control}
@@ -280,23 +333,47 @@ export default function UserSecretaryCardComponent({ user }: { user: User }) {
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-6">
+               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="bloodType">Sangre </Label>
-                    <BloodSelect
-                      control={control}
-                      defaultValue={user?.bloodType}
+                    <FormField
+                      control={form.control}
+                      name="bloodType"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">Sangre</FormLabel>
+                          <FormControl>
+                            <BloodSelect
+                              control={control}
+                              defaultValue={String(user?.bloodType)}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="rhFactor">Factor R.H.</Label>
-                    <RHFactorSelect
-                      control={control}
-                      defaultValue={user?.rhFactor}
+                    <FormField
+                      control={form.control}
+                      name="rhFactor"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">
+                            Factor R.H.
+                          </FormLabel>
+                          <FormControl>
+                            <RHFactorSelect
+                              control={control}
+                              defaultValue={String(user?.rhFactor)}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-6">
+               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <FormField
                       control={form.control}
@@ -307,7 +384,7 @@ export default function UserSecretaryCardComponent({ user }: { user: User }) {
                           <FormControl>
                             <GenderSelect
                               control={control}
-                              defaultValue={user?.gender}
+                              defaultValue={String(user?.gender)}
                             />
                           </FormControl>
                           <FormMessage />
@@ -327,7 +404,7 @@ export default function UserSecretaryCardComponent({ user }: { user: User }) {
                           <FormControl>
                             <MaritalStatusSelect
                               control={control}
-                              defaultValue={user?.maritalStatus}
+                              defaultValue={String(user?.maritalStatus)}
                             />
                           </FormControl>
                           <FormMessage />
@@ -338,8 +415,8 @@ export default function UserSecretaryCardComponent({ user }: { user: User }) {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-6">
-                <div className="grid grid-cols-2 gap-6">
+             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {/*<div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <FormField
                       control={form.control}
@@ -350,12 +427,12 @@ export default function UserSecretaryCardComponent({ user }: { user: User }) {
                             Obra Social
                           </FormLabel>
                           <FormControl>
-                            {/* <HealthInsuranceSelect
+                            <HealthInsuranceSelect
                                 onHealthInsuranceChange={
                                   handleHealthInsuranceChange
                                 }
                                 selected={selectedHealthInsurance}
-                              /> */}
+                              />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -364,14 +441,14 @@ export default function UserSecretaryCardComponent({ user }: { user: User }) {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="healthInsurancePlan">Plan</Label>
-                    {/* <HealthPlanSelect
+                    <HealthPlanSelect
                         idHealthInsurance={Number(selectedHealthInsurance?.id)}
                         selected={selectedHealthInsurance}
                         onPlanChange={handlePlanChange}
-                      /> */}
+                      />
                   </div>
-                </div>
-                <div className="grid grid-cols-2 gap-6">
+                </div> */}
+                {/*<div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <FormField
                       control={form.control}
@@ -414,12 +491,12 @@ export default function UserSecretaryCardComponent({ user }: { user: User }) {
                       )}
                     />
                   </div>
-                </div>
-                <div className="grid grid-cols-2 gap-6">
+                </div> */}
+               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <FormField
                       control={form.control}
-                      name="address.city.state.name"
+                      name="address.city.state"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-black">
@@ -440,17 +517,19 @@ export default function UserSecretaryCardComponent({ user }: { user: User }) {
                   <div className="space-y-2">
                     <FormField
                       control={form.control}
-                      name="address.city.name"
+                      name="address.city"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-black">Ciudad</FormLabel>
                           <FormControl>
-                            <CitySelect
-                              control={control}
-                              idState={selectedState ? selectedState.id : 0}
-                              onCityChange={handleCityChange}
-                              defaultValue={selectedCity}
-                            />
+                            {selectedState && (
+                              <CitySelect
+                                control={control}
+                                defaultValue={selectedCity}
+                                idState={selectedState.id}
+                                onCityChange={handleCityChange}
+                              />
+                            )}
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -539,28 +618,22 @@ export default function UserSecretaryCardComponent({ user }: { user: User }) {
                   </div>
                 </div>
               </div>
-              <div className="flex justify-center items-center gap-4 mt-10">
-                <Button
-                  className="w-full sm:w-auto"
-                  variant="outline"
-                  form="userForm"
-                  type="submit"
-                >
-                  Modificar Datos
-                </Button>
-                <ChangePasswordDialog id={user?.userId} />
-              </div>
             </CardContent>
-            <CardFooter className="flex justify-end gap-2">
-              <Button variant="outline" type="button" onClick={goBack}>
-                Cancelar
-              </Button>
-              <Button variant="incor" type="submit">
-                Confirmar
+            <CardFooter className="flex flex-col sm:flex-row justify-center gap-2">
+              <Button
+                className="sm:w-auto"
+                variant="incor"
+                type="submit"
+                disabled={updateUserMutation.isPending}
+              >
+                Modificar Datos
               </Button>
             </CardFooter>
           </form>
         </Form>
+        <div className="mb-4 flex justify-center">
+          <ChangePasswordDialog idUser={user.id} />
+        </div>
       </Card>
     </div>
   );

@@ -7,12 +7,10 @@ const { auth } = NextAuth(authConfig);
 const publicRoutes = ["/nueva-contrase%C3%B1a", "/restablecer-contrase%C3%B1a"];
 const authRoutes = ["/iniciar-sesion"];
 const apiAuthPrefix = "/api/auth";
-
 export default auth((req) => {
     const { nextUrl } = req;
     const isLoggedIn = !!req.auth;
-
-    // console.log({ isLoggedIn, path: nextUrl.pathname });
+    console.log({ isLoggedIn, path: nextUrl.pathname, auth: req.auth });
 
     // Permitir todas las rutas de API de autenticación
     if (nextUrl.pathname.startsWith(apiAuthPrefix)) {

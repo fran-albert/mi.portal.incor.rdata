@@ -554,7 +554,7 @@ export function CreatePatientForm() {
               <Button variant="outline" type="button" onClick={goBack}>
                 Cancelar
               </Button>
-              <Button variant="incor" type="submit">
+              <Button variant="incor" type="submit" disabled={addPatientMutation.isPending}>
                 Confirmar
               </Button>
             </CardFooter>

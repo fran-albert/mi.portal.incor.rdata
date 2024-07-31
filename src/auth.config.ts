@@ -24,7 +24,8 @@ export default {
                             id: decodedToken.Id,
                             email: decodedToken.Email,
                             role: decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"],
-                            token: user.token
+                            token: user.token,
+                            exp: decodedToken.exp,
                         };
                     } else {
                         return null;
@@ -36,7 +37,7 @@ export default {
             },
         }),
     ],
-    session: { strategy: "jwt" },
+    session: { strategy: "jwt", maxAge: 3600 },
     callbacks: {
         async jwt({ token, user }) {
             if (user) {
@@ -44,6 +45,10 @@ export default {
                 token.email = user.email;
                 token.role = user.role;
                 token.accessToken = user.token;
+                token.exp = Math.floor(Date.now() / 1000) + 3600;
+            }
+            if (token.exp && Date.now() / 1000 > token.exp) {
+                token.isExpired = true;
             }
             return token;
         },

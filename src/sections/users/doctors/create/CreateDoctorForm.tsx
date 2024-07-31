@@ -519,7 +519,7 @@ function CreateDoctorForm() {
                 <Button variant="outline" type="button" onClick={goBack}>
                   Cancelar
                 </Button>
-                <Button variant="incor" type="submit">
+                <Button variant="incor" type="submit"disabled={addDoctorMutation.isPending}>
                   Confirmar
                 </Button>
               </div>

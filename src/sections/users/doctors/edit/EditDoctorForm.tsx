@@ -153,8 +153,6 @@ function EditDoctorForm({ doctor }: { doctor: Doctor }) {
       registeredById: doctor?.registeredById,
     };
 
-    console.log("dataToSend", dataToSend);
-
     try {
       const doctorCreationPromise = updateDoctorMutation.mutateAsync({
         id: Number(doctor?.userId),

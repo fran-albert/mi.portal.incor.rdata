@@ -2,7 +2,7 @@
 import Loading from "@/app/loading";
 import { useDoctor } from "@/hooks/Doctor/useDoctor";
 import { usePatient } from "@/hooks/Patient/usePatient";
-import useProfileStore from "@/hooks/useProfile";
+import { useUser } from "@/hooks/User/useUser";
 import useRoles from "@/hooks/useRoles";
 import ProfileDoctorCardComponent from "@/sections/Profile/doctor/card";
 import ProfileCardComponent from "@/sections/Profile/patient/ProfileCard";
@@ -14,7 +14,11 @@ const ClientMyProfileComponent = () => {
   const { data: session } = useSession();
   const id = session?.user?.id ? Number(session.user.id) : undefined;
   const { isPatient, isDoctor, isSecretary } = useRoles();
-  const { profileData } = useProfileStore();
+
+  const { user: secretary, isLoading: isLoadingSecretary } = useUser({
+    auth: isSecretary && id !== undefined,
+    id: id !== undefined ? id : -1,
+  });
 
   const { patient, isLoading: isLoadingPatient } = usePatient({
     auth: isPatient && id !== undefined,
@@ -26,7 +30,11 @@ const ClientMyProfileComponent = () => {
     id: id !== undefined ? id : -1,
   });
 
-  if ((isDoctor && isLoadingDoctor) || (isPatient && isLoadingPatient)) {
+  if (
+    (isDoctor && isLoadingDoctor) ||
+    (isPatient && isLoadingPatient) ||
+    (isSecretary && isLoadingSecretary)
+  ) {
     return <Loading isLoading={true} />;
   }
 
@@ -34,8 +42,8 @@ const ClientMyProfileComponent = () => {
     return <ProfileDoctorCardComponent data={doctor} />;
   }
 
-  if (isSecretary) {
-    return <ProfileSecretaryCardComponent user={profileData} />;
+  if (isSecretary && secretary) {
+    return <ProfileSecretaryCardComponent user={secretary} />;
   }
 
   if (isPatient && patient) {

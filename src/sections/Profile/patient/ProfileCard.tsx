@@ -162,462 +162,456 @@ export default function ProfileCardComponent({
   }
 
   return (
-    <>
-      <div key="1" className="w-full container px-4 sm:px-6 lg:px-8 mt-2">
-        <Card>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} id="profileForm">
-              <CardHeader>
-                <CardTitle>
-                  <button
-                    className="flex items-center justify-start w-full"
-                    type="button"
-                  >
-                    <FaUserEdit className="text-black mr-2" size={25} />
-                    Mi Perfil
-                  </button>
-                </CardTitle>
-                <CardDescription>
-                  En esta sección podrás modificar tus datos personales.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="grid gap-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <FormField
-                        control={form.control}
-                        name="firstName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-black">Nombre</FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Ingresar nombre..."
-                                defaultValue={data?.firstName}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <FormField
-                        control={form.control}
-                        name="lastName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-black">
-                              Apellido
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Ingresar apellido..."
-                                defaultValue={data?.lastName}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 gap-6">
-                    <div className="space-y-2">
-                      <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-black">
-                              Correo Electrónico
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Ingresar correo electrónico..."
-                                defaultValue={data?.email}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <FormField
-                        control={form.control}
-                        name="userName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-black">D.N.I.</FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Ingresar D.N.I..."
-                                defaultValue={formatDni(String(data?.dni))}
-                                readOnly
-                                className="w-full text-gray-800 cursor-not-allowed"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <FormField
-                        control={form.control}
-                        name="birthDate"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-black">
-                              Fecha de Nacimiento
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="date"
-                                value={
-                                  startDate
-                                    ? startDate.toISOString().split("T")[0]
-                                    : ""
-                                }
-                                onChange={(e) =>
-                                  handleDateChange(
-                                    e,
-                                    setStartDate,
-                                    setValue,
-                                    "birthDate"
-                                  )
-                                }
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <FormField
-                        control={form.control}
-                        name="phoneNumber"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-black">
-                              Teléfono
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Ingresar teléfono..."
-                                defaultValue={data?.phoneNumber}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <FormField
-                        control={form.control}
-                        name="phoneNumber2"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-black">
-                              Teléfono 2
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                defaultValue={data?.phoneNumber2}
-                                placeholder="Ingresar teléfono..."
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <FormField
-                        control={form.control}
-                        name="bloodType"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-black">Sangre</FormLabel>
-                            <FormControl>
-                              <BloodSelect
-                                control={control}
-                                defaultValue={String(data?.bloodType) || ""}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <FormField
-                        control={form.control}
-                        name="rhFactor"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-black">
-                              Factor R.H.
-                            </FormLabel>
-                            <FormControl>
-                              <RHFactorSelect
-                                control={control}
-                                defaultValue={String(data?.rhFactor) || ""}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <FormField
-                        control={form.control}
-                        name="gender"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-black">Sexo</FormLabel>
-                            <FormControl>
-                              <GenderSelect
-                                control={control}
-                                defaultValue={String(data?.gender) || ""}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <FormField
-                        control={form.control}
-                        name="maritalStatus"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-black">
-                              Estado Civil
-                            </FormLabel>
-                            <FormControl>
-                              <MaritalStatusSelect
-                                control={control}
-                                defaultValue={String(data?.maritalStatus) || ""}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="">
-                    <div className="space-y-2">
-                      <Label htmlFor="healthCareProvider">Obra Social</Label>
-                      <Input
-                        className="w-full text-gray-800 cursor-not-allowed"
-                        value={data?.healthPlans?.map((plan) => plan.name)}
-                        readOnly
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="affiliationNumber">
-                        Número de Obra Social
-                      </Label>
-                      <Input
-                        id="affiliationNumber"
-                        className="w-full text-gray-800 cursor-not-allowed"
-                        defaultValue={data?.affiliationNumber}
-                        readOnly
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <FormField
-                        control={form.control}
-                        name="observations"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-black">
-                              Observaciones
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                className="w-full text-gray-800 cursor-not-allowed"
-                                readOnly
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <FormField
-                        control={form.control}
-                        name="address.city.state"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-black">
-                              Provincia
-                            </FormLabel>
-                            <FormControl>
-                              <StateSelect
-                                control={control}
-                                defaultValue={data?.address?.city?.state}
-                                onStateChange={handleStateChange}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <FormField
-                        control={form.control}
-                        name="address.city"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-black">Ciudad</FormLabel>
-                            <FormControl>
-                              {selectedState && (
-                                <CitySelect
-                                  control={control}
-                                  defaultValue={selectedCity}
-                                  idState={selectedState.id}
-                                  onCityChange={handleCityChange}
-                                />
-                              )}
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                    <div className="space-y-2">
-                      <FormField
-                        control={form.control}
-                        name="address.street"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-black">Calle</FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Ingresar calle"
-                                defaultValue={data?.address?.street}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <FormField
-                        control={form.control}
-                        name="address.number"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-black">N°</FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Ingresar número"
-                                defaultValue={data?.address?.number}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <FormField
-                        control={form.control}
-                        name="address.description"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-black">Piso</FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Ingresar número"
-                                defaultValue={data?.address?.description}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <FormField
-                        control={form.control}
-                        name="address.phoneNumber"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-black">
-                              Departamento
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Ingresar departamento"
-                                defaultValue={data?.address?.phoneNumber}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter className="flex flex-col sm:flex-row justify-center gap-2">
-                <Button
-                  className="sm:w-auto"
-                  variant="incor"
-                  form="profileForm"
-                  type="submit"
+    <div key="1" className="w-full container px-4 sm:px-6 lg:px-8 mt-2">
+      <Card>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} id="profileForm">
+            <CardHeader>
+              <CardTitle>
+                <button
+                  className="flex items-center justify-start w-full"
+                  type="button"
                 >
-                  Modificar Datos
-                </Button>
-              </CardFooter>
-            </form>
-          </Form>
-          <div className="mb-4 flex justify-center">
-            <ChangePasswordDialog idUser={data.userId} />
-          </div>
-        </Card>
-      </div>
-    </>
+                  <FaUserEdit className="text-black mr-2" size={25} />
+                  Mi Perfil
+                </button>
+              </CardTitle>
+              <CardDescription>
+                En esta sección podrás modificar tus datos personales.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="firstName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">Nombre</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              placeholder="Ingresar nombre..."
+                              defaultValue={data?.firstName}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="lastName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">Apellido</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              placeholder="Ingresar apellido..."
+                              defaultValue={data?.lastName}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 gap-6">
+                  <div className="space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">
+                            Correo Electrónico
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              placeholder="Ingresar correo electrónico..."
+                              defaultValue={data?.email}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="userName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">D.N.I.</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              placeholder="Ingresar D.N.I..."
+                              defaultValue={formatDni(String(data?.dni))}
+                              readOnly
+                              className="w-full text-gray-800 cursor-not-allowed"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="birthDate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">
+                            Fecha de Nacimiento
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type="date"
+                              value={
+                                startDate
+                                  ? startDate.toISOString().split("T")[0]
+                                  : ""
+                              }
+                              onChange={(e) =>
+                                handleDateChange(
+                                  e,
+                                  setStartDate,
+                                  setValue,
+                                  "birthDate"
+                                )
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="phoneNumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">Teléfono</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              placeholder="Ingresar teléfono..."
+                              defaultValue={data?.phoneNumber}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="phoneNumber2"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">
+                            Teléfono 2
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              defaultValue={data?.phoneNumber2}
+                              placeholder="Ingresar teléfono..."
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="bloodType"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">Sangre</FormLabel>
+                          <FormControl>
+                            <BloodSelect
+                              control={control}
+                              defaultValue={String(data?.bloodType) || ""}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="rhFactor"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">
+                            Factor R.H.
+                          </FormLabel>
+                          <FormControl>
+                            <RHFactorSelect
+                              control={control}
+                              defaultValue={String(data?.rhFactor) || ""}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="gender"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">Sexo</FormLabel>
+                          <FormControl>
+                            <GenderSelect
+                              control={control}
+                              defaultValue={String(data?.gender) || ""}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="maritalStatus"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">
+                            Estado Civil
+                          </FormLabel>
+                          <FormControl>
+                            <MaritalStatusSelect
+                              control={control}
+                              defaultValue={String(data?.maritalStatus) || ""}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="">
+                  <div className="space-y-2">
+                    <Label htmlFor="healthCareProvider">Obra Social</Label>
+                    <Input
+                      className="w-full text-gray-800 cursor-not-allowed"
+                      value={data?.healthPlans?.map((plan) => plan.name)}
+                      readOnly
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="affiliationNumber">
+                      Número de Obra Social
+                    </Label>
+                    <Input
+                      id="affiliationNumber"
+                      className="w-full text-gray-800 cursor-not-allowed"
+                      defaultValue={data?.affiliationNumber}
+                      readOnly
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="observations"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">
+                            Observaciones
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              className="w-full text-gray-800 cursor-not-allowed"
+                              readOnly
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="address.city.state"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">
+                            Provincia
+                          </FormLabel>
+                          <FormControl>
+                            <StateSelect
+                              control={control}
+                              defaultValue={data?.address?.city?.state}
+                              onStateChange={handleStateChange}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="address.city"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">Ciudad</FormLabel>
+                          <FormControl>
+                            {selectedState && (
+                              <CitySelect
+                                control={control}
+                                defaultValue={selectedCity}
+                                idState={selectedState.id}
+                                onCityChange={handleCityChange}
+                              />
+                            )}
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                  <div className="space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="address.street"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">Calle</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              placeholder="Ingresar calle"
+                              defaultValue={data?.address?.street}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="address.number"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">N°</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              placeholder="Ingresar número"
+                              defaultValue={data?.address?.number}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="address.description"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">Piso</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              placeholder="Ingresar número"
+                              defaultValue={data?.address?.description}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="address.phoneNumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">
+                            Departamento
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              placeholder="Ingresar departamento"
+                              defaultValue={data?.address?.phoneNumber}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter className="flex flex-col sm:flex-row justify-center gap-2">
+              <Button
+                className="sm:w-auto"
+                variant="incor"
+                form="profileForm"
+                type="submit"
+              >
+                Modificar Datos
+              </Button>
+            </CardFooter>
+          </form>
+        </Form>
+        <div className="mb-4 flex justify-center">
+          <ChangePasswordDialog idUser={data.userId} />
+        </div>
+      </Card>
+    </div>
   );
 }

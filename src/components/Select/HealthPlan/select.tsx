@@ -1,21 +1,17 @@
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { HealthInsurance } from "@/types/Health-Insurance/Health-Insurance";
 import { HealthPlans } from "@/modules/healthPlans/domain/HealthPlan";
 import { createApiHealthPlansRepository } from "@/modules/healthPlans/infra/ApiHealthPlansRepository";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 interface HealthPlanSelectProps {
   selected?: HealthPlans;
   onPlanChange: (value: HealthPlans | null) => void;
-
   idHealthInsurance: number;
 }
 
@@ -29,6 +25,14 @@ export const HealthPlanSelect = ({
   const [selectedPlanId, setSelectedPlanId] = useState<string | undefined>(
     selected?.id.toString()
   );
+
+  const handlePlanChange = useCallback(
+    (value: HealthPlans | null) => {
+      onPlanChange(value);
+    },
+    [onPlanChange]
+  );
+
   useEffect(() => {
     const loadHealthPlans = async () => {
       const loadedHealthPlans =
@@ -36,10 +40,10 @@ export const HealthPlanSelect = ({
       setHealthPlans(loadedHealthPlans || []);
       if (loadedHealthPlans && loadedHealthPlans.length > 0) {
         const firstPlan = loadedHealthPlans[0];
-        onPlanChange(firstPlan);
+        handlePlanChange(firstPlan);
         setSelectedPlanId(firstPlan.id.toString());
       } else {
-        onPlanChange(null);
+        handlePlanChange(null);
         setSelectedPlanId(undefined);
       }
     };
@@ -48,10 +52,10 @@ export const HealthPlanSelect = ({
       loadHealthPlans();
     } else {
       setHealthPlans([]);
-      onPlanChange(null);
+      handlePlanChange(null);
       setSelectedPlanId(undefined);
     }
-  }, [idHealthInsurance]);
+  }, [idHealthInsurance, healthPlansRepository, handlePlanChange]);
 
   useEffect(() => {
     if (selected) {
@@ -62,7 +66,7 @@ export const HealthPlanSelect = ({
   const handleValueChange = (idHI: string) => {
     const healthPlan = healthPlans.find((c) => c.id === Number(idHI));
     if (healthPlan) {
-      onPlanChange && onPlanChange(healthPlan);
+      handlePlanChange(healthPlan);
       setSelectedPlanId(idHI);
     }
   };

@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Roboto } from "next/font/google";
 import "@/styles/globals.css";
 import HeaderComponent from "@/components/Header/header";
 import SessionAuthProvider from "@/context/SessionAuthProviders";
 import ClientWrapper from "@/components/Client/Wrapper";
 import { Toaster } from "sonner";
 
-const inter = Inter({ subsets: ["latin"] });
+const roboto = Roboto({
+  subsets: ["latin-ext"],
+  weight: ['400', '500', '700'],
+});
 
 export const metadata: Metadata = {
   title: {
@@ -23,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <SessionAuthProvider>
-        <body className={inter.className}>
+        <body className={roboto.className}>
           <ClientWrapper>
             <HeaderComponent />
             <Toaster richColors position="top-center" />

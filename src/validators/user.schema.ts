@@ -5,7 +5,7 @@ export const UserSchema = z.object({
     lastName: z.string({ required_error: "Este campo es obligatorio." }).max(255),
     email: z.string().email().optional(),
     userName: z.string({ required_error: "Este campo es obligatorio." }),
-    phoneNumber: z.string({ required_error: "Este campo es obligatorio." }),
+    phoneNumber: z.string({ required_error: "Este campo es obligatorio." },),
     photo: z.string().optional(),
     phoneNumber2: z.string().optional(),
     birthDate: z.union([z.string({ required_error: "Este campo es obligatorio." }), z.date()]),

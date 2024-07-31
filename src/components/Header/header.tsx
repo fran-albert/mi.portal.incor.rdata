@@ -16,15 +16,17 @@ import {
   CollapsibleContent,
 } from "@/components/ui/collapsible";
 import useRoles from "@/hooks/useRoles";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { getSession, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function HeaderComponent() {
-  const [activeLink, setActiveLink] = React.useState<string | null>(null);
+  const [activeLink, setActiveLink] = useState<string | null>(null);
   const handleLinkClick = (link: string) => {
     setActiveLink(link);
   };
+  const router = useRouter();
   const { isPatient, isSecretary, isDoctor } = useRoles();
   const { data: session, status } = useSession();
 

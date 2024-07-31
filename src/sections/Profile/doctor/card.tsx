@@ -143,8 +143,6 @@ export default function ProfileDoctorCardComponent({
       registeredById: data?.registeredById,
     };
 
-    console.log("dataToSend", dataToSend);
-
     try {
       const doctorCreationPromise = updateDoctorMutation.mutateAsync({
         id: Number(data?.userId),

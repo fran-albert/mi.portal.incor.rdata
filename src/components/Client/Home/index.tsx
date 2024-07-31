@@ -9,6 +9,7 @@ import { useSpeciality } from "@/hooks/Speciality/useSpeciality";
 import { useHealthInsurance } from "@/hooks/Health-Insurance/useHealthInsurance";
 import { useStudy } from "@/hooks/Study/useStudy";
 import PatientHomePage from "@/sections/Home/Patient";
+import useSessionStore from "@/stores/Session/session.store";
 
 const ClientHomePage = () => {
   const { isPatient, isSecretary, isDoctor } = useRoles();
