@@ -11,9 +11,9 @@ export const useDoctor = ({ auth, id }: Props) => {
 
     const { isLoading, isError, error, data: doctor, isFetching } = useQuery({
         queryKey: ['doctor', id],
-        queryFn: () => getDoctorById(id),
+        queryFn: () => getDoctorById(id as number),
         staleTime: 1000 * 60,
-        enabled: auth
+        enabled: auth && id !== undefined,
     });
 
 

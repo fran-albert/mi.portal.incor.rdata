@@ -12,7 +12,7 @@ export const usePatient = ({ auth, id }: Props) => {
         queryKey: ['patient', id],
         queryFn: () => getPatientById(id),
         staleTime: 1000 * 60,
-        enabled: auth
+        enabled: auth && id !== undefined,
     });
 
 
