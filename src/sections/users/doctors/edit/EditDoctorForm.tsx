@@ -50,6 +50,7 @@ import { DoctorSchema } from "@/validators/doctor.schema";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDoctorMutations } from "@/hooks/Doctor/useDoctorMutation";
+import { HealthInsuranceDoctorSelect } from "@/components/Select/HealthInsurace/Doctor/select";
 
 type FormValues = z.infer<typeof DoctorSchema>;
 
@@ -81,10 +82,42 @@ function EditDoctorForm({ doctor }: { doctor: Doctor }) {
     doctor?.birthDate ? new Date(doctor.birthDate.toString()) : undefined
   );
 
+  useEffect(() => {
+    if (doctor) {
+      setValue("firstName", doctor.firstName);
+      setValue("lastName", doctor.lastName);
+      setValue("email", doctor.email);
+      setValue("userName", formatDni(String(doctor.dni)));
+      if (doctor?.birthDate) {
+        setStartDate(new Date(doctor.birthDate.toString()));
+        setValue("birthDate", doctor.birthDate.toString());
+      }
+      setValue("phoneNumber", doctor.phoneNumber);
+      setValue("phoneNumber2", doctor.phoneNumber2 || "");
+      setValue("bloodType", String(doctor.bloodType) || "");
+      setValue("matricula", doctor.matricula || "");
+      setValue("rhFactor", String(doctor.rhFactor) || "");
+      setValue("gender", String(doctor.gender) || "");
+      setValue("maritalStatus", String(doctor.maritalStatus) || "");
+      setValue("observations", doctor.observations || "");
+      setValue("address.city.state", doctor?.address?.city?.state);
+      setValue("address.city", doctor?.address?.city);
+      setValue("address.street", doctor?.address.street);
+      setValue("address.number", doctor?.address.number);
+      setValue("address.description", doctor?.address.description || "");
+      setValue("address.phoneNumber", doctor?.address.phoneNumber || "");
+      setSelectedHealthInsurances(doctor.healthInsurances || []);
+      setSelectedSpecialities(doctor.specialities || []);
+      setSelectedCity(doctor?.address?.city);
+      setSelectedState(doctor?.address?.city?.state);
+    }
+  }, [doctor, setValue]);
+
+
   const handleStateChange = (state: State) => {
     setSelectedState(state);
+    setSelectedCity(undefined);
   };
-
   const handleCityChange = (city: City) => {
     setSelectedCity(city);
   };
@@ -103,7 +136,7 @@ function EditDoctorForm({ doctor }: { doctor: Doctor }) {
     const formattedUserName = removeDotsFromDni(formData.userName);
     const addressToSend = {
       ...address,
-      id: address.id,
+      id: doctor?.address?.id,
       city: {
         ...selectedCity,
         state: selectedState,
@@ -119,6 +152,8 @@ function EditDoctorForm({ doctor }: { doctor: Doctor }) {
       photo: doctor?.photo,
       registeredById: doctor?.registeredById,
     };
+
+    console.log("dataToSend", dataToSend);
 
     try {
       const doctorCreationPromise = updateDoctorMutation.mutateAsync({
@@ -143,6 +178,7 @@ function EditDoctorForm({ doctor }: { doctor: Doctor }) {
       console.error("Error al actualizar el médico", error);
     }
   };
+
 
   return (
     <div key="1" className="w-full container px-4 sm:px-6 lg:px-8 mt-2">
@@ -231,7 +267,7 @@ function EditDoctorForm({ doctor }: { doctor: Doctor }) {
                   <div className="space-y-2">
                     <FormField
                       control={form.control}
-                      name="email"
+                      name="matricula"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-black">
@@ -284,8 +320,11 @@ function EditDoctorForm({ doctor }: { doctor: Doctor }) {
                               {...field}
                               type="date"
                               value={
-                                startDate
-                                  ? startDate.toISOString().split("T")[0]
+                                field.value &&
+                                !isNaN(new Date(field.value).getTime())
+                                  ? moment(new Date(field.value)).format(
+                                      "YYYY-MM-DD"
+                                    )
                                   : ""
                               }
                               onChange={(e) =>
@@ -440,12 +479,12 @@ function EditDoctorForm({ doctor }: { doctor: Doctor }) {
                             Obra Social
                           </FormLabel>
                           <FormControl>
-                            {/* <HealthInsuranceDoctorSelect
-                      selected={selectedHealthInsurances}
-                      onHealthInsuranceChange={(newSelection) =>
-                        setSelectedHealthInsurances(newSelection)
-                      }
-                    /> */}
+                            <HealthInsuranceDoctorSelect
+                              selected={selectedHealthInsurances}
+                              onHealthInsuranceChange={(newSelection) =>
+                                setSelectedHealthInsurances(newSelection)
+                              }
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

@@ -1,70 +1,45 @@
 "use client";
 import Loading from "@/app/loading";
+import { useDoctor } from "@/hooks/Doctor/useDoctor";
+import { usePatient } from "@/hooks/Patient/usePatient";
 import useProfileStore from "@/hooks/useProfile";
 import useRoles from "@/hooks/useRoles";
 import ProfileDoctorCardComponent from "@/sections/Profile/doctor/card";
 import ProfileCardComponent from "@/sections/Profile/patient/ProfileCard";
 import ProfileSecretaryCardComponent from "@/sections/Profile/secretary/card";
-import axiosInstance from "@/services/axiosConfig";
-import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
-import React, { useEffect } from "react";
-
-const fetchProfileData = async (role: string, id: number) => {
-  const endpoint =
-    role === "Doctor"
-      ? "doctor"
-      : role === "Secretary"
-      ? "Account"
-      : "Patient";
-  const response = await axiosInstance.get(`${endpoint}/${id}`);
-  return response.data;
-};
+import React from "react";
 
 const ClientMyProfileComponent = () => {
   const { data: session } = useSession();
-  const id = Number(session?.user?.id);
+  const id = session?.user?.id ? Number(session.user.id) : undefined;
   const { isPatient, isDoctor, isSecretary } = useRoles();
-  const { profileData, setProfileData } = useProfileStore();
+  const { profileData } = useProfileStore();
 
-  const role = isDoctor
-    ? "Doctor"
-    : isSecretary
-    ? "Secretary"
-    : isPatient
-    ? "Patient"
-    : null;
-
-  const { isLoading, error, data } = useQuery({
-    queryKey: ["profileData", role, id],
-    queryFn: () => fetchProfileData(role!, id),
-    enabled: !!role && !!id,
+  const { patient, isLoading: isLoadingPatient } = usePatient({
+    auth: isPatient && id !== undefined,
+    id: id !== undefined ? id : -1,
   });
 
-  useEffect(() => {
-    if (data) {
-      setProfileData(data);
-    }
-  }, [data, setProfileData]);
+  const { doctor, isLoading: isLoadingDoctor } = useDoctor({
+    auth: isDoctor && id !== undefined,
+    id: id !== undefined ? id : -1,
+  });
 
-  if (isLoading) {
+  if ((isDoctor && isLoadingDoctor) || (isPatient && isLoadingPatient)) {
     return <Loading isLoading={true} />;
   }
 
-  if (error) {
-    return <div>An error has occurred: {(error as Error).message}</div>;
-  }
-
-  if (isDoctor) {
-    return <ProfileDoctorCardComponent data={profileData} />;
+  if (isDoctor && doctor) {
+    return <ProfileDoctorCardComponent data={doctor} />;
   }
 
   if (isSecretary) {
     return <ProfileSecretaryCardComponent user={profileData} />;
   }
 
-  if (isPatient) {
-    return <ProfileCardComponent data={profileData} />;
+  if (isPatient && patient) {
+    return <ProfileCardComponent data={patient} />;
   }
 
   return null;

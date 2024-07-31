@@ -301,8 +301,11 @@ function EditPatientForm({ patient }: { patient: Patient }) {
                               {...field}
                               type="date"
                               value={
-                                startDate
-                                  ? startDate.toISOString().split("T")[0]
+                                field.value &&
+                                !isNaN(new Date(field.value).getTime())
+                                  ? moment(new Date(field.value)).format(
+                                      "YYYY-MM-DD"
+                                    )
                                   : ""
                               }
                               onChange={(e) =>

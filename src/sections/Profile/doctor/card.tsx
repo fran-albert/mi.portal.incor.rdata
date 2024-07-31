@@ -42,16 +42,22 @@ import { toast } from "sonner";
 import "react-datepicker/dist/react-datepicker.css";
 import { HealthInsurance } from "@/types/Health-Insurance/Health-Insurance";
 import { Speciality } from "@/types/Speciality/Speciality";
-import ChangePasswordDialog from "../changePassword/dialog";
 import Loading from "@/app/loading";
 import { DoctorSchema } from "@/validators/doctor.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { FaUserEdit } from "react-icons/fa";
 import { City } from "@/types/City/City";
+import ChangePasswordDialog from "../Change-Password/dialog";
+import { useDoctorMutations } from "@/hooks/Doctor/useDoctorMutation";
+import { spec } from "node:test/reporters";
 type FormValues = z.infer<typeof DoctorSchema>;
-export default function ProfileDoctorCardComponent({ data }: { data: Doctor }) {
-  // const { updateDoctor } = useDoctorStore();
+export default function ProfileDoctorCardComponent({
+  data,
+}: {
+  data: Doctor | undefined;
+}) {
+  const { updateDoctorMutation } = useDoctorMutations();
   const form = useForm<FormValues>({
     resolver: zodResolver(DoctorSchema),
   });
@@ -73,8 +79,8 @@ export default function ProfileDoctorCardComponent({ data }: { data: Doctor }) {
 
   const handleStateChange = (state: State) => {
     setSelectedState(state);
+    setSelectedCity(undefined);
   };
-
   const handleCityChange = (city: City) => {
     setSelectedCity(city);
   };
@@ -91,57 +97,72 @@ export default function ProfileDoctorCardComponent({ data }: { data: Doctor }) {
       setValue("phoneNumber", data.phoneNumber);
       setValue("phoneNumber2", data.phoneNumber2 || "");
       setValue("bloodType", String(data.bloodType) || "");
+      setValue("matricula", data.matricula || "");
       setValue("rhFactor", String(data.rhFactor) || "");
       setValue("gender", String(data.gender) || "");
       setValue("maritalStatus", String(data.maritalStatus) || "");
       setValue("observations", data.observations || "");
       setValue("address.city.state", data?.address?.city?.state);
       setValue("address.city", data?.address?.city);
+      setValue("address.street", data?.address.street);
+      setValue("address.number", data?.address.number);
+      setValue("address.description", data?.address.description || "");
+      setValue("address.phoneNumber", data?.address.phoneNumber || "");
       setSelectedState(data?.address?.city?.state);
       setSelectedCity(data?.address?.city);
     }
   }, [data, setValue]);
   const onSubmit: SubmitHandler<any> = async (formData) => {
-    // const healthPlansToSend = selectedPlan.map((plan) => ({
-    //   id: plan.id,
-    //   name: plan.name,
-    //   healthInsurance: {
-    //     id: plan.healthInsurance.id,
-    //     name: plan.healthInsurance.name,
-    //   },
-    // }));
-    const formattedUserName = removeDotsFromDni(formData.userName);
+    const specialitiesToSend = data?.specialities.map((s) => ({
+      id: s.id,
+      name: s.name,
+    }));
+    const healthInsuranceToSend = data?.healthInsurances.map((h) => ({
+      id: h.id,
+      name: h.name,
+    }));
+
     const { address, ...rest } = formData;
+    const formattedUserName = removeDotsFromDni(formData.userName);
     const addressToSend = {
       ...address,
-      id: formData?.address.id,
+      id: data?.address?.id,
       city: {
         ...selectedCity,
         state: selectedState,
       },
     };
+
     const dataToSend: any = {
       ...rest,
       userName: formattedUserName,
       address: addressToSend,
-      // healthPlans: selectedPlan ? [selectedPlan] : profile?.healthPlans,
-      photo: "",
+      specialities: specialitiesToSend,
+      healthInsurances: healthInsuranceToSend,
+      photo: data?.photo,
+      registeredById: data?.registeredById,
     };
 
-    // try {
-    //   const patientCreationPromise = updateDoctor(dataToSend, Number(data?.id));
-    //   toast.promise(patientCreationPromise, {
-    //     loading: "Actualizando datos...",
-    //     success: "Datos actualizados con éxito!",
-    //     error: "Error al actualizar los datos",
-    //   });
+    console.log("dataToSend", dataToSend);
 
-    //   patientCreationPromise.catch((error) => {
-    //     console.error("Error al actualizar los datos", error);
-    //   });
-    // } catch (error) {
-    //   console.error("Error al actualizar los datos", error);
-    // }
+    try {
+      const doctorCreationPromise = updateDoctorMutation.mutateAsync({
+        id: Number(data?.userId),
+        doctor: dataToSend,
+      });
+
+      toast.promise(doctorCreationPromise, {
+        loading: "Actualizando médico...",
+        success: "Médico actualizado con éxito!",
+        error: "Error al actualizar el médico",
+      });
+
+      doctorCreationPromise.catch((error) => {
+        console.error("Error al actualizar el médico", error);
+      });
+    } catch (error) {
+      console.error("Error al actualizar el médico", error);
+    }
   };
 
   return (
@@ -264,8 +285,11 @@ export default function ProfileDoctorCardComponent({ data }: { data: Doctor }) {
                               {...field}
                               type="date"
                               value={
-                                startDate
-                                  ? startDate.toISOString().split("T")[0]
+                                field.value &&
+                                !isNaN(new Date(field.value).getTime())
+                                  ? moment(new Date(field.value)).format(
+                                      "YYYY-MM-DD"
+                                    )
                                   : ""
                               }
                               onChange={(e) =>
@@ -529,12 +553,14 @@ export default function ProfileDoctorCardComponent({ data }: { data: Doctor }) {
                         <FormItem>
                           <FormLabel className="text-black">Ciudad</FormLabel>
                           <FormControl>
-                            <CitySelect
-                              control={control}
-                              defaultValue={data?.address?.city}
-                              idState={selectedState ? selectedState.id : 0}
-                              onCityChange={handleCityChange}
-                            />
+                            {selectedState && (
+                              <CitySelect
+                                control={control}
+                                defaultValue={selectedCity}
+                                idState={selectedState.id}
+                                onCityChange={handleCityChange}
+                              />
+                            )}
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -624,10 +650,9 @@ export default function ProfileDoctorCardComponent({ data }: { data: Doctor }) {
                 </div>
               </div>
             </CardContent>
-            <CardFooter className="flex flex-col sm:flex-row justify-end gap-2">
-              <ChangePasswordDialog id={data?.userId} />
+            <CardFooter className="flex flex-col sm:flex-row justify-center gap-2">
               <Button
-                className="w-full sm:w-auto"
+                className="sm:w-auto"
                 variant="incor"
                 form="profileForm"
                 type="submit"
@@ -637,6 +662,9 @@ export default function ProfileDoctorCardComponent({ data }: { data: Doctor }) {
             </CardFooter>
           </form>
         </Form>
+        <div className="mb-4 flex justify-center">
+          <ChangePasswordDialog idUser={Number(data?.userId)} />
+        </div>
       </Card>
     </div>
   );
