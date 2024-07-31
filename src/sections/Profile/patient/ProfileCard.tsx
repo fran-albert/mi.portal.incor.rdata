@@ -29,7 +29,6 @@ import { StateSelect } from "@/components/Select/State/select";
 import { formatDni } from "@/common/helpers/helpers";
 import { Patient } from "@/types/Patient/Patient";
 import { State } from "@/types/State/State";
-import ChangePasswordDialog from "../changePassword/dialog";
 import { SubmitHandler, useForm } from "react-hook-form";
 import DatePicker, { registerLocale, setDefaultLocale } from "react-datepicker";
 import { es } from "date-fns/locale/es";
@@ -41,6 +40,7 @@ import { z } from "zod";
 import { City } from "@/types/City/City";
 import { usePatientMutations } from "@/hooks/Patient/usePatientMutation";
 import { toast } from "sonner";
+import ChangePasswordDialog from "../Change-Password/dialog";
 registerLocale("es", es);
 type FormValues = z.infer<typeof PatientSchema>;
 export default function ProfileCardComponent({
@@ -94,6 +94,10 @@ export default function ProfileCardComponent({
       setValue("observations", data.observations || "");
       setValue("address.city.state", data?.address?.city?.state);
       setValue("address.city", data?.address?.city);
+      setValue("address.street", data?.address?.street);
+      setValue("address.number", data?.address?.number);
+      setValue("address.description", data?.address?.description);
+      setValue("address.phoneNumber", data?.address?.phoneNumber);
       setSelectedState(data?.address?.city?.state);
       setSelectedCity(data?.address?.city);
     }
@@ -596,10 +600,9 @@ export default function ProfileCardComponent({
                   </div>
                 </div>
               </CardContent>
-              <CardFooter className="flex flex-col sm:flex-row justify-end gap-2">
-                {/* <ChangePasswordDialog id={id} /> */}
+              <CardFooter className="flex flex-col sm:flex-row justify-center gap-2">
                 <Button
-                  className="w-full sm:w-auto"
+                  className="sm:w-auto"
                   variant="incor"
                   form="profileForm"
                   type="submit"
@@ -609,6 +612,9 @@ export default function ProfileCardComponent({
               </CardFooter>
             </form>
           </Form>
+          <div className="mb-4 flex justify-center">
+            <ChangePasswordDialog idUser={data.userId} />
+          </div>
         </Card>
       </div>
     </>

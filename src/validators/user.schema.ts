@@ -39,3 +39,9 @@ export const ResetPasswordSchema = z.object({
 export const RequestEmailPasswordSchema = z.object({
     email: z.string({ required_error: "Este campo es obligatorio." }).email(),
 });
+
+export const ChangePasswordSchema = z.object({
+    currentPassword: z.string({ required_error: "Este campo es obligatorio." }),
+    newPassword: z.string({ required_error: "Este campo es obligatorio." }),
+    confirmPassword: z.string({ required_error: "Este campo es obligatorio." }),
+});
