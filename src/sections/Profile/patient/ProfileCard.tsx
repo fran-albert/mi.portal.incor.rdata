@@ -98,6 +98,7 @@ export default function ProfileCardComponent({
       setValue("address.number", data?.address?.number);
       setValue("address.description", data?.address?.description);
       setValue("address.phoneNumber", data?.address?.phoneNumber);
+      setValue("affiliationNumber", data?.affiliationNumber);
       setSelectedState(data?.address?.city?.state);
       setSelectedCity(data?.address?.city);
     }
