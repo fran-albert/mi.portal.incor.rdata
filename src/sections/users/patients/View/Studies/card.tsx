@@ -8,9 +8,10 @@ import DeleteStudyDialog from "./Delete/dialog";
 import { useStudyUrls } from "@/hooks/Study/useStudyUrl";
 import { useStudy } from "@/hooks/Study/useStudy";
 import Loading from "@/app/loading";
+import { ViewButton } from "@/components/Button/View/button";
 
 const StudiesCardComponent = ({ idUser }: { idUser: number }) => {
-  const { isSecretary } = useRoles();
+  const { isSecretary, isDoctor } = useRoles();
   const { studiesByUserId = [], isLoadingStudiesByUserId } = useStudy({
     idUser: idUser,
     fetchStudiesByUserId: true,
@@ -51,10 +52,16 @@ const StudiesCardComponent = ({ idUser }: { idUser: number }) => {
                       </div>
                     </div>
                     {isSecretary && (
-                      <DeleteStudyDialog
-                        studies={studiesByUserId}
-                        idStudy={study.id}
-                      />
+                      <div className="flex gap-2">
+                        <ViewButton url={urls[study.id]} text="Ver" />
+                        <DeleteStudyDialog
+                          studies={studiesByUserId}
+                          idStudy={study.id}
+                        />
+                      </div>
+                    )}
+                    {isDoctor && !isSecretary && (
+                      <ViewButton url={urls[study.id]} text="Ver" />
                     )}
                   </div>
                 ))}

@@ -7,21 +7,38 @@ export const ViewButton = ({
   slug,
   text,
   path,
+  url,
 }: {
-  slug: string;
+  slug?: string;
   text: string;
-  path: string;
+  path?: string;
+  url?: string;
 }) => {
+  const handleClick = () => {
+    if (url) {
+      window.open(url, "_blank");
+    }
+  };
+
   return (
     <div className="flex justify-center">
-      <Link href={`/usuarios/${path}/${slug}`}>
-        <Button variant="ghost" size="icon">
+      {url ? (
+        <Button variant="ghost" size="icon" onClick={handleClick}>
           <ActionIcon
             tooltip={text}
             icon={<FaRegEye className="w-4 h-4" color="gray" />}
           />
         </Button>
-      </Link>
+      ) : (
+        <Link href={`/usuarios/${path}/${slug}`}>
+          <Button variant="ghost" size="icon">
+            <ActionIcon
+              tooltip={text}
+              icon={<FaRegEye className="w-4 h-4" color="gray" />}
+            />
+          </Button>
+        </Link>
+      )}
     </div>
   );
 };
