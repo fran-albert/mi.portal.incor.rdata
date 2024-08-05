@@ -77,7 +77,7 @@ export function CreatePatientForm() {
 
   const handleHealthInsuranceChange = (healthInsurance: HealthInsurance) => {
     setSelectedHealthInsurance(healthInsurance);
-    setSelectedPlan(null);
+    setSelectedPlan(healthInsurance);
   };
 
   const handleCityChange = (city: City) => {
@@ -93,9 +93,9 @@ export function CreatePatientForm() {
     setValue("address.city.state", state);
   };
 
-  const handlePlanChange = (plan: HealthPlans | null) => {
-    setSelectedPlan(plan ? plan : null);
-  };
+  // const handlePlanChange = (plan: HealthPlans | null) => {
+  //   setSelectedPlan(plan ? plan : null);
+  // };
 
   async function onSubmit(data: z.infer<typeof PatientSchema>) {
     const dateInArgentina = moment(data.birthDate).tz(
@@ -151,9 +151,11 @@ export function CreatePatientForm() {
     }
   }
 
-  useEffect(() => {
-    setSelectedPlan(null);
-  }, [selectedHealthInsurance]);
+  // useEffect(() => {
+  //   if (selectedHealthInsurance) {
+  //     setSelectedPlan(null);
+  //   }
+  // }, [selectedHealthInsurance]);
 
   return (
     <div key="1" className="container mt-2">
@@ -332,12 +334,36 @@ export function CreatePatientForm() {
                 </div>
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="bloodType">Sangre </Label>
-                    <BloodSelect control={control} />
+                    <FormField
+                      control={form.control}
+                      name="bloodType"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">Sangre</FormLabel>
+                          <FormControl>
+                            <BloodSelect control={control} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="rhFactor">Factor R.H.</Label>
-                    <RHFactorSelect control={control} />
+                    <FormField
+                      control={form.control}
+                      name="rhFactor"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">
+                            Factor R.H.
+                          </FormLabel>
+                          <FormControl>
+                            <RHFactorSelect control={control} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-6">
@@ -357,8 +383,21 @@ export function CreatePatientForm() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="maritalStatus">Estado Civil</Label>
-                    <MaritalStatusSelect control={control} />
+                    <FormField
+                      control={form.control}
+                      name="maritalStatus"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-black">
+                            Estado Civil
+                          </FormLabel>
+                          <FormControl>
+                            <MaritalStatusSelect control={control} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                 </div>
               </div>
@@ -379,7 +418,7 @@ export function CreatePatientForm() {
                               onHealthInsuranceChange={
                                 handleHealthInsuranceChange
                               }
-                              selected={selectedHealthInsurance}
+                              control={control}
                             />
                           </FormControl>
                           <FormMessage />
@@ -387,16 +426,6 @@ export function CreatePatientForm() {
                       )}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="healthInsurancePlan">Plan</Label>
-                    <HealthPlanSelect
-                      idHealthInsurance={Number(selectedHealthInsurance?.id)}
-                      selected={selectedHealthInsurance}
-                      onPlanChange={handlePlanChange}
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <FormField
                       control={form.control}
@@ -417,6 +446,8 @@ export function CreatePatientForm() {
                       )}
                     />
                   </div>
+                </div>
+                <div className="grid grid-cols-1 gap-6">
                   <div className="space-y-2">
                     <FormField
                       control={form.control}
@@ -554,7 +585,11 @@ export function CreatePatientForm() {
               <Button variant="outline" type="button" onClick={goBack}>
                 Cancelar
               </Button>
-              <Button variant="incor" type="submit" disabled={addPatientMutation.isPending}>
+              <Button
+                variant="incor"
+                type="submit"
+                disabled={addPatientMutation.isPending}
+              >
                 Confirmar
               </Button>
             </CardFooter>

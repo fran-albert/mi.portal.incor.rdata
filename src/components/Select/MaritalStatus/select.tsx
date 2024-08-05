@@ -33,7 +33,6 @@ export const MaritalStatusSelect = ({
       render={({ field }) => (
         <div>
           <Select
-            {...field}
             value={field.value}
             onValueChange={(value) => field.onChange(value)}
           >

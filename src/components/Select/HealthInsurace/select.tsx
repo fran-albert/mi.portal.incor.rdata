@@ -8,53 +8,58 @@ import {
 import { useHealthInsurance } from "@/hooks/Health-Insurance/useHealthInsurance";
 import { HealthInsurance } from "@/types/Health-Insurance/Health-Insurance";
 import { useEffect, useCallback } from "react";
+import { Controller } from "react-hook-form";
 
 interface HealthInsuranceSelectProps {
-  selected?: HealthInsurance;
+  defaultValue?: string;
+  control: any;
   onHealthInsuranceChange: (value: HealthInsurance) => void;
 }
 
 export const HealthInsuranceSelect = ({
-  selected,
+  control,
+  defaultValue,
   onHealthInsuranceChange,
 }: HealthInsuranceSelectProps) => {
   const { healthInsurances } = useHealthInsurance({});
 
-  const handleHealthInsuranceChange = useCallback(
-    (value: HealthInsurance) => {
-      onHealthInsuranceChange(value);
-    },
-    [onHealthInsuranceChange]
-  );
-
-  useEffect(() => {
-    if (!selected && healthInsurances.length > 0) {
-      handleHealthInsuranceChange(healthInsurances[0]);
+  const handleValueChange = (selectedId: string) => {
+    const selectedHC = healthInsurances.find(
+      (state) => String(state.id) === selectedId
+    );
+    if (onHealthInsuranceChange && selectedHC) {
+      onHealthInsuranceChange(selectedHC);
     }
-  }, [healthInsurances, selected, handleHealthInsuranceChange]);
+  };
 
   return (
-    <Select
-      value={selected?.id.toString()}
-      onValueChange={(selectedId) => {
-        const selectedHealthInsurance = healthInsurances.find(
-          (hi) => String(hi.id) === selectedId
-        );
-        if (selectedHealthInsurance) {
-          handleHealthInsuranceChange(selectedHealthInsurance);
-        }
-      }}
-    >
-      <SelectTrigger className="w-full">
-        <SelectValue placeholder="Seleccionar la obra..." />
-      </SelectTrigger>
-      <SelectContent>
-        {healthInsurances.map((hi) => (
-          <SelectItem key={String(hi.id)} value={String(hi.id)}>
-            {hi.name}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <Controller
+      name="healthInsurance"
+      defaultValue={defaultValue || ""}
+      control={control}
+      // rules={{ required: "Este campo es obligatorio" }}
+      render={({ field }) => (
+        <div>
+          <Select
+            value={field.value}
+            onValueChange={(value) => {
+              field.onChange(value);
+              handleValueChange(value);
+            }}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Seleccionar la obra..." />
+            </SelectTrigger>
+            <SelectContent>
+              {healthInsurances.map((hi) => (
+                <SelectItem key={String(hi.id)} value={String(hi.id)}>
+                  {hi.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+    />
   );
 };

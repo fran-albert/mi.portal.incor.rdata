@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   Select,
   SelectContent,
@@ -9,10 +9,12 @@ import {
   SelectLabel,
 } from "@/components/ui/select";
 import { Controller } from "react-hook-form";
+
 interface BloodSelectProps {
   control: any;
   defaultValue?: string;
 }
+
 export const BloodSelect = ({ control, defaultValue }: BloodSelectProps) => {
   const bloodTypes = [
     { id: "A", name: "A" },
@@ -24,12 +26,10 @@ export const BloodSelect = ({ control, defaultValue }: BloodSelectProps) => {
     <Controller
       name="bloodType"
       control={control}
-      // rules={{ required: "Este campo es obligatorio" }}
       defaultValue={defaultValue || ""}
       render={({ field }) => (
         <div>
           <Select
-            {...field}
             value={field.value}
             onValueChange={(value) => field.onChange(value)}
           >

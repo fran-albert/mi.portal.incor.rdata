@@ -29,7 +29,6 @@ export const GenderSelect = ({ control, defaultValue }: GenderSelectProps) => {
       render={({ field }) => (
         <div>
           <Select
-            {...field}
             value={field.value}
             onValueChange={(value) => field.onChange(value)}
           >

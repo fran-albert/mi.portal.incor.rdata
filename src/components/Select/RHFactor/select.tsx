@@ -32,7 +32,6 @@ export const RHFactorSelect = ({
       render={({ field }) => (
         <div>
           <Select
-            {...field}
             value={field.value}
             onValueChange={(value) => field.onChange(value)}
           >
