@@ -82,6 +82,8 @@ function EditPatientForm({ patient }: { patient: Patient }) {
     setSelectedState(state);
   };
 
+  console.log("patient", patient);
+
   const handleCityChange = (city: City) => {
     if (selectedState) {
       const cityWithState = { ...city, state: selectedState };
@@ -127,10 +129,6 @@ function EditPatientForm({ patient }: { patient: Patient }) {
     }
   }, [patient, setValue]);
 
-  const handlePlanChange = (plan: HealthPlans | null) => {
-    setSelectedPlan(plan ? plan : null);
-  };
-
   const onSubmit: SubmitHandler<any> = async (formData) => {
     const formattedUserName = removeDotsFromDni(formData.userName);
     const { address, ...rest } = formData;
@@ -157,8 +155,8 @@ function EditPatientForm({ patient }: { patient: Patient }) {
       photo: patient.photo,
       registeredById: patient.registeredById,
       healthPlans: healthPlansToSend,
-      
     };
+    console.log("dataToSend", dataToSend);
     try {
       const patientCreationPromise = updatePatientMutation.mutateAsync({
         id: Number(patient?.userId),
@@ -449,7 +447,7 @@ function EditPatientForm({ patient }: { patient: Patient }) {
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-2 gap-6">
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <FormField
@@ -465,7 +463,8 @@ function EditPatientForm({ patient }: { patient: Patient }) {
                               onHealthInsuranceChange={
                                 handleHealthInsuranceChange
                               }
-                              selected={selectedHealthInsurance}
+                              control={control}
+                              defaultValue={selectedHealthInsurance}
                             />
                           </FormControl>
                           <FormMessage />
@@ -474,16 +473,12 @@ function EditPatientForm({ patient }: { patient: Patient }) {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="healthInsurancePlan">Plan</Label>
+                    {/* <Label htmlFor="healthInsurancePlan">Plan</Label>
                     <HealthPlanSelect
                       idHealthInsurance={Number(selectedHealthInsurance?.id)}
                       selected={selectedHealthInsurance}
                       onPlanChange={handlePlanChange}
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div className="space-y-2">
+                    /> */}
                     <FormField
                       control={form.control}
                       name="affiliationNumber"
@@ -504,6 +499,8 @@ function EditPatientForm({ patient }: { patient: Patient }) {
                       )}
                     />
                   </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <FormField
                       control={form.control}

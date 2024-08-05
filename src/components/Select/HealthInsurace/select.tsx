@@ -11,7 +11,7 @@ import { useEffect, useCallback } from "react";
 import { Controller } from "react-hook-form";
 
 interface HealthInsuranceSelectProps {
-  defaultValue?: string;
+  defaultValue?: HealthInsurance;
   control: any;
   onHealthInsuranceChange: (value: HealthInsurance) => void;
 }
@@ -35,7 +35,7 @@ export const HealthInsuranceSelect = ({
   return (
     <Controller
       name="healthInsurance"
-      defaultValue={defaultValue || ""}
+      defaultValue={defaultValue ? defaultValue.id.toString() : ""}
       control={control}
       // rules={{ required: "Este campo es obligatorio" }}
       render={({ field }) => (

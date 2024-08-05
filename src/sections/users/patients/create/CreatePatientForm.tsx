@@ -158,7 +158,7 @@ export function CreatePatientForm() {
   // }, [selectedHealthInsurance]);
 
   return (
-    <div key="1" className="container mt-2">
+    <div key="1" className="w-full container px-4 sm:px-6 lg:px-8 mt-2">
       <Card>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -178,8 +178,8 @@ export function CreatePatientForm() {
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-6">
-              <div className="grid grid-cols-2 gap-6">
-                <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <FormField
                       control={form.control}
@@ -239,7 +239,7 @@ export function CreatePatientForm() {
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <FormField
                       control={form.control}
@@ -292,7 +292,7 @@ export function CreatePatientForm() {
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <FormField
                       control={form.control}
@@ -332,7 +332,7 @@ export function CreatePatientForm() {
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <FormField
                       control={form.control}
@@ -366,7 +366,7 @@ export function CreatePatientForm() {
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <FormField
                       control={form.control}
@@ -402,8 +402,8 @@ export function CreatePatientForm() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-6">
-                <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <FormField
                       control={form.control}
@@ -469,7 +469,7 @@ export function CreatePatientForm() {
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <FormField
                       control={form.control}
