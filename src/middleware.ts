@@ -4,7 +4,7 @@ import authConfig from "./auth.config";
 
 const { auth } = NextAuth(authConfig);
 
-const publicRoutes = ["/nueva-contrase%C3%B1a", "/restablecer-contrase%C3%B1a"];
+const publicRoutes = ["/nueva-contrase%C3%B1a", "/restablecer-contrase%C3%B1a", "/incor-laboral"];
 const authRoutes = ["/iniciar-sesion"];
 const apiAuthPrefix = "/api/auth";
 export default auth((req) => {
