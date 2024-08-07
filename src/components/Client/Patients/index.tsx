@@ -8,7 +8,7 @@ import useAuth from "@/hooks/Auth/useAuth";
 
 const ClientPatientComponent = () => {
   const isLoadingAuth = useAuth([Role.SECRETARIA, Role.MEDICO]);
-  const { isLoading, patients, error } = usePatients({ auth: !isLoadingAuth });
+  const { isLoading, patients, error } = usePatients({ auth: !isLoadingAuth, fetchPatients: true });
   const prefetchPatients = usePrefetchPatient();
 
   if (isLoadingAuth) {
