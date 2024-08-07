@@ -70,9 +70,6 @@ function EditPatientForm({ patient }: { patient: Patient }) {
   const [selectedHealthInsurance, setSelectedHealthInsurance] = useState<
     HealthInsurance | undefined
   >(patient?.healthPlans?.[0]?.healthInsurance);
-  const [selectedPlan, setSelectedPlan] = useState<any | null>(
-    patient?.healthPlans?.[0]
-  );
   const [startDate, setStartDate] = useState<Date | undefined>(() =>
     patient?.birthDate ? new Date(patient.birthDate.toString()) : undefined
   );
@@ -96,12 +93,13 @@ function EditPatientForm({ patient }: { patient: Patient }) {
       if (selectedCity) {
         setValue("address.city", selectedCity, { shouldValidate: true });
       }
-      setValue("healthPlans", selectedPlan ? [selectedPlan] : []);
+      setValue("healthPlans", selectedHealthInsurance  ? [selectedHealthInsurance ] : []);
     }
-  }, [patient, selectedCity, selectedPlan, setValue]);
+  }, [patient, selectedCity, selectedHealthInsurance , setValue]);
 
   const handleHealthInsuranceChange = (healthInsurance: HealthInsurance) => {
     setSelectedHealthInsurance(healthInsurance);
+    setValue("healthPlans", healthInsurance ? [healthInsurance] : [], { shouldValidate: true });
   };
   useEffect(() => {
     if (patient) {
@@ -140,14 +138,16 @@ function EditPatientForm({ patient }: { patient: Patient }) {
         state: selectedState,
       },
     };
-    const healthPlansToSend = patient?.healthPlans?.map((plan) => ({
-      id: plan.id,
-      name: plan.name,
-      healthInsurance: {
-        id: plan.healthInsurance.id,
-        name: plan.healthInsurance.name,
+    const healthPlansToSend = [
+      {
+        id: selectedHealthInsurance?.id,
+        name: selectedHealthInsurance?.name,
+        healthInsurance: {
+          id: selectedHealthInsurance?.id,
+          name: selectedHealthInsurance?.name,
+        },
       },
-    }));
+    ];
     const dataToSend = {
       ...rest,
       userName: formattedUserName,
