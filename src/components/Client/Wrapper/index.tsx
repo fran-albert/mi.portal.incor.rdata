@@ -12,7 +12,7 @@ const ClientWrapper = ({
 }>) => {
   return (
     <QueryClientProvider client={queryClient}>
-      {children}
+      <div style={{ flex: 1 }}>{children}</div>
       <ReactQueryDevtools />
     </QueryClientProvider>
   );

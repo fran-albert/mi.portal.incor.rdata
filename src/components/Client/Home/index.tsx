@@ -18,14 +18,14 @@ const ClientHomePage = () => {
     isLoadingTotalPatients,
     lastedpatients,
     totalPatients,
-  } = usePatients({ auth: true });
+  } = usePatients({ auth: true, fetchPatients: false });
 
   const {
     isLoadingLastDoctors,
     isLoadingTotalDoctors,
     totalDoctors,
     lastedDoctors,
-  } = useDoctors({ auth: true });
+  } = useDoctors({ auth: true, fetchDoctors: false });
 
   const { isLoadingTotalSpecialities, totalSpecialities } = useSpeciality({
     auth: true,

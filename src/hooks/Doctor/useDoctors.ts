@@ -7,16 +7,17 @@ import { useState } from "react";
 
 interface Props {
     auth: boolean;
+    fetchDoctors: boolean;
 }
 
-export const useDoctors = ({ auth }: Props) => {
+export const useDoctors = ({ auth, fetchDoctors }: Props) => {
     const [page, setPage] = useState(1);
 
     const { isLoading, isError, error, data: doctors = [], isFetching } = useQuery({
         queryKey: ['doctors'],
         queryFn: () => getDoctors(),
         staleTime: 1000 * 60,
-        enabled: auth
+        enabled: auth && fetchDoctors   
     });
 
     const { isLoading: isLoadingLastDoctors, isError: isErrorLastDoctors, error: errorLastDoctors, data: lastedDoctors = 0 } = useQuery({
