@@ -1,11 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { MyStudiesComponent } from "@/sections/users/patients/MyStudies/component";
 import { Study } from "@/types/Study/Study";
 import Loading from "@/app/loading";
 import { Session } from "next-auth";
 import { useStudy } from "@/hooks/Study/useStudy";
 import { useStudyUrls } from "@/hooks/Study/useStudyUrl";
+import MyStudiesCardComponent from "@/sections/My-Studies";
 
 function ClientMyStudiesComponent({ session }: { session: Session }) {
   const userId = session?.user?.id ? Number(session.user.id) : undefined;
@@ -37,7 +37,7 @@ function ClientMyStudiesComponent({ session }: { session: Session }) {
     return <Loading isLoading={true} />;
   }
 
-  return <MyStudiesComponent labs={labs} ecography={ecography} urls={urls} />;
+  return <MyStudiesCardComponent idUser={Number(userId)} />;
 }
 
 export default ClientMyStudiesComponent;
