@@ -6,7 +6,7 @@ import SessionAuthProvider from "@/context/SessionAuthProviders";
 import ClientWrapper from "@/components/Client/Wrapper";
 import { Toaster } from "sonner";
 import Footer from "@/components/Footer";
-
+import { Analytics } from "@vercel/analytics/react"
 const roboto = Roboto({
   subsets: ["latin-ext"],
   weight: ["400", "500", "700"],
@@ -36,6 +36,7 @@ export default function RootLayout({
             </ClientWrapper>
             <Footer  />
           </div>
+          <Analytics />
         </body>
       </SessionAuthProvider>
     </html>
