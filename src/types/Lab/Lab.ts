@@ -1,6 +1,7 @@
-export interface Labs {
+export interface Lab {
   id: number;
   GlobulosRojos: string;
+  date: string;
   GlobulosBlancos: string;
   Hemoglobina: string;
   Hematocrito: string;

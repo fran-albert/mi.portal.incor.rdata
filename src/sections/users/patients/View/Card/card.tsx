@@ -54,7 +54,7 @@ const PatientCardComponent = ({
           </AvatarFallback>
         </Avatar> */}
         <div className="space-y-1">
-          <CardTitle>
+          <CardTitle className="text-incor">
             {patient?.firstName} {patient?.lastName}
           </CardTitle>
           <CardDescription>
