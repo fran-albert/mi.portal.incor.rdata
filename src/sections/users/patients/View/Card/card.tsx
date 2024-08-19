@@ -33,6 +33,7 @@ import {
 } from "@/common/helpers/helpers";
 import useRoles from "@/hooks/useRoles";
 import { EditButtonIcon } from "@/components/Button/Edit/button";
+import { Button } from "@/components/ui/button";
 const PatientCardComponent = ({
   patient,
   registerBy,
@@ -61,12 +62,19 @@ const PatientCardComponent = ({
             Creado por {registerBy || "Desconocido"}
           </CardDescription>
           {isSecretary && (
-            <div className="text-blue-600 hover:text-blue-800 cursor-pointer">
-              <EditButtonIcon
-                slug={patient?.slug}
-                id={patient?.id}
-                path="usuarios/pacientes"
-              />
+            <div className="flex">
+              <div className="text-blue-600 hover:text-blue-800">
+                <EditButtonIcon
+                  slug={patient?.slug}
+                  id={patient?.id}
+                  path="usuarios/pacientes"
+                />
+              </div>
+              <div className="text-blue-600 hover:text-blue-800">
+                <Button onClick={() => alert('reseterar contraseña')} variant={'ghost'}>
+                  Resetear contraseña
+                </Button>
+              </div>
             </div>
           )}
         </div>

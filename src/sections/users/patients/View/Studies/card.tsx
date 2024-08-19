@@ -43,8 +43,6 @@ const StudiesCardComponent = ({ idUser }: { idUser: number }) => {
     return <Loading isLoading={true} />;
   }
 
-  console.log(studiesByUserId);
-
   return (
     <>
       {/* <Card>

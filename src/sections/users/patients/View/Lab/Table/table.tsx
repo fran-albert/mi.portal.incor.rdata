@@ -1,8 +1,16 @@
 import { useEffect, useState } from "react";
 import Loading from "@/app/loading";
-import { DataTable } from "@/components/Table/table";
 import { useStudy } from "@/hooks/Study/useStudy";
-import { getColumns } from "./columns";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+} from "@/components/ui/table";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface LabData {
   testName: string;
@@ -25,7 +33,7 @@ const transformLabData = (labsDetails: any[]): LabData[] => {
 };
 
 export const LabPatientTable = ({ id }: { id: number }) => {
-  const [transformedLabs, setTransformedLabs] = useState<any[]>([]);
+  const [transformedLabs, setTransformedLabs] = useState<LabData[]>([]);
   const [dates, setDates] = useState<string[]>([]);
   const { LabsDetails, isLoadingLabsDetails } = useStudy({
     fetchLabsDetails: true,
@@ -42,20 +50,6 @@ export const LabPatientTable = ({ id }: { id: number }) => {
     }
   }, [LabsDetails]);
 
-  const updateMyData = (rowIndex: number, columnId: string, value: string) => {
-    setTransformedLabs((old) =>
-      old.map((row, index) => {
-        if (index === rowIndex) {
-          return {
-            ...row,
-            [columnId]: value,
-          };
-        }
-        return row;
-      })
-    );
-  };
-
   if (isLoadingLabsDetails) {
     return <Loading isLoading />;
   }
@@ -70,11 +64,41 @@ export const LabPatientTable = ({ id }: { id: number }) => {
 
   return (
     <div className="w-full">
-      <DataTable
-        columns={getColumns(dates, updateMyData)}
-        data={transformedLabs}
-        showSearch={false}
-      />
+      <div className="relative overflow-x-auto">
+        <ScrollArea className="h-96">
+          <Table>
+            <TableHeader className="sticky top-0 bg-white z-10 border-b">
+              <TableRow>
+                <TableHead className="whitespace-nowrap w-32">
+                  Análisis
+                </TableHead>
+                {dates.map((date) => (
+                  <TableHead key={date} className="whitespace-nowrap">
+                    {new Date(date).toLocaleDateString()}
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {transformedLabs.map(
+                (lab) =>
+                  lab.testName !== "id" && ( 
+                    <TableRow key={lab.testName}>
+                      <TableCell className="font-medium w-32">
+                        {lab.testName}
+                      </TableCell>
+                      {dates.map((date) => (
+                        <TableCell key={date}>
+                          <Input type="text" defaultValue={lab[date]} />
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  )
+              )}
+            </TableBody>
+          </Table>
+        </ScrollArea>
+      </div>
     </div>
   );
 };
