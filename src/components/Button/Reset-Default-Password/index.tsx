@@ -1,6 +1,5 @@
 "use client";
-
-import React, { use, useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,21 +10,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { FaCalendar, FaCamera, FaFilePdf, FaUpload } from "react-icons/fa";
-import axios from "axios";
 import { toast } from "sonner";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Calendar } from "@/components/ui/calendar";
-import DatePicker, { registerLocale, setDefaultLocale } from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { es } from "date-fns/locale/es";
-registerLocale("es", es);
-import moment from "moment-timezone";
-import { Study } from "@/types/Study/Study";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { StudyTypeSelect } from "@/components/Select/Study/select";
-import { useStudyMutations } from "@/hooks/Study/useStudyMutations";
+import { SubmitHandler } from "react-hook-form";
 import { useUserMutations } from "@/hooks/User/useUserMutations";
 interface Props {
   idUser: number;
