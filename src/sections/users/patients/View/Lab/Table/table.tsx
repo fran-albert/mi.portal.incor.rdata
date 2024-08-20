@@ -13,6 +13,8 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Lab } from "@/types/Lab/Lab";
 import { displayNames } from "@/common/helpers/helpers";
+import { DataTable } from "@/components/Table/table";
+import { getColumns } from "./columns";
 
 interface LabData {
   testName: string;
@@ -161,9 +163,27 @@ export const LabPatientTable = ({ id }: { id: number }) => {
       </div>
     );
   }
+  const updateMyData = (rowIndex: number, columnId: string, value: string) => {
+    setTransformedLabs((old) =>
+      old.map((row, index) => {
+        if (index === rowIndex) {
+          return {
+            ...row,
+            [columnId]: value,
+          };
+        }
+        return row;
+      })
+    );
+  };
 
   return (
     <div className="w-full">
+      <DataTable
+        columns={getColumns(dates, updateMyData)}
+        data={transformedLabs}
+        showSearch={false}
+      />
       <div className="relative overflow-x-auto">
         <ScrollArea className="h-96">
           <Table>
