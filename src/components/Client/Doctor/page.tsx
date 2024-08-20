@@ -20,7 +20,7 @@ export function DoctorComponent({ doctor }: { doctor: Doctor | undefined }) {
       {doctor && (
         <DoctorCardComponent doctor={doctor} registerBy={registerByText} />
       )}
-      <div className="md:grid md:gap-6 mt-4 space-y-4">
+      <div className="md:grid md:gap-6 space-y-4">
         {doctor && <DoctorSpecialitiesComponent doctor={doctor} />}
         <StudiesCardComponent idUser={Number(doctor?.userId)} />
         {/* <DoctorHealthInsuranceComponent doctor={doctor} /> */}

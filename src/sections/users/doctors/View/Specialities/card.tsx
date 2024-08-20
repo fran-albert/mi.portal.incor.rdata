@@ -7,7 +7,7 @@ const DoctorSpecialitiesComponent = ({ doctor }: { doctor: Doctor | null }) => {
     <>
       <Card>
         <CardHeader>
-          <CardTitle>Especialidades</CardTitle>
+          <CardTitle className="text-incor">Especialidades</CardTitle>
         </CardHeader>
         <CardContent>
           <ul className="grid gap-2">

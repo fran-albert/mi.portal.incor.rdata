@@ -22,6 +22,8 @@ import { calculateAge, formatDate, formatDni } from "@/common/helpers/helpers";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MdDateRange } from "react-icons/md";
 import { EditButtonIcon } from "@/components/Button/Edit/button";
+import useRoles from "@/hooks/useRoles";
+import ResetDefaultPasswordDialog from "@/components/Button/Reset-Default-Password";
 const DoctorCardComponent = ({
   doctor,
   registerBy,
@@ -29,6 +31,7 @@ const DoctorCardComponent = ({
   doctor: Doctor | null;
   registerBy: undefined | string;
 }) => {
+  const { isSecretary } = useRoles();
   return (
     <>
       <Card>
@@ -44,20 +47,27 @@ const DoctorCardComponent = ({
             </AvatarFallback>
           </Avatar> */}
           <div className="space-y-1">
-            <CardTitle>
+            <CardTitle className="text-incor">
               {doctor?.gender === "Masculino" ? "Dr. " : "Dra. "}{" "}
               {doctor?.firstName} {doctor?.lastName}
             </CardTitle>
             <CardDescription>
               Creado por {registerBy || "Desconocido"}
             </CardDescription>
-            <div className="text-blue-600 hover:text-blue-800 cursor-pointer">
-              <EditButtonIcon
-                id={Number(doctor?.userId)}
-                path="usuarios/medicos"
-                slug={doctor?.slug}
-              />
-            </div>
+            {isSecretary && (
+              <div className="flex">
+                <div className="text-blue-600 hover:text-blue-800">
+                  <EditButtonIcon
+                    slug={doctor?.slug}
+                    id={doctor?.id}
+                    path="usuarios/pacientes"
+                  />
+                </div>
+                <div className="text-blue-600 hover:text-blue-800">
+                  <ResetDefaultPasswordDialog idUser={Number(doctor?.userId)} />
+                </div>
+              </div>
+            )}
           </div>
         </CardHeader>
         <CardContent className="space-y-4">

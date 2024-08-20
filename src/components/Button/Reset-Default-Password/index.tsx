@@ -63,7 +63,7 @@ export default function ResetDefaultPasswordDialog({ idUser }: Props) {
         </DialogHeader>
         <DialogDescription>
           ¿Estás seguro que deseas restablecer la contraseña por defecto? La
-          nueva contraseña será el DNI del paciente.
+          nueva contraseña será el DNI del usuario.
         </DialogDescription>
         <DialogFooter>
           <Button variant="outline" type="button" onClick={toggleDialog}>
