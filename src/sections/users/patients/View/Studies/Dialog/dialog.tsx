@@ -106,10 +106,11 @@ export default function StudyDialog({ idUser }: AddStudyProps) {
               <StudyTypeSelect onStudyChange={handleStudyChange} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="file">Archivo</Label>
+              <Label htmlFor="file">Archivos</Label>
               <Input
                 type="file"
                 className="text-black"
+                multiple
                 onChange={(e) =>
                   setSelectedFile(e.target.files && e.target.files[0])
                 }

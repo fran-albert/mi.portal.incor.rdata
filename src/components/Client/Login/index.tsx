@@ -51,61 +51,61 @@ const LoginComponent = () => {
   }
 
   return (
-    <div className="mt-10">
-      <div className="flex items-center justify-center bg-background md:w-96">
-        <div className="w-full max-w-md p-6 space-y-6 bg-card rounded-lg shadow-lg">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold text-primary">Bienvenido</h1>
-            <p className="text-muted-foreground">Inicia sesión en tu cuenta</p>
-          </div>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <FormField
-                control={form.control}
-                name="userName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-black">
-                      Correo Electrónico o D.N.I.
-                    </FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-black">Contraseña</FormLabel>
-                    <FormControl>
-                      <PasswordInput {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {error && <p className="text-red-500">{error}</p>}
-              <div className="flex items-center justify-between">
-                <Button
-                  type="submit"
-                  className="w-full"
-                  variant="incor"
-                  disabled={isPending}
-                >
-                  {isPending ? "Iniciando..." : "Iniciar sesión"}
-                </Button>
-              </div>
-            </form>
-          </Form>
-          <div className="text-center text-muted-foreground">
-            <Link href="/restablecer-contrase%C3%B1a">
-              ¿Has olvidado tu contraseña?
-            </Link>
-          </div>
+    <div className="mt-2 mx-auto max-w-sm space-y-6">
+      <div className="space-y-2 text-center">
+        <h1 className="text-3xl font-bold text-incor">Bienvenido</h1>
+        <p className="text-muted-foreground">
+          Ingresa tu correo electrónico o D.N.I. para acceder a tu cuenta.
+        </p>
+      </div>
+      <div className="space-y-4">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <FormField
+              control={form.control}
+              name="userName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-black">
+                    Correo Electrónico o D.N.I.
+                  </FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-black">Contraseña</FormLabel>
+                  <FormControl>
+                    <PasswordInput {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {error && <p className="text-red-500">{error}</p>}
+            <div className="flex items-center justify-between">
+              <Button
+                type="submit"
+                className="w-full"
+                variant="incor"
+                disabled={isPending}
+              >
+                {isPending ? "Iniciando..." : "Iniciar sesión"}
+              </Button>
+            </div>
+          </form>
+        </Form>
+        <div className="text-center text-muted-foreground">
+          <Link href="/restablecer-contrase%C3%B1a">
+            ¿Has olvidado tu contraseña?
+          </Link>
         </div>
       </div>
     </div>
