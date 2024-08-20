@@ -22,7 +22,7 @@ export function ClientPatientComponent({
       {patient && (
         <PatientCardComponent patient={patient} registerBy={registerByText} />
       )}
-      <div className="md:grid md:gap-6 mt-4 space-y-4">
+      <div className="md:grid md:gap-6 space-y-4">
         <StudiesCardComponent idUser={Number(patient?.userId)} />
         {/* <LabCard id={Number(patient?.userId)} /> */}
         {/* <HistoryCardComponent /> */}

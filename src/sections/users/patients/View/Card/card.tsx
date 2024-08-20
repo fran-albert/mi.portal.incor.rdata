@@ -33,6 +33,8 @@ import {
 } from "@/common/helpers/helpers";
 import useRoles from "@/hooks/useRoles";
 import { EditButtonIcon } from "@/components/Button/Edit/button";
+import { Button } from "@/components/ui/button";
+import ResetDefaultPasswordDialog from "@/components/Button/Reset-Default-Password";
 const PatientCardComponent = ({
   patient,
   registerBy,
@@ -53,7 +55,7 @@ const PatientCardComponent = ({
             {getInitials(String(patient?.firstName), String(patient?.lastName))}
           </AvatarFallback>
         </Avatar> */}
-        <div className="space-y-1">
+        <div className="space-y-1 text-incor">
           <CardTitle>
             {patient?.firstName} {patient?.lastName}
           </CardTitle>
@@ -61,12 +63,17 @@ const PatientCardComponent = ({
             Creado por {registerBy || "Desconocido"}
           </CardDescription>
           {isSecretary && (
-            <div className="text-blue-600 hover:text-blue-800 cursor-pointer">
-              <EditButtonIcon
-                slug={patient?.slug}
-                id={patient?.id}
-                path="usuarios/pacientes"
-              />
+            <div className="flex">
+              <div className="text-blue-600 hover:text-blue-800">
+                <EditButtonIcon
+                  slug={patient?.slug}
+                  id={patient?.id}
+                  path="usuarios/pacientes"
+                />
+              </div>
+              <div className="text-blue-600 hover:text-blue-800">
+                <ResetDefaultPasswordDialog idUser={Number(patient?.userId)} />
+              </div>
             </div>
           )}
         </div>

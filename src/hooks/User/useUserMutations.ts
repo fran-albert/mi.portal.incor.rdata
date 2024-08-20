@@ -1,6 +1,7 @@
 import { changePassword } from "@/actions/User/change-password.action";
 import { forgotPassword } from "@/actions/User/forgot-password.action";
 import { requestSupport } from "@/actions/User/request-support.action";
+import { resetDefaultPassword } from "@/actions/User/reset-default-password.action";
 import { resetPassword } from "@/actions/User/reset-password.action";
 import { updateUser } from "@/actions/User/update-user.action";
 import { User } from "@/types/User/User";
@@ -40,6 +41,7 @@ export const useUserMutations = () => {
             console.log("Error", error, variables, context);
         },
     });
+
     const resetPasswordMutation = useMutation({
         mutationFn: (password: any) => resetPassword(password),
         onSuccess: (password, variables, context) => {
@@ -49,6 +51,17 @@ export const useUserMutations = () => {
             console.log("Error", error, variables, context);
         },
     });
+
+    const resetDefaultPasswordMutation = useMutation({
+        mutationFn: (idUser: number) => resetDefaultPassword(idUser),
+        onSuccess: (password, variables, context) => {
+            console.log("OK", password, variables, context);
+        },
+        onError: (error, variables, context) => {
+            console.log("Error", error, variables, context);
+        },
+    });
+
     const updateUserMutation = useMutation({
         mutationFn: ({ user, id }: { user: User, id: number }) => updateUser(user, id),
         onSuccess: (patient, variables, context) => {
@@ -59,5 +72,5 @@ export const useUserMutations = () => {
         },
     });
 
-    return { changePasswordMutation, updateUserMutation, resetPasswordMutation, requestSupportMutation, forgotPasswordMutation };
+    return { changePasswordMutation, updateUserMutation, resetPasswordMutation, requestSupportMutation, forgotPasswordMutation, resetDefaultPasswordMutation };
 };
