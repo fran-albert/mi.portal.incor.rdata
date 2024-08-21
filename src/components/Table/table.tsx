@@ -110,7 +110,7 @@ export function DataTable<TData, TValue>({
           className={`mx-1 ${
             pageIndex === 0
               ? "bg-teal-500 text-white border-black"
-              : "text-teal-500"
+              : "text-teal-500 hover:text-teal-500"
           }`}
         >
           1
@@ -158,7 +158,7 @@ export function DataTable<TData, TValue>({
           className={`mx-1 ${
             pageIndex === pageCount - 1
               ? "bg-teal-500 text-white border-black"
-              : "text-teal-500"
+              : "text-teal-500 hover:text-teal-500"
           }`}
         >
           {pageCount}
