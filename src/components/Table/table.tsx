@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Search } from "../ui/search";
 import Loading from "@/app/loading";
-
+import { IoMdArrowBack, IoMdArrowForward } from "react-icons/io";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -89,14 +89,43 @@ export function DataTable<TData, TValue>({
     }));
   };
 
-
   if (isAdding) {
     return null;
   }
 
   const renderPageNumbers = () => {
     const pages = [];
-    for (let i = 0; i < pageCount; i++) {
+    const { pageIndex } = pagination;
+
+    const startPage = Math.max(0, pageIndex - 2);
+    const endPage = Math.min(pageCount - 1, pageIndex + 2);
+
+    if (startPage > 0) {
+      pages.push(
+        <Button
+          key="first"
+          variant="outline"
+          size="sm"
+          onClick={() => handlePageChange(0)}
+          className={`mx-1 ${
+            pageIndex === 0
+              ? "bg-teal-500 text-white border-black"
+              : "text-teal-500"
+          }`}
+        >
+          1
+        </Button>
+      );
+      if (startPage > 1) {
+        pages.push(
+          <span key="start-ellipsis" className="mx-1 text-teal-500">
+            ...
+          </span>
+        );
+      }
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
       pages.push(
         <Button
           key={i}
@@ -104,15 +133,39 @@ export function DataTable<TData, TValue>({
           size="sm"
           onClick={() => handlePageChange(i)}
           className={`transition duration-150 ease-in-out ${
-            pagination.pageIndex === i
-              ? "bg-incor text-white"
-              : "bg-white text-teal-500"
+            pageIndex === i ? "bg-incor text-white" : "bg-white text-teal-500"
           } hover:bg-teal-500 hover:text-white focus:outline-none mx-1`}
         >
           {i + 1}
         </Button>
       );
     }
+
+    if (endPage < pageCount - 1) {
+      if (endPage < pageCount - 2) {
+        pages.push(
+          <span key="end-ellipsis" className="mx-1 text-gray-500">
+            ...
+          </span>
+        );
+      }
+      pages.push(
+        <Button
+          key="last"
+          variant="outline"
+          size="sm"
+          onClick={() => handlePageChange(pageCount - 1)}
+          className={`mx-1 ${
+            pageIndex === pageCount - 1
+              ? "bg-teal-500 text-white border-black"
+              : "text-teal-500"
+          }`}
+        >
+          {pageCount}
+        </Button>
+      );
+    }
+
     return pages;
   };
 
@@ -212,7 +265,33 @@ export function DataTable<TData, TValue>({
             </div>
           </div>
           <div className="flex items-center justify-center space-x-2 py-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(pagination.pageIndex - 1)}
+              disabled={pagination.pageIndex === 0}
+              className={`mx-1 ${
+                pagination.pageIndex === 0
+                  ? "text-teal-500 hover:text-teal-500"
+                  : "text-teal-500 hover:text-teal-500"
+              }`}
+            >
+              <IoMdArrowBack />
+            </Button>
             {renderPageNumbers()}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(pagination.pageIndex + 1)}
+              disabled={pagination.pageIndex === pageCount - 1}
+              className={`mx-1 ${
+                pagination.pageIndex === 0
+                  ? "text-teal-500 hover:text-teal-500"
+                  : "text-teal-500 hover:text-teal-500"
+              }`}
+            >
+              <IoMdArrowForward  />
+            </Button>
           </div>
         </>
       )}
