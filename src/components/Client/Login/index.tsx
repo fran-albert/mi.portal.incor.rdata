@@ -39,7 +39,7 @@ const LoginComponent = () => {
         redirect: false,
       });
       if (result?.error) {
-        setError([result.error]);
+        setError(["Credenciales Incorrectas"]);
       } else {
         if (result?.ok) {
           setSession(result.user);
@@ -89,7 +89,7 @@ const LoginComponent = () => {
                 </FormItem>
               )}
             />
-            {error && <p className="text-red-500">{error}</p>}
+            {error && <p className="text-red-500 text-sm font-medium">{error}</p>}
             <div className="flex items-center justify-between">
               <Button
                 type="submit"
