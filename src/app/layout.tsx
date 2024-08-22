@@ -34,7 +34,7 @@ export default function RootLayout({
             <ClientWrapper>
               {children}
             </ClientWrapper>
-            <Footer  />
+            {/* <Footer  /> */}
           </div>
         </body>
       </SessionAuthProvider>

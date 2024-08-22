@@ -51,7 +51,7 @@ const LoginComponent = () => {
   }
 
   return (
-    <div className="mt-2 mx-auto max-w-sm space-y-6">
+    <div className="mt-2 mx-auto max-w-sm space-y-6 p-4">
       <div className="space-y-2 text-center">
         <h1 className="text-3xl font-bold text-incor">Bienvenido</h1>
         <p className="text-muted-foreground">
