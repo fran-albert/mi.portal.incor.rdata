@@ -215,7 +215,7 @@ export default function HeaderComponent() {
               )}
               <NavigationMenuLink asChild>
                 <button
-                  className={`group inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-bold transition-colors hover:bg-red-200 hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50 ${
+                  className={`group inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-bold transition-colors text-white hover:bg-red-200 hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50 ${
                     activeLink === "Salir" ? "" : ""
                   }`}
                   onClick={() => signOut()}
@@ -224,29 +224,19 @@ export default function HeaderComponent() {
                 </button>
               </NavigationMenuLink>
             </>
-          ) : (
-            <NavigationMenuLink asChild>
-              <Link
-                href="/iniciar-sesion"
-                className="group inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50"
-                prefetch={false}
-              >
-                Iniciar Sesión
-              </Link>
-            </NavigationMenuLink>
-          )}
+          ) : null}
         </NavigationMenuList>
       </NavigationMenu>
-      <Sheet>
-        <SheetTrigger asChild>
-          <Button variant="outline" size="icon" className="ml-auto lg:hidden">
-            <MenuIcon className="h-6 w-6" />
-            <span className="sr-only">Menú de navegación</span>
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left">
-          <div className="grid gap-2 py-6">
-            {session ? (
+      {session ? (
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="outline" size="icon" className="ml-auto lg:hidden">
+              <MenuIcon className="h-6 w-6" />
+              <span className="sr-only">Menú de navegación</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left">
+            <div className="grid gap-2 py-6">
               <>
                 <Link
                   href="/inicio"
@@ -327,18 +317,10 @@ export default function HeaderComponent() {
                   Salir
                 </button>
               </>
-            ) : (
-              <Link
-                href="/iniciar-sesion"
-                className="flex w-full items-center py-2 text-lg font-semibold"
-                prefetch={false}
-              >
-                Iniciar Sesión
-              </Link>
-            )}
-          </div>
-        </SheetContent>
-      </Sheet>
+            </div>
+          </SheetContent>
+        </Sheet>
+      ) : null}
     </header>
   );
 }
