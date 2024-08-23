@@ -3,12 +3,14 @@ import StudiesCardComponent from "@/sections/users/patients/View/Studies/card";
 import PatientCardComponent from "@/sections/users/patients/View/Card/card";
 import LabCard from "@/sections/users/patients/View/Lab/card";
 import { Patient } from "@/types/Patient/Patient";
+import useRoles from "@/hooks/useRoles";
 
 export function ClientPatientComponent({
   patient,
 }: {
   patient: Patient | undefined;
 }) {
+  const { isDoctor } = useRoles();
   const registerByText =
     patient?.registerBy?.firstName +
     " " +
@@ -24,7 +26,7 @@ export function ClientPatientComponent({
       )}
       <div className="md:grid md:gap-6 space-y-4">
         <StudiesCardComponent idUser={Number(patient?.userId)} />
-        {/* <LabCard id={Number(patient?.userId)} /> */}
+        {<LabCard id={Number(patient?.userId)} />}
         {/* <HistoryCardComponent /> */}
         {/* <Card>
         <CardHeader>

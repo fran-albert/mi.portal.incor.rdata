@@ -1,3 +1,4 @@
+import { Lab } from "@/types/Lab/Lab";
 import moment from "moment";
 import { UseFormSetValue } from "react-hook-form";
 
@@ -74,3 +75,4 @@ export const sleep = (seconds: number): Promise<boolean> => {
     }, seconds * 1000);
   });
 }
+

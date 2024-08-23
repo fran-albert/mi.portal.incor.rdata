@@ -6,13 +6,17 @@ import {
   CardContent,
   Card,
 } from "@/components/ui/card";
+import { GiHypodermicTest } from "react-icons/gi";
 import { LabPatientTable } from "./Table/table";
 const LabCard = ({ id }: { id: number }) => {
   return (
     <>
       <Card>
         <CardHeader>
-          <CardTitle>Laboratorios</CardTitle>
+          <CardTitle className="flex items-center text-incor">
+            <GiHypodermicTest className="mr-2" />
+            Laboratorios
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <LabPatientTable id={id} />

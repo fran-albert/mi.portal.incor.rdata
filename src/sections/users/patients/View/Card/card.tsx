@@ -55,8 +55,8 @@ const PatientCardComponent = ({
             {getInitials(String(patient?.firstName), String(patient?.lastName))}
           </AvatarFallback>
         </Avatar> */}
-        <div className="space-y-1 text-incor">
-          <CardTitle>
+        <div className="space-y-1">
+          <CardTitle className="text-incor">
             {patient?.firstName} {patient?.lastName}
           </CardTitle>
           <CardDescription>
