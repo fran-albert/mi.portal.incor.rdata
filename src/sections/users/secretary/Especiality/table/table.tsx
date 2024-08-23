@@ -32,7 +32,7 @@ export const SpecialityTable = ({
 
   return (
     <div className="container">
-      <h2 className="text-2xl font-semibold text-center mt-6">
+      <h2 className="text-2xl font-semibold text-center mt-6 text-incor">
         Lista de Especialidades
       </h2>
       <div className="overflow-hidden sm:rounded-lg p-4 ">
