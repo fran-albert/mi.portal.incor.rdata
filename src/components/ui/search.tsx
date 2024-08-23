@@ -6,7 +6,7 @@ import { FaSearch } from "react-icons/fa";
 export type SearchProps = React.InputHTMLAttributes<HTMLInputElement>;
 
 const Search = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, ...props }, ref) => {
+  ({ className, color, ...props }, ref) => {
     return (
       <div
         className={cn(
@@ -14,7 +14,7 @@ const Search = React.forwardRef<HTMLInputElement, InputProps>(
           className
         )}
       >
-        <FaSearch size={18} />
+        <FaSearch size={18} color={color}  />
         <input
           {...props}
           type="text"

@@ -128,6 +128,7 @@ export function DataTable<TData, TValue>({
                 placeholder={searchPlaceholder}
                 className="w-full px-4 py-2 border rounded-md"
                 value={searchInput}
+                color="#01A9A4"
                 onChange={handleSearchChange}
               />
               {canAddUser && (
