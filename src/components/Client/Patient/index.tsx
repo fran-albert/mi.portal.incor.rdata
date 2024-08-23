@@ -26,7 +26,7 @@ export function ClientPatientComponent({
       )}
       <div className="md:grid md:gap-6 space-y-4">
         <StudiesCardComponent idUser={Number(patient?.userId)} />
-        {<LabCard id={Number(patient?.userId)} />}
+        {isDoctor && <LabCard id={Number(patient?.userId)} />}
         {/* <HistoryCardComponent /> */}
         {/* <Card>
         <CardHeader>
