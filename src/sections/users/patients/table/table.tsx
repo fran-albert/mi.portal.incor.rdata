@@ -3,7 +3,14 @@ import { Patient } from "@/types/Patient/Patient";
 import useRoles from "@/hooks/useRoles";
 import { DataTable } from "@/components/Table/table";
 import { usePatients } from "@/hooks/Patient/usePatients";
-
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 interface PatientTableProps {
   patients: Patient[];
   prefetchPatients: (id: number) => void;
@@ -32,7 +39,18 @@ export const PatientsTable: React.FC<PatientTableProps> = ({
       <h2 className="text-2xl font-semibold text-center mt-6 text-incor">
         Lista de Pacientes
       </h2>
-      <div className="overflow-hidden sm:rounded-lg p-4 ">
+      <Breadcrumb className="mb-4">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/inicio">Inicio</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/pacientes">Pacientes</BreadcrumbLink>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+      <div className="overflow-hidden sm:rounded-lg ">
         <DataTable
           columns={patientColumns}
           data={patients}

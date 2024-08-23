@@ -45,62 +45,6 @@ const StudiesCardComponent = ({ idUser }: { idUser: number }) => {
 
   return (
     <>
-      {/* <Card>
-        <CardHeader>
-          <CardTitle>Estudios</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col justify-between">
-            <div>
-              {studiesByUserId.length > 0 ? (
-                <div className="rounded-lg overflow-hidden">
-                  {studiesByUserId.map((study) => (
-                    <div
-                      key={study.id}
-                      className="grid grid-cols-[50px_1fr_auto] gap-4 items-center p-2 rounded"
-                    >
-                      <FaRegFilePdf
-                        className="w-8 h-8 text-red-600 cursor-pointer"
-                        onClick={() => window.open(urls[study.id], "_blank")}
-                      />
-                      <div className="grid gap-1">
-                        <span className="text-sm font-medium">
-                          {study?.note}
-                        </span>
-                        <div className="text-xs text-gray-500">
-                          {formatDate(String(study.date))}
-                        </div>
-                      </div>
-                      {isSecretary && (
-                        <div className="flex gap-2">
-                          <ViewButton url={urls[study.id]} text="Ver" />
-                          <DeleteStudyDialog
-                            studies={studiesByUserId}
-                            idStudy={study.id}
-                          />
-                        </div>
-                      )}
-                      {isDoctor && !isSecretary && (
-                        <ViewButton url={urls[study.id]} text="Ver" />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-sm text-gray-700 p-2">
-                  No hay estudios cargados.
-                </div>
-              )}
-            </div>
-            {isSecretary && (
-              <div className="mt-auto">
-                <StudyDialog idUser={idUser} />
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card> */}
-
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center text-incor">
