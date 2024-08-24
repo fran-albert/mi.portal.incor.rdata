@@ -86,8 +86,8 @@ export default function StudyDialog({ idUser }: AddStudyProps) {
           onClick={toggleDialog}
           className="flex items-center justify-center w-full p-2 border border-dashed border-gray-300 rounded hover:bg-gray-50"
         >
-          <FaUpload className="w-4 h-4 mr-2 text-teal-600" />
-          <span className="text-teal-600">Nuevo Estudio</span>
+          <FaUpload className="w-4 h-4 mr-2 text-incor" />
+          <span className="text-incor">Nuevo Estudio</span>
         </button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">

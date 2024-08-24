@@ -11,6 +11,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import BreadcrumbComponent from "@/components/Breadcrumb";
 interface PatientTableProps {
   patients: Patient[];
   prefetchPatients: (id: number) => void;
@@ -34,22 +35,17 @@ export const PatientsTable: React.FC<PatientTableProps> = ({
     patient.lastName.toLowerCase().includes(query.toLowerCase()) ||
     patient.dni.toLowerCase().includes(query.toLowerCase());
 
+  const breadcrumbItems = [
+    { label: "Inicio", href: "/inicio" },
+    { label: "Pacientes", href: "/usuarios/pacientes" },
+  ];
+
   return (
     <div className="container">
       <h2 className="text-2xl font-semibold text-center mt-6 text-incor">
         Lista de Pacientes
       </h2>
-      <Breadcrumb className="mb-4">
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/inicio">Inicio</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/pacientes">Pacientes</BreadcrumbLink>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <BreadcrumbComponent items={breadcrumbItems} />
       <div className="overflow-hidden sm:rounded-lg ">
         <DataTable
           columns={patientColumns}

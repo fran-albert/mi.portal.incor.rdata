@@ -2,21 +2,19 @@ import { getAllStudyType } from "@/actions/Study/get-all-study-type.action";
 import { getLastStudies } from "@/actions/Study/get-last-studies.action";
 import { getStudiesByUserId } from "@/actions/Study/get-studies-by-idUser.action";
 import { getTotalStudies } from "@/actions/Study/get-total-studies.action";
-import { getLabsDetail } from "@/actions/Study/Lab/get-labs-detailts.action";
 import { useQuery } from "@tanstack/react-query"
 
 interface Props {
     auth?: boolean;
     idUser?: number;
     fetchTotal?: boolean;
-    fetchLabsDetails?: boolean;
     idStudy?: number;
     fetchStudiesByUserId?: boolean;
     studyTypeId?: number;
     studyTypeAuth?: boolean;
 }
 
-export const useStudy = ({ auth = true, idUser, fetchTotal = false, fetchStudiesByUserId = false, studyTypeAuth = false, studyTypeId, fetchLabsDetails = false, idStudy }: Props) => {
+export const useStudy = ({ auth = true, idUser, fetchTotal = false, fetchStudiesByUserId = false, studyTypeAuth = false, studyTypeId, idStudy }: Props) => {
 
     const { isLoading: isLoadingTotalStudies, isError: isErrorTotalStudies, error: errorTotalStudies, data: totalStudies = 0 } = useQuery({
         queryKey: ["totalStudies"],
@@ -69,13 +67,6 @@ export const useStudy = ({ auth = true, idUser, fetchTotal = false, fetchStudies
         enabled: !!idUser && fetchStudiesByUserId
     });
 
-    const { isLoading: isLoadingLabsDetails, isError: isErrorLabsDetails, error: errorLabsDetails, data: LabsDetails } = useQuery({
-        queryKey: ["labsDetail", idUser],
-        queryFn: () => getLabsDetail(Number(idUser)),
-        staleTime: 1000 * 60,
-        enabled: !!idUser && fetchLabsDetails
-    });
-
     const { isLoading: isLoadingStudyType, isError: isErrorStudyType, error: errorStudyType, data: studyType } = useQuery({
         queryKey: ["studyType"],
         queryFn: () => getAllStudyType(),
@@ -92,7 +83,6 @@ export const useStudy = ({ auth = true, idUser, fetchTotal = false, fetchStudies
         isLoadingLastLabs, isErrorLastLabs, errorLastLabs, lastLabs,
         isLoadingLastStudies, isErrorLastStudies, errorLastStudies, lastStudies,
         isLoadingLastEcography, isErrorLastEcography, errorLastEcography, lastEcography,
-        isLoadingLabsDetails, isErrorLabsDetails, errorLabsDetails, LabsDetails
     }
 
 }

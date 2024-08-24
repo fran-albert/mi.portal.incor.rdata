@@ -44,32 +44,29 @@ const transformLabData = (labsDetails: any[]): LabData[] => {
   return Object.values(groupedData);
 };
 
-export const LabPatientTable = ({ id }: { id: number }) => {
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+export const LabPatientTable = ({ labsDetails }: { labsDetails: Lab[] }) => {
+  const [rowsPerPage, setRowsPerPage] = useState(8);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [transformedLabs, setTransformedLabs] = useState<LabData[]>([]);
   const [dates, setDates] = useState<string[]>([]);
-  const { LabsDetails, isLoadingLabsDetails } = useStudy({
-    fetchLabsDetails: true,
-    idUser: id,
-  });
+ 
 
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
 
   useEffect(() => {
-    if (LabsDetails && LabsDetails.length > 0) {
-      const transformed = transformLabData(LabsDetails);
+    if (labsDetails && labsDetails.length > 0) {
+      const transformed = transformLabData(labsDetails);
       setTransformedLabs(transformed);
 
-      const datesFromLabs = LabsDetails.map((lab) => lab.date).filter(
+      const datesFromLabs = labsDetails.map((lab) => lab.date).filter(
         (date): date is string => date !== undefined
       );
       setDates(datesFromLabs);
     }
-  }, [LabsDetails]);
+  }, [labsDetails]);
 
   const filteredAnalysisNames = analysisNames.filter((name) => {
     const columnName = columNames[name as keyof Lab];
@@ -87,11 +84,7 @@ export const LabPatientTable = ({ id }: { id: number }) => {
     indexOfLastRow
   );
 
-  if (isLoadingLabsDetails) {
-    return <Loading isLoading />;
-  }
-
-  if (!LabsDetails || LabsDetails.length === 0) {
+  if (!labsDetails || labsDetails.length === 0) {
     return (
       <div className="text-gray-900 text-sm">
         Los laboratorios del paciente no se pudieron insertar en la tabla.

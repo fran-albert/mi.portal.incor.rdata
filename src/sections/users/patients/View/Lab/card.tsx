@@ -8,7 +8,9 @@ import {
 } from "@/components/ui/card";
 import { GiHypodermicTest } from "react-icons/gi";
 import { LabPatientTable } from "./Table/table";
-const LabCard = ({ id }: { id: number }) => {
+import { Lab } from "@/types/Lab/Lab";
+const LabCard = ({ labsDetails }: { labsDetails: Lab[] | undefined }) => {
+  console.log(labsDetails, "labsDetails");
   return (
     <>
       <Card>
@@ -19,7 +21,13 @@ const LabCard = ({ id }: { id: number }) => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <LabPatientTable id={id} />
+          {labsDetails && labsDetails.length > 0 ? (
+            <LabPatientTable labsDetails={labsDetails} />
+          ) : (
+            <p className="text-gray-500">
+              No hay laboratorios disponibles para este paciente.
+            </p>
+          )}
         </CardContent>
       </Card>
     </>

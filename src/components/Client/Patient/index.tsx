@@ -5,6 +5,9 @@ import LabCard from "@/sections/users/patients/View/Lab/card";
 import { Patient } from "@/types/Patient/Patient";
 import useRoles from "@/hooks/useRoles";
 import BreadcrumbComponent from "@/components/Breadcrumb";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import StudiesPatientTableComponent from "@/sections/users/patients/View/Studies/Table";
 export function ClientPatientComponent({
   patient,
 }: {
@@ -36,7 +39,11 @@ export function ClientPatientComponent({
           <PatientCardComponent patient={patient} registerBy={registerByText} />
         )}
         <div className="md:grid md:gap-6 space-y-4">
-          <StudiesCardComponent idUser={Number(patient?.userId)} />
+          {/* <StudiesCardComponent idUser={Number(patient?.userId)} /> */}
+          <StudiesPatientTableComponent
+            idUser={Number(patient?.userId)}
+            slug={String(patient?.slug)}
+          />
           {isDoctor && <LabCard id={Number(patient?.userId)} />}
         </div>
       </div>
