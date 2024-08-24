@@ -8,8 +8,6 @@ import { ViewButton } from "@/components/Button/View/button";
 import { BsFillFileTextFill } from "react-icons/bs";
 import { FaRegFilePdf } from "react-icons/fa";
 import { Study } from "@/types/Study/Study";
-import StudyDialog from "../Dialog/dialog";
-import DeleteStudyDialog from "../Delete/dialog";
 import {
   Table,
   TableHeader,
@@ -29,31 +27,32 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { Search } from "@/components/ui/search";
+import { Label } from "@/components/ui/label";
+import DeleteStudyDialog from "../Delete/dialog";
+import StudyDialog from "../Upload/dialog";
 
-const StudiesPatientTableComponent = ({
+const StudiesTableComponent = ({
+  studiesByUserId,
   idUser,
+  urls,
   slug,
+  role,
 }: {
+  studiesByUserId: Study[];
   idUser: number;
   slug: string;
+  role: string;
+  urls: Record<string, string>;
 }) => {
   const { isSecretary } = useRoles();
-  const { studiesByUserId = [], isLoadingStudiesByUserId } = useStudy({
-    idUser: idUser,
-    fetchStudiesByUserId: true,
-  });
-
-  const { data: urls = {}, isLoading: isLoadingUrls } = useStudyUrls(
-    idUser,
-    studiesByUserId
-  );
 
   const [selectedStudyType, setSelectedStudyType] = useState<string | null>(
     "Todos"
   );
 
   const groupStudiesByType = (studiesByUserId: Study[]) => {
-    return studiesByUserId.reduce((acc, study) => {
+    return studiesByUserId?.reduce((acc, study) => {
       const name = study.studyType?.name;
       if (!name) return acc;
       if (!acc[name]) {
@@ -83,31 +82,33 @@ const StudiesPatientTableComponent = ({
             <BsFillFileTextFill className="mr-2" />
             Estudios Médicos
           </CardTitle>
-          <Button variant="outline" className="ml-auto text-gray-900">
-            <Link href={`/usuarios/pacientes/${slug}/laboratorios`}>Ver Tabla Laboratorios</Link>
-          </Button>
         </CardHeader>
         <CardContent>
           <div className="flex items-center mb-4">
-            <div className="w-full">
-              <label className="block text-sm font-medium text-gray-700">
-                Filtrar por tipo de estudio
-              </label>
-              <Select
-                onValueChange={setSelectedStudyType}
-                value={selectedStudyType || ""}
-              >
-                <SelectTrigger className="w-full mt-1">
-                  <SelectValue placeholder="Seleccione tipo de estudio" />
-                </SelectTrigger>
-                <SelectContent>
-                  {studyTypes.map((type) => (
-                    <SelectItem key={type} value={type}>
-                      {type}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <Select
+              onValueChange={setSelectedStudyType}
+              value={selectedStudyType || ""}
+            >
+              <SelectTrigger className="w-full mx-auto">
+                <SelectValue placeholder="Seleccione tipo de estudio" />
+              </SelectTrigger>
+              <SelectContent>
+                {studyTypes.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {type}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <div className="ml-4">
+              <Button variant="outline">
+                <Link
+                  className="text-gray-700 hover:text-gray-700"
+                  href={`/usuarios/${role}/${slug}/laboratorios`}
+                >
+                  Ver Tabla Laboratorios
+                </Link>
+              </Button>
             </div>
           </div>
 
@@ -187,4 +188,4 @@ const StudiesPatientTableComponent = ({
   );
 };
 
-export default StudiesPatientTableComponent;
+export default StudiesTableComponent;

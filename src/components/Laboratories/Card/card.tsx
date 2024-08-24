@@ -7,9 +7,15 @@ import {
   Card,
 } from "@/components/ui/card";
 import { GiHypodermicTest } from "react-icons/gi";
-import { LabPatientTable } from "./Table/table";
+import { LabPatientTable } from "../Table/table";
 import { Lab } from "@/types/Lab/Lab";
-const LabCard = ({ labsDetails }: { labsDetails: Lab[] | undefined }) => {
+const LabCard = ({
+  labsDetails,
+  role,
+}: {
+  labsDetails: Lab[] | undefined;
+  role: string;
+}) => {
   console.log(labsDetails, "labsDetails");
   return (
     <>
@@ -25,7 +31,7 @@ const LabCard = ({ labsDetails }: { labsDetails: Lab[] | undefined }) => {
             <LabPatientTable labsDetails={labsDetails} />
           ) : (
             <p className="text-gray-500">
-              No hay laboratorios disponibles para este paciente.
+              No hay laboratorios disponibles para este {role}.
             </p>
           )}
         </CardContent>

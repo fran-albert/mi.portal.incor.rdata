@@ -1,10 +1,8 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FaRegFilePdf } from "react-icons/fa";
-import StudyDialog from "./Dialog/dialog";
 import { formatDate } from "@/common/helpers/helpers";
 import useRoles from "@/hooks/useRoles";
-import DeleteStudyDialog from "./Delete/dialog";
 import { useStudyUrls } from "@/hooks/Study/useStudyUrl";
 import { useStudy } from "@/hooks/Study/useStudy";
 import Loading from "@/app/loading";
@@ -13,6 +11,8 @@ import { ViewButton } from "@/components/Button/View/button";
 import { BsFillFileTextFill } from "react-icons/bs";
 import { Button } from "@/components/ui/button";
 import { Study } from "@/types/Study/Study";
+import StudyDialog from "../Upload/dialog";
+import DeleteStudyDialog from "../Delete/dialog";
 const StudiesCardComponent = ({ idUser }: { idUser: number }) => {
   const { isSecretary, isDoctor } = useRoles();
   const { studiesByUserId = [], isLoadingStudiesByUserId } = useStudy({
