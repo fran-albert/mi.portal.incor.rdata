@@ -60,7 +60,7 @@ const DoctorCardComponent = ({
                   <EditButtonIcon
                     slug={doctor?.slug}
                     id={doctor?.id}
-                    path="usuarios/pacientes"
+                    path="usuarios/medicos"
                   />
                 </div>
                 <div className="text-blue-600 hover:text-blue-800">
