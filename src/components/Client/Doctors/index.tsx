@@ -8,7 +8,10 @@ import { usePrefetchDoctor } from "@/hooks/Doctor/usePrefetchDoctor";
 
 const ClientDoctorComponent = () => {
   const isLoadingAuth = useAuth([Role.SECRETARIA, Role.MEDICO]);
-  const { isLoading, doctors, error } = useDoctors({ auth: !isLoadingAuth, fetchDoctors: true });
+  const { isLoading, doctors, error } = useDoctors({
+    auth: !isLoadingAuth,
+    fetchDoctors: true,
+  });
   const prefetchDoctors = usePrefetchDoctor();
   return (
     <>

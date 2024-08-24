@@ -6,6 +6,8 @@ import { useDoctor } from "@/hooks/Doctor/useDoctor";
 import useAuth from "@/hooks/Auth/useAuth";
 import { useParams } from "next/navigation";
 import React from "react";
+import { useStudy } from "@/hooks/Study/useStudy";
+import { useStudyUrls } from "@/hooks/Study/useStudyUrl";
 
 function DoctorPage() {
   const params = useParams();
@@ -18,6 +20,17 @@ function DoctorPage() {
     auth: !isLoadingAuth,
     id,
   });
+
+  const { studiesByUserId = [], isLoadingStudiesByUserId } = useStudy({
+    idUser: id,
+    fetchStudiesByUserId: true,
+  });
+
+  const { data: urls = {}, isLoading: isLoadingUrls } = useStudyUrls(
+    id,
+    studiesByUserId
+  );
+
   return (
     <>
       {error && (
@@ -25,10 +38,17 @@ function DoctorPage() {
           Hubo un error al cargos los datos del Doctor.
         </div>
       )}
-      {isLoading || isLoadingAuth ? (
+      {isLoading ||
+      isLoadingUrls ||
+      isLoadingStudiesByUserId ||
+      isLoadingAuth ? (
         <Loading isLoading={true} />
       ) : (
-        <DoctorComponent doctor={doctor} />
+        <DoctorComponent
+          doctor={doctor}
+          urls={urls}
+          studiesByUserId={studiesByUserId}
+        />
       )}
     </>
   );

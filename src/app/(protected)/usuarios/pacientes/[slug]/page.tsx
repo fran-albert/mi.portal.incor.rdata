@@ -6,6 +6,8 @@ import { usePatient } from "@/hooks/Patient/usePatient";
 import useAuth from "@/hooks/Auth/useAuth";
 import { useParams, useSearchParams } from "next/navigation";
 import React, { useEffect } from "react";
+import { useStudy } from "@/hooks/Study/useStudy";
+import { useStudyUrls } from "@/hooks/Study/useStudyUrl";
 
 const PatientPage = () => {
   const params = useParams();
@@ -18,14 +20,30 @@ const PatientPage = () => {
     auth: !isLoadingAuth,
     id,
   });
+  const { studiesByUserId = [], isLoadingStudiesByUserId } = useStudy({
+    idUser: id,
+    fetchStudiesByUserId: true,
+  });
+
+  const { data: urls = {}, isLoading: isLoadingUrls } = useStudyUrls(
+    id,
+    studiesByUserId
+  );
 
   return (
     <>
       {error && <div>Hubo un error al cargar los pacientes.</div>}
-      {isLoading || isLoadingAuth ? (
+      {isLoading ||
+      isLoadingUrls ||
+      isLoadingStudiesByUserId ||
+      isLoadingAuth ? (
         <Loading isLoading={true} />
       ) : (
-        <ClientPatientComponent patient={patient} />
+        <ClientPatientComponent
+          patient={patient}
+          urls={urls}
+          studiesByUserId={studiesByUserId}
+        />
       )}
     </>
   );

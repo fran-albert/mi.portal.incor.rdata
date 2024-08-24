@@ -6,9 +6,9 @@ import { ClientPatientComponent } from "@/components/Client/Patient";
 import { usePatient } from "@/hooks/Patient/usePatient";
 import useAuth from "@/hooks/Auth/useAuth";
 import { useParams, useSearchParams } from "next/navigation";
-import LabCard from "@/sections/users/patients/View/Lab/card";
 import BreadcrumbComponent from "@/components/Breadcrumb";
 import { useLab } from "@/hooks/Labs/useLab";
+import LabCard from "@/components/Laboratories/Card/card";
 
 const PatientLaboratoriosPage = () => {
   const params = useParams();
@@ -56,9 +56,10 @@ const PatientLaboratoriosPage = () => {
       {!isLoading && !isLoadingAuth && !isLoadingLabsDetails && (
         <div className="container space-y-2 mt-2">
           <BreadcrumbComponent items={breadcrumbItems} />
-          {<LabCard labsDetails={labsDetails} />}
+          {<LabCard labsDetails={labsDetails} role="paciente"/>}
         </div>
       )}
+
     </>
   );
 };

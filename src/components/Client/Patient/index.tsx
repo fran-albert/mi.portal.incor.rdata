@@ -1,17 +1,20 @@
 import { formatDateWithTime } from "@/common/helpers/helpers";
-import StudiesCardComponent from "@/sections/users/patients/View/Studies/card";
 import PatientCardComponent from "@/sections/users/patients/View/Card/card";
-import LabCard from "@/sections/users/patients/View/Lab/card";
 import { Patient } from "@/types/Patient/Patient";
 import useRoles from "@/hooks/useRoles";
 import BreadcrumbComponent from "@/components/Breadcrumb";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import StudiesPatientTableComponent from "@/sections/users/patients/View/Studies/Table";
+import { Study } from "@/types/Study/Study";
+import StudiesTableComponent from "@/components/Studies/Table";
 export function ClientPatientComponent({
   patient,
+  studiesByUserId,
+  urls,
 }: {
   patient: Patient | undefined;
+  studiesByUserId: Study[];
+  urls: Record<string, string>;
 }) {
   const { isDoctor } = useRoles();
   const registerByText =
@@ -40,11 +43,13 @@ export function ClientPatientComponent({
         )}
         <div className="md:grid md:gap-6 space-y-4">
           {/* <StudiesCardComponent idUser={Number(patient?.userId)} /> */}
-          <StudiesPatientTableComponent
+          <StudiesTableComponent
             idUser={Number(patient?.userId)}
+            studiesByUserId={studiesByUserId}
+            role="pacientes"
+            urls={urls}
             slug={String(patient?.slug)}
           />
-          {isDoctor && <LabCard id={Number(patient?.userId)} />}
         </div>
       </div>
     </div>

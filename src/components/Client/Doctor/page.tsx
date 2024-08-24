@@ -3,10 +3,21 @@ import React, { useEffect } from "react";
 import { formatDateWithTime } from "@/common/helpers/helpers";
 import DoctorCardComponent from "@/sections/users/doctors/View/Card/card";
 import DoctorSpecialitiesComponent from "@/sections/users/doctors/View/Specialities/card";
-import StudiesCardComponent from "@/sections/users/patients/View/Studies/card";
 import Loading from "@/app/loading";
 import { Doctor } from "@/types/Doctor/Doctor";
-export function DoctorComponent({ doctor }: { doctor: Doctor | undefined }) {
+import BreadcrumbComponent from "@/components/Breadcrumb";
+import StudiesCardComponent from "@/components/Studies/Card/card";
+import StudiesTableComponent from "@/components/Studies/Table";
+import { Study } from "@/types/Study/Study";
+export function DoctorComponent({
+  doctor,
+  urls,
+  studiesByUserId,
+}: {
+  doctor: Doctor | undefined;
+  urls: Record<string, string>;
+  studiesByUserId: Study[];
+}) {
   const registerByText =
     doctor?.registerBy?.firstName +
     " " +
@@ -15,79 +26,32 @@ export function DoctorComponent({ doctor }: { doctor: Doctor | undefined }) {
     "- " +
     formatDateWithTime(String(doctor?.registrationDate));
 
+  const breadcrumbItems = [
+    { label: "Inicio", href: "/inicio" },
+    { label: "Médicos", href: "/usuarios/medicos" },
+    {
+      label: doctor ? `${doctor.firstName} ${doctor.lastName}` : "Médico",
+      href: `/usuarios/medicos/${doctor?.slug}`,
+    },
+  ];
   return (
-    <div className="container md:grid md:grid-cols-[300px_1fr] gap-6 p-4 md:p-6">
-      {doctor && (
-        <DoctorCardComponent doctor={doctor} registerBy={registerByText} />
-      )}
-      <div className="md:grid md:gap-6 space-y-4">
-        {doctor && <DoctorSpecialitiesComponent doctor={doctor} />}
-        <StudiesCardComponent idUser={Number(doctor?.userId)} />
-        {/* <DoctorHealthInsuranceComponent doctor={doctor} /> */}
-        {/* <Card>
-            <CardHeader>
-              <CardTitle>Schedule</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-4">
-                <div className="flex items-center justify-between">
-                  <span>Monday</span>
-                  <span>9:00 AM - 5:00 PM</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Tuesday</span>
-                  <span>9:00 AM - 5:00 PM</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Wednesday</span>
-                  <span>9:00 AM - 5:00 PM</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Thursday</span>
-                  <span>9:00 AM - 5:00 PM</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Friday</span>
-                  <span>9:00 AM - 5:00 PM</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Saturday</span>
-                  <span>Closed</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Sunday</span>
-                  <span>Closed</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card> */}
-        {/* <Card>
-            <CardHeader>
-              <CardTitle>Contact Info</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-2">
-                <div className="flex items-center gap-2">
-                  <BuildingIcon className="h-5 w-5 text-gray-500 dark:text-gray-400" />
-                  <span>Acme Medical Clinic</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <MapPinIcon className="h-5 w-5 text-gray-500 dark:text-gray-400" />
-                  <span>456 Oak St, Anytown USA</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <PhoneIcon className="h-5 w-5 text-gray-500 dark:text-gray-400" />
-                  <span>+1 (555) 555-5556</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <GlobeIcon className="h-5 w-5 text-gray-500 dark:text-gray-400" />
-                  <Link className="text-blue-500 hover:underline" href="#">
-                    www.acmeclinic.com
-                  </Link>
-                </div>
-              </div>
-            </CardContent>
-          </Card> */}
+    <div className="container space-y-2 mt-2">
+      <BreadcrumbComponent items={breadcrumbItems} />
+      <div className="md:grid md:grid-cols-[300px_1fr] gap-6">
+        {doctor && (
+          <DoctorCardComponent doctor={doctor} registerBy={registerByText} />
+        )}
+        <div className="md:grid md:gap-6 space-y-4">
+          {doctor && <DoctorSpecialitiesComponent doctor={doctor} />}
+          <StudiesTableComponent
+            idUser={Number(doctor?.userId)}
+            role="medicos"
+            studiesByUserId={studiesByUserId}
+            urls={urls}
+            slug={String(doctor?.slug)}
+          />
+          <StudiesCardComponent idUser={Number(doctor?.userId)} />
+        </div>
       </div>
     </div>
   );

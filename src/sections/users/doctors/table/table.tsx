@@ -2,6 +2,7 @@ import { getColumns } from "./columns";
 import { Doctor } from "@/types/Doctor/Doctor";
 import { DataTable } from "@/components/Table/table";
 import useRoles from "@/hooks/useRoles";
+import BreadcrumbComponent from "@/components/Breadcrumb";
 
 interface DoctorsTableProps {
   doctors: Doctor[];
@@ -25,13 +26,18 @@ export const DoctorsTable: React.FC<DoctorsTableProps> = ({
     isDoctor,
     isAdmin,
   });
+  const breadcrumbItems = [
+    { label: "Inicio", href: "/inicio" },
+    { label: "Médicos", href: "/usuarios/medicos" },
+  ];
 
   return (
     <div className="container">
-      <h2 className="text-2xl font-semibold text-center mt-6">
+      <h2 className="text-2xl font-semibold text-center mt-6 text-incor">
         Lista de Médicos
       </h2>
-      <div className="overflow-hidden sm:rounded-lg p-4 ">
+      <BreadcrumbComponent items={breadcrumbItems} />
+      <div className="overflow-hidden sm:rounded-lg">
         <DataTable
           columns={doctorColumns}
           data={doctors}
