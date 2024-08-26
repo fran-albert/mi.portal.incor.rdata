@@ -9,7 +9,7 @@ interface EditButtonIconProps {
   id?: number;
   text?: string;
   path?: string;
-  props: any;
+  props?: any;
   slug?: string;
   onClick?: () => void;
   className?: string;

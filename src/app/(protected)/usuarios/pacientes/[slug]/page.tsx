@@ -36,8 +36,6 @@ const PatientPage = () => {
   const { data: ultraSoundImages = {}, isLoading: isLoadingUltraSoundImages } =
     useAllUltraSoundImages(id, studiesByUserId, isLoadingStudiesByUserId);
 
-  console.log(ultraSoundImages);
-
   return (
     <>
       {error && <div>Hubo un error al cargar los pacientes.</div>}

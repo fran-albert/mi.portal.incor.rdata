@@ -8,6 +8,7 @@ import { useParams } from "next/navigation";
 import React from "react";
 import { useStudy } from "@/hooks/Study/useStudy";
 import { useStudyUrls } from "@/hooks/Study/useStudyUrl";
+import { useAllUltraSoundImages } from "@/hooks/Ultra-Sound-Images/useAllUtraSoundImages";
 
 function DoctorPage() {
   const params = useParams();
@@ -31,6 +32,9 @@ function DoctorPage() {
     studiesByUserId
   );
 
+  const { data: ultraSoundImages = {}, isLoading: isLoadingUltraSoundImages } =
+    useAllUltraSoundImages(id, studiesByUserId, isLoadingStudiesByUserId);
+
   return (
     <>
       {error && (
@@ -39,6 +43,7 @@ function DoctorPage() {
         </div>
       )}
       {isLoading ||
+      isLoadingUltraSoundImages ||
       isLoadingUrls ||
       isLoadingStudiesByUserId ||
       isLoadingAuth ? (
@@ -46,6 +51,7 @@ function DoctorPage() {
       ) : (
         <DoctorComponent
           doctor={doctor}
+          ultraSoundImages={ultraSoundImages}
           urls={urls}
           studiesByUserId={studiesByUserId}
         />
