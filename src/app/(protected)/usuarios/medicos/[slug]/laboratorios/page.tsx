@@ -13,7 +13,7 @@ const DoctorLaboratoriosPage = () => {
   const params = useParams();
   const slug = params.slug;
   const slugString = slug as string;
-  const isLoadingAuth = useAuth([Role.SECRETARIA, Role.MEDICO]);
+  const isLoadingAuth = useAuth([Role.MEDICO]);
   const slugParts = slugString.split("-");
   const id = parseInt(slugParts[slugParts.length - 1], 10);
   const { isLoading, doctor, error } = useDoctor({

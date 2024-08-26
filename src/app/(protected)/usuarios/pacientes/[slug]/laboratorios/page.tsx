@@ -14,7 +14,7 @@ const PatientLaboratoriosPage = () => {
   const params = useParams();
   const slug = params.slug;
   const slugString = slug as string;
-  const isLoadingAuth = useAuth([Role.SECRETARIA, Role.MEDICO]);
+  const isLoadingAuth = useAuth([Role.MEDICO]);
   const slugParts = slugString.split("-");
   const id = parseInt(slugParts[slugParts.length - 1], 10);
   const { isLoading, patient, error } = usePatient({
@@ -26,8 +26,6 @@ const PatientLaboratoriosPage = () => {
     fetchLabsDetails: true,
     idUser: id,
   });
-
-  console.log(labsDetails, "labsDetails");
 
   const breadcrumbItems = [
     { label: "Inicio", href: "/inicio" },
@@ -56,10 +54,9 @@ const PatientLaboratoriosPage = () => {
       {!isLoading && !isLoadingAuth && !isLoadingLabsDetails && (
         <div className="container space-y-2 mt-2">
           <BreadcrumbComponent items={breadcrumbItems} />
-          {<LabCard labsDetails={labsDetails} role="paciente"/>}
+          {<LabCard labsDetails={labsDetails} role="paciente" />}
         </div>
       )}
-
     </>
   );
 };
