@@ -33,7 +33,7 @@ function DoctorPage() {
   );
 
   const { data: ultraSoundImages = {}, isLoading: isLoadingUltraSoundImages } =
-    useAllUltraSoundImages(id, studiesByUserId, isLoadingStudiesByUserId);
+    useAllUltraSoundImages(id, studiesByUserId);
 
   return (
     <>
