@@ -31,10 +31,10 @@ const StudiesComponent = ({
   role,
 }: {
   studiesByUserId: Study[];
-  idUser: number;
-  slug: string;
+  idUser?: number;
+  slug?: string;
   ultraSoundImages: { [key: number]: string[] };
-  role: string;
+  role?: string;
   urls: Record<string, string>;
 }) => {
   const { isDoctor } = useRoles();
@@ -131,7 +131,7 @@ const StudiesComponent = ({
         )}
         <StudiesTable
           studiesByUserId={filteredStudies}
-          idUser={idUser}
+          idUser={Number(idUser)}
           ultraSoundImages={ultraSoundImages}
           urls={urls}
         />

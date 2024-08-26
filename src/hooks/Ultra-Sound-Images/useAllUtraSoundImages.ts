@@ -4,13 +4,12 @@ import { Study } from "@/types/Study/Study";
 import { getUltraSoundImages } from "@/actions/Study/Ultra-Sounds/get-ultra-sound-image.action";
 import { UltraSound } from "@/types/Ultra-Sound/Ultra-Sound";
 
-export const useAllUltraSoundImages = (idUser: number | undefined, studies: Study[], isLoadingStudiesByUserId: boolean) => {
+export const useAllUltraSoundImages = (idUser: number | undefined, studies: Study[]) => {
     return useQuery({
-        queryKey: ["allUltraSoundImages", idUser],
+        queryKey: ["studiesByUserId", { idUser }],
         queryFn: async () => {
             if (!idUser) return {};
             const allImages: { [key: number]: string[] } = {};
-
             await Promise.all(
                 studies.map(async (study) => {
                     if (Number(study.studyType?.id) === 2) {
@@ -28,6 +27,6 @@ export const useAllUltraSoundImages = (idUser: number | undefined, studies: Stud
             return allImages;
         },
         staleTime: 1000 * 60,
-        enabled: !!idUser && studies.length > 0 && !isLoadingStudiesByUserId,
+        enabled: !!idUser && studies.length > 0
     });
 };

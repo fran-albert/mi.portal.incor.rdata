@@ -6,12 +6,15 @@ import { Session } from "next-auth";
 import { useStudy } from "@/hooks/Study/useStudy";
 import { useStudyUrls } from "@/hooks/Study/useStudyUrl";
 import MyStudiesCardComponent from "@/sections/My-Studies";
+import StudiesComponent from "@/components/Studies/Component";
+import { useAllUltraSoundImages } from "@/hooks/Ultra-Sound-Images/useAllUtraSoundImages";
 
 function ClientMyStudiesComponent({ session }: { session: Session }) {
   const userId = session?.user?.id ? Number(session.user.id) : undefined;
   const [labs, setLabs] = useState<Study[]>([]);
   const [ecography, setEcography] = useState<Study[]>([]);
-  const { studiesByUserId, isLoadingStudiesByUserId } = useStudy({
+
+  const { studiesByUserId = [], isLoadingStudiesByUserId } = useStudy({
     idUser: userId,
     fetchStudiesByUserId: true,
   });
@@ -20,6 +23,9 @@ function ClientMyStudiesComponent({ session }: { session: Session }) {
     userId,
     studiesByUserId || []
   );
+
+  const { data: ultraSoundImages = {}, isLoading: isLoadingUltraSoundImages } =
+    useAllUltraSoundImages(userId, studiesByUserId, isLoadingStudiesByUserId);
 
   useEffect(() => {
     if (studiesByUserId) {
@@ -37,7 +43,18 @@ function ClientMyStudiesComponent({ session }: { session: Session }) {
     return <Loading isLoading={true} />;
   }
 
-  return <MyStudiesCardComponent idUser={Number(userId)} />;
+  return (
+    <div className="container mt-2">
+      {/* <MyStudiesCardComponent idUser={Number(userId)} /> */}
+      {studiesByUserId && (
+        <StudiesComponent
+          studiesByUserId={studiesByUserId}
+          urls={urls}
+          ultraSoundImages={ultraSoundImages}
+        />
+      )}
+    </div>
+  );
 }
 
 export default ClientMyStudiesComponent;

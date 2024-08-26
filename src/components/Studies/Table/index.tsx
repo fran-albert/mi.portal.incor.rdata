@@ -51,6 +51,9 @@ const StudiesTable = ({
   );
 
   const toggleExpand = (studyId: number) => {
+    console.log(`Toggling expand for study ${studyId}`);
+    console.log("ultraSoundImages for this study:", ultraSoundImages[studyId]); // Verifica si las imágenes están disponibles al expandir
+
     setExpandedStudies((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(studyId)) {
