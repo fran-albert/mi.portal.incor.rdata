@@ -39,7 +39,7 @@ export default function ResetDefaultPasswordDialog({ idUser }: Props) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button onClick={toggleDialog} variant={"ghost"}>
+        <Button onClick={toggleDialog} variant={"outline"}>
           Resetear contraseña
         </Button>
       </DialogTrigger>

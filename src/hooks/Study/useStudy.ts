@@ -15,7 +15,14 @@ interface Props {
 }
 
 export const useStudy = ({ auth = true, idUser, fetchTotal = false, fetchStudiesByUserId = false, studyTypeAuth = false, studyTypeId, idStudy }: Props) => {
-
+   
+    const { isLoading: isLoadingStudiesByUserId, isError: isErrorStudiesByUserId, error: errorStudiesByUserId, data: studiesByUserId } = useQuery({
+        queryKey: ["studiesByUserId", idUser],
+        queryFn: () => getStudiesByUserId(Number(idUser)),
+        staleTime: 1000 * 60,
+        enabled: !!idUser && fetchStudiesByUserId
+    });
+   
     const { isLoading: isLoadingTotalStudies, isError: isErrorTotalStudies, error: errorTotalStudies, data: totalStudies = 0 } = useQuery({
         queryKey: ["totalStudies"],
         queryFn: () => getTotalStudies(),
@@ -60,12 +67,7 @@ export const useStudy = ({ auth = true, idUser, fetchTotal = false, fetchStudies
         enabled: auth && fetchTotal
     });
 
-    const { isLoading: isLoadingStudiesByUserId, isError: isErrorStudiesByUserId, error: errorStudiesByUserId, data: studiesByUserId } = useQuery({
-        queryKey: ["studiesByUserId", idUser],
-        queryFn: () => getStudiesByUserId(Number(idUser)),
-        staleTime: 1000 * 60,
-        enabled: !!idUser && fetchStudiesByUserId
-    });
+
 
     const { isLoading: isLoadingStudyType, isError: isErrorStudyType, error: errorStudyType, data: studyType } = useQuery({
         queryKey: ["studyType"],

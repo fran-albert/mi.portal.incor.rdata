@@ -41,7 +41,7 @@ export default function StudyDialog({ idUser }: AddStudyProps) {
     formState: { errors },
     setValue,
   } = useForm();
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const { uploadStudyMutation } = useStudyMutations();
   const onSubmit: SubmitHandler<any> = async (data) => {
     const formData = new FormData();
@@ -52,8 +52,10 @@ export default function StudyDialog({ idUser }: AddStudyProps) {
       formData.append("UserId", String(idUser));
     }
 
-    if (selectedFile) {
-      formData.append("StudyFile", selectedFile);
+    if (selectedFiles.length > 0) {
+      selectedFiles.forEach((file) => {
+        formData.append("StudyFiles", file);
+      });
     }
     const date = data.date;
     const formattedDateISO = moment(date).toISOString();
@@ -77,6 +79,12 @@ export default function StudyDialog({ idUser }: AddStudyProps) {
   const handleStudyChange = (study: Study) => {
     setSelectedStudy(study);
     setValue("StudyTypeId", study.id);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setSelectedFiles(Array.from(e.target.files));
+    }
   };
 
   return (
@@ -111,9 +119,7 @@ export default function StudyDialog({ idUser }: AddStudyProps) {
                 type="file"
                 className="text-black"
                 multiple
-                onChange={(e) =>
-                  setSelectedFile(e.target.files && e.target.files[0])
-                }
+                onChange={handleFileChange}
               />
             </div>
             <div className="space-y-2">

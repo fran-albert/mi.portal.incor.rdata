@@ -20,7 +20,7 @@ const BreadcrumbComponent: React.FC<BreadcrumbComponentProps> = ({ items }) => {
       <BreadcrumbList>
         {items.map((item, index) => (
           <React.Fragment key={index}>
-            <BreadcrumbItem className="text-teal-600 font-medium hover:text-teal-800">
+            <BreadcrumbItem className="text-gray-600 font-medium hover:text-gray-800">
               {item.href ? (
                 <Link href={item.href}>
                   <>{item.label}</>

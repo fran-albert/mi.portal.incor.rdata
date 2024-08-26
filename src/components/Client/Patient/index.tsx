@@ -6,14 +6,16 @@ import BreadcrumbComponent from "@/components/Breadcrumb";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Study } from "@/types/Study/Study";
-import StudiesTableComponent from "@/components/Studies/Table";
+import StudiesComponent from "@/components/Studies/Component";
 export function ClientPatientComponent({
   patient,
   studiesByUserId,
   urls,
+  ultraSoundImages,
 }: {
   patient: Patient | undefined;
   studiesByUserId: Study[];
+  ultraSoundImages: { [key: number]: string[] };
   urls: Record<string, string>;
 }) {
   const { isDoctor } = useRoles();
@@ -37,14 +39,15 @@ export function ClientPatientComponent({
   return (
     <div className="container space-y-2 mt-2">
       <BreadcrumbComponent items={breadcrumbItems} />
-      <div className="md:grid md:grid-cols-[300px_1fr] gap-6">
+      <div className="md:grid md:grid-cols-[320px_1fr] gap-6">
         {patient && (
           <PatientCardComponent patient={patient} registerBy={registerByText} />
         )}
         <div className="md:grid md:gap-6 space-y-4">
           {/* <StudiesCardComponent idUser={Number(patient?.userId)} /> */}
-          <StudiesTableComponent
+          <StudiesComponent
             idUser={Number(patient?.userId)}
+            ultraSoundImages={ultraSoundImages}
             studiesByUserId={studiesByUserId}
             role="pacientes"
             urls={urls}

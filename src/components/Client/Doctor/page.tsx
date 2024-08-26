@@ -1,14 +1,11 @@
 "use client";
-import React, { useEffect } from "react";
+import React from "react";
 import { formatDateWithTime } from "@/common/helpers/helpers";
 import DoctorCardComponent from "@/sections/users/doctors/View/Card/card";
-import DoctorSpecialitiesComponent from "@/sections/users/doctors/View/Specialities/card";
-import Loading from "@/app/loading";
 import { Doctor } from "@/types/Doctor/Doctor";
 import BreadcrumbComponent from "@/components/Breadcrumb";
-import StudiesCardComponent from "@/components/Studies/Card/card";
-import StudiesTableComponent from "@/components/Studies/Table";
 import { Study } from "@/types/Study/Study";
+import StudiesComponent from "@/components/Studies/Component";
 export function DoctorComponent({
   doctor,
   urls,
@@ -37,20 +34,19 @@ export function DoctorComponent({
   return (
     <div className="container space-y-2 mt-2">
       <BreadcrumbComponent items={breadcrumbItems} />
-      <div className="md:grid md:grid-cols-[300px_1fr] gap-6">
+      <div className="md:grid md:grid-cols-[320px_1fr] gap-6">
         {doctor && (
           <DoctorCardComponent doctor={doctor} registerBy={registerByText} />
         )}
         <div className="md:grid md:gap-6 space-y-4">
-          {doctor && <DoctorSpecialitiesComponent doctor={doctor} />}
-          <StudiesTableComponent
+          <StudiesComponent
             idUser={Number(doctor?.userId)}
             role="medicos"
             studiesByUserId={studiesByUserId}
             urls={urls}
             slug={String(doctor?.slug)}
           />
-          <StudiesCardComponent idUser={Number(doctor?.userId)} />
+          {/* <StudiesCardComponent idUser={Number(doctor?.userId)} /> */}
         </div>
       </div>
     </div>

@@ -8,6 +8,7 @@ import { useParams, useSearchParams } from "next/navigation";
 import React, { useEffect } from "react";
 import { useStudy } from "@/hooks/Study/useStudy";
 import { useStudyUrls } from "@/hooks/Study/useStudyUrl";
+import { useAllUltraSoundImages } from "@/hooks/Ultra-Sound-Images/useAllUtraSoundImages";
 
 const PatientPage = () => {
   const params = useParams();
@@ -16,10 +17,12 @@ const PatientPage = () => {
   const isLoadingAuth = useAuth([Role.SECRETARIA, Role.MEDICO]);
   const slugParts = slugString.split("-");
   const id = parseInt(slugParts[slugParts.length - 1], 10);
+
   const { isLoading, patient, error } = usePatient({
     auth: !isLoadingAuth,
     id,
   });
+
   const { studiesByUserId = [], isLoadingStudiesByUserId } = useStudy({
     idUser: id,
     fetchStudiesByUserId: true,
@@ -30,10 +33,16 @@ const PatientPage = () => {
     studiesByUserId
   );
 
+  const { data: ultraSoundImages = {}, isLoading: isLoadingUltraSoundImages } =
+    useAllUltraSoundImages(id, studiesByUserId, isLoadingStudiesByUserId);
+
+  console.log(ultraSoundImages);
+
   return (
     <>
       {error && <div>Hubo un error al cargar los pacientes.</div>}
       {isLoading ||
+      isLoadingUltraSoundImages ||
       isLoadingUrls ||
       isLoadingStudiesByUserId ||
       isLoadingAuth ? (
@@ -43,6 +52,7 @@ const PatientPage = () => {
           patient={patient}
           urls={urls}
           studiesByUserId={studiesByUserId}
+          ultraSoundImages={ultraSoundImages}
         />
       )}
     </>

@@ -1,12 +1,7 @@
 import React, { useState } from "react";
 import { formatDate } from "@/common/helpers/helpers";
 import useRoles from "@/hooks/useRoles";
-import { useStudyUrls } from "@/hooks/Study/useStudyUrl";
-import { useStudy } from "@/hooks/Study/useStudy";
-import Loading from "@/app/loading";
 import { ViewButton } from "@/components/Button/View/button";
-import { BsFillFileTextFill } from "react-icons/bs";
-import { FaRegFilePdf } from "react-icons/fa";
 import { Study } from "@/types/Study/Study";
 import {
   Table,
@@ -17,175 +12,221 @@ import {
   TableHead,
   TableCell,
 } from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { Search } from "@/components/ui/search";
-import { Label } from "@/components/ui/label";
 import DeleteStudyDialog from "../Delete/dialog";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import StudyDialog from "../Upload/dialog";
+import { FaRegFilePdf, FaRegImage } from "react-icons/fa";
+import { Button } from "@/components/ui/button";
 
-const StudiesTableComponent = ({
+const StudiesTable = ({
   studiesByUserId,
   idUser,
   urls,
-  slug,
-  role,
+  ultraSoundImages,
 }: {
   studiesByUserId: Study[];
   idUser: number;
-  slug: string;
-  role: string;
   urls: Record<string, string>;
+  ultraSoundImages: { [key: number]: string[] };
 }) => {
   const { isSecretary } = useRoles();
 
   const [selectedStudyType, setSelectedStudyType] = useState<string | null>(
-    "Todos"
+    "Seleccionar tipo de estudio..."
+  );
+  const [selectedYear, setSelectedYear] = useState<string | null>(
+    "Seleccionar año..."
+  );
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [expandedStudies, setExpandedStudies] = useState<Set<number>>(
+    new Set()
   );
 
-  const groupStudiesByType = (studiesByUserId: Study[]) => {
-    return studiesByUserId?.reduce((acc, study) => {
-      const name = study.studyType?.name;
-      if (!name) return acc;
-      if (!acc[name]) {
-        acc[name] = [];
+  const toggleExpand = (studyId: number) => {
+    setExpandedStudies((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(studyId)) {
+        newSet.delete(studyId);
+      } else {
+        newSet.add(studyId);
       }
-      acc[name].push(study);
-      return acc;
-    }, {} as Record<string, Study[]>);
+      return newSet;
+    });
   };
 
-  const groupedStudies = groupStudiesByType(studiesByUserId);
-
   const filteredStudies = studiesByUserId.filter((study) => {
-    return (
-      selectedStudyType === "Todos" ||
-      study.studyType?.name === selectedStudyType
-    );
+    const matchesType =
+      selectedStudyType === "Seleccionar tipo de estudio..." ||
+      study.studyType?.name === selectedStudyType;
+
+    const matchesYear =
+      selectedYear === "Seleccionar año..." ||
+      (study.date &&
+        new Date(study.date).getFullYear().toString() === selectedYear);
+
+    return matchesType && matchesYear;
   });
 
-  const studyTypes = ["Todos", ...Object.keys(groupedStudies)];
+  const totalPages = Math.ceil(filteredStudies.length / rowsPerPage);
+  const indexOfLastRow = currentPage * rowsPerPage;
+  const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+  const currentRows = filteredStudies.slice(indexOfFirstRow, indexOfLastRow);
 
   return (
-    <>
-      <Card>
-        <CardHeader className="flex justify-between items-start">
-          <CardTitle className="flex items-center text-incor">
-            <BsFillFileTextFill className="mr-2" />
-            Estudios Médicos
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center mb-4">
-            <Select
-              onValueChange={setSelectedStudyType}
-              value={selectedStudyType || ""}
-            >
-              <SelectTrigger className="w-full mx-auto">
-                <SelectValue placeholder="Seleccione tipo de estudio" />
-              </SelectTrigger>
-              <SelectContent>
-                {studyTypes.map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {type}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <div className="ml-4">
-              <Button variant="outline">
-                <Link
-                  className="text-gray-700 hover:text-gray-700"
-                  href={`/usuarios/${role}/${slug}/laboratorios`}
-                >
-                  Ver Tabla Laboratorios
-                </Link>
-              </Button>
-            </div>
-          </div>
+    <div>
+      <Table>
+        <TableHeader className="sticky top-0 bg-white z-10 border-b">
+          <TableRow>
+            <TableHead className="whitespace-nowrap w-[5%] text-center align-middle">
+              #
+            </TableHead>
+            <TableHead className="whitespace-nowrap w-[5%] text-center align-middle"></TableHead>
+            <TableHead className="whitespace-nowrap w-[20%] text-left align-middle">
+              Tipo
+            </TableHead>
+            <TableHead className="whitespace-nowrap w-[35%] text-left align-middle">
+              Nota
+            </TableHead>
+            <TableHead className="whitespace-nowrap w-[20%] text-left align-middle">
+              Fecha
+            </TableHead>
+            <TableHead className="whitespace-nowrap w-[15%] text-left align-middle">
+              Acciones
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {currentRows.length > 0 ? (
+            currentRows.map((study, index) => (
+              <React.Fragment key={study.id}>
+                {/* Fila principal para el estudio, PDF o imagen principal */}
+                <TableRow className="hover:bg-gray-50">
+                  <TableCell className="font-medium text-center align-middle">
+                    {index + 1}
+                  </TableCell>
 
-          <Table>
-            <TableHeader className="sticky top-0 bg-white z-10 border-b">
-              <TableRow className="bg-gray-100">
-                <TableHead className="whitespace-nowrap w-[5%] text-center align-middle">
-                  #
-                </TableHead>
-                <TableHead className="whitespace-nowrap w-[25%] text-left align-middle">
-                  Tipo
-                </TableHead>
-                <TableHead className="whitespace-nowrap w-[35%] text-left align-middle">
-                  Nota
-                </TableHead>
-                <TableHead className="whitespace-nowrap w-[20%] text-left align-middle">
-                  Fecha
-                </TableHead>
-                <TableHead className="whitespace-nowrap w-[15%] text-left align-middle">
-                  Acciones
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredStudies.length > 0 ? (
-                filteredStudies.map((study, index) => (
-                  <TableRow key={study.id} className="hover:bg-gray-50">
-                    <TableCell className="font-medium text-center align-middle">
-                      {index + 1}
-                    </TableCell>
-                    <TableCell className="">
-                      <span>{study.studyType?.name}</span>
-                    </TableCell>
-                    <TableCell className="items-center align-middle">
-                      <span>{study.note}</span>
-                    </TableCell>
-                    <TableCell className="align-middle">
-                      <span>{formatDate(String(study.date))}</span>
-                    </TableCell>
-                    <TableCell className="align-middle">
-                      <div className="flex items-center gap-2">
-                        <ViewButton url={urls[study.id]} text="Ver" />
-                        {isSecretary && (
-                          <DeleteStudyDialog
-                            studies={studiesByUserId}
-                            idStudy={study.id}
-                          />
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={5}
-                    className="text-center py-4 text-gray-500 align-middle"
+                  <TableCell className="text-center align-middle">
+                    {study.locationS3?.endsWith(".pdf") && (
+                      <FaRegFilePdf className="text-red-500" size={20} />
+                    )}
+                    {[".jpg", ".jpeg", ".png"].some((ext) =>
+                      study.locationS3?.endsWith(ext)
+                    ) && <FaRegImage className="text-blue-500" size={20} />}
+                  </TableCell>
+                  <TableCell className="text-base">
+                    <span>{study.studyType?.name}</span>
+                  </TableCell>
+                  <TableCell className="items-center align-middle text-base">
+                    <span>{study.note}</span>
+                  </TableCell>
+                  <TableCell className="align-middle text-base">
+                    <span>{formatDate(String(study.date))}</span>
+                  </TableCell>
+                  <TableCell className="align-middle text-base">
+                    <div className="flex items-center gap-2">
+                      <Button
+                        onClick={() => toggleExpand(study.id)}
+                        variant={"ghost"}
+                        className="text-gray-600"
+                      >
+                        {expandedStudies.has(study.id) ? "-" : "+"}
+                      </Button>
+                      <ViewButton url={urls[study.id]} text="Ver" />
+                      {isSecretary && (
+                        <DeleteStudyDialog
+                          studies={studiesByUserId}
+                          idStudy={study.id}
+                        />
+                      )}
+                    </div>
+                  </TableCell>
+                </TableRow>
+                {expandedStudies.has(study.id) &&
+                  ultraSoundImages[study.id]?.map((image, idx) => (
+                    <TableRow
+                      key={`${study.id}-${idx}`}
+                      className="hover:bg-gray-50"
+                    >
+                      <TableCell className="font-medium text-center align-middle">
+                        -
+                      </TableCell>
+                      <TableCell className="text-center align-middle">
+                        <FaRegImage className="text-blue-500" size={20} />
+                      </TableCell>
+                      <TableCell className="text-base" colSpan={3}>
+                        <span>Imagen de Ecografía {idx + 1}</span>
+                      </TableCell>
+                      <TableCell className="align-middle text-base">
+                        <ViewButton url={image} text="Ver Imagen" />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </React.Fragment>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell
+                colSpan={6}
+                className="text-center py-4 text-gray-500 align-middle"
+              >
+                No hay estudios cargados.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+
+      {/* Mostrar paginación solo si hay estudios */}
+      {filteredStudies.length > 0 && (
+        <>
+          <div className="text-gray-500 mt-4 text-xs">
+            Mostrando {currentRows.length} de {filteredStudies.length}{" "}
+            resultados encontrados
+          </div>
+          <Pagination className="mt-4">
+            <PaginationContent>
+              <PaginationPrevious
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                className="cursor-pointer text-incor hover:text-incor"
+              />
+              {[...Array(totalPages)].map((_, i) => (
+                <PaginationItem key={i}>
+                  <PaginationLink
+                    isActive={currentPage === i + 1}
+                    className="cursor-pointer text-incor hover:text-incor"
+                    onClick={() => setCurrentPage(i + 1)}
                   >
-                    No hay estudios cargados.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-            {isSecretary && (
-              <TableFooter>
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center align-middle">
-                    <StudyDialog idUser={idUser} />
-                  </TableCell>
-                </TableRow>
-              </TableFooter>
-            )}
-          </Table>
-        </CardContent>
-      </Card>
-    </>
+                    {i + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationNext
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                className="cursor-pointer text-incor hover:text-incor"
+              />
+            </PaginationContent>
+          </Pagination>
+        </>
+      )}
+
+      {/* Mostrar el StudyDialog debajo de la paginación */}
+      {isSecretary && (
+        <div className="text-center mt-4">
+          <StudyDialog idUser={idUser} />
+        </div>
+      )}
+    </div>
   );
 };
 
-export default StudiesTableComponent;
+export default StudiesTable;

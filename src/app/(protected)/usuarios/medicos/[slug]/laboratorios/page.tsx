@@ -28,7 +28,7 @@ const DoctorLaboratoriosPage = () => {
 
   const breadcrumbItems = [
     { label: "Inicio", href: "/inicio" },
-    { label: "Pacientes", href: "/usuarios/pacientes" },
+    { label: "Médicos", href: "/usuarios/medicos" },
     {
       label: doctor ? `${doctor.firstName} ${doctor.lastName}` : "Médico",
       href: `/usuarios/medicos/${doctor?.slug}`,
@@ -42,7 +42,7 @@ const DoctorLaboratoriosPage = () => {
     <>
       {error && (
         <div className="text-red-500">
-          Hubo un error al cargar los laboratorios del paciente.
+          Hubo un error al cargar los laboratorios del médico.
         </div>
       )}
       {(isLoading || isLoadingAuth || isLoadingLabsDetails) && (

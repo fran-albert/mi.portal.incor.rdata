@@ -63,15 +63,16 @@ const PatientCardComponent = ({
             Creado por {registerBy || "Desconocido"}
           </CardDescription>
           {isSecretary && (
-            <div className="flex">
-              <div className="text-blue-600 hover:text-blue-800">
+            <div className="flex justify-center gap-4">
+              <div className="text-gray-600 hover:text-gray-800">
                 <EditButtonIcon
                   slug={patient?.slug}
                   id={patient?.id}
+                  props={{ variant: "outline" }}
                   path="usuarios/pacientes"
                 />
               </div>
-              <div className="text-blue-600 hover:text-blue-800">
+              <div className="text-gray-600 hover:text-gray-800">
                 <ResetDefaultPasswordDialog idUser={Number(patient?.userId)} />
               </div>
             </div>

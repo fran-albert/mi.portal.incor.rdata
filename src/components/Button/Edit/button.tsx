@@ -3,10 +3,13 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { FaPencilAlt } from "react-icons/fa";
 
+import { cva, type VariantProps } from "class-variance-authority"
+
 interface EditButtonIconProps {
   id?: number;
   text?: string;
   path?: string;
+  props: any;
   slug?: string;
   onClick?: () => void;
   className?: string;
@@ -16,6 +19,7 @@ export const EditButtonIcon: React.FC<EditButtonIconProps> = ({
   id,
   text = "Edit",
   slug,
+  props,
   path,
   onClick,
   className = "",
@@ -28,7 +32,7 @@ export const EditButtonIcon: React.FC<EditButtonIconProps> = ({
 
   return (
     <div className={`flex justify-center ${className}`}>
-      <Button variant="ghost" onClick={handleEdit}>
+      <Button {...props} onClick={handleEdit}>
         {onClick ? (
           <Button variant="ghost" size="icon">
             <ActionIcon

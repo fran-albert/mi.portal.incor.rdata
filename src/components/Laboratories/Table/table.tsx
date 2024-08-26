@@ -50,7 +50,6 @@ export const LabPatientTable = ({ labsDetails }: { labsDetails: Lab[] }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [transformedLabs, setTransformedLabs] = useState<LabData[]>([]);
   const [dates, setDates] = useState<string[]>([]);
- 
 
   useEffect(() => {
     setCurrentPage(1);
