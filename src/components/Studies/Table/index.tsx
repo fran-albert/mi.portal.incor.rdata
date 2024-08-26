@@ -51,9 +51,6 @@ const StudiesTable = ({
   );
 
   const toggleExpand = (studyId: number) => {
-    console.log(`Toggling expand for study ${studyId}`);
-    console.log("ultraSoundImages for this study:", ultraSoundImages[studyId]); // Verifica si las imágenes están disponibles al expandir
-
     setExpandedStudies((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(studyId)) {
@@ -134,14 +131,19 @@ const StudiesTable = ({
                     <span>{formatDate(String(study.date))}</span>
                   </TableCell>
                   <TableCell className="align-middle text-base">
-                    <div className="flex items-center gap-2">
-                      <Button
-                        onClick={() => toggleExpand(study.id)}
-                        variant={"ghost"}
-                        className="text-gray-600"
-                      >
-                        {expandedStudies.has(study.id) ? "-" : "+"}
-                      </Button>
+                    <div className="flex items-center justify-center gap-2">
+                      {study.studyType?.id === 2 ? (
+                        <Button
+                          onClick={() => toggleExpand(study.id)}
+                          variant={"ghost"}
+                          className="text-gray-600"
+                          style={{ minWidth: "24px" }}
+                        >
+                          {expandedStudies.has(study.id) ? "-" : "+"}
+                        </Button>
+                      ) : (
+                        <span style={{ width: "40px" }}></span> // Espacio para alinear botones
+                      )}
                       <ViewButton url={urls[study.id]} text="Ver" />
                       {isSecretary && (
                         <DeleteStudyDialog
@@ -153,6 +155,7 @@ const StudiesTable = ({
                   </TableCell>
                 </TableRow>
                 {expandedStudies.has(study.id) &&
+                  Array.isArray(ultraSoundImages[study.id]) &&
                   ultraSoundImages[study.id]?.map((image, idx) => (
                     <TableRow
                       key={`${study.id}-${idx}`}

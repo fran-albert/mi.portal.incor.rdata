@@ -68,6 +68,7 @@ export default function StudyDialog({ idUser }: AddStudyProps) {
         success: "Estudio subido con éxito!",
         error: "Error al agregar el estudio",
       });
+      setIsOpen(false);
     } catch (error) {
       console.error("Error al agregar el estudio", error);
       toast.error("Error al agregar el estudio");

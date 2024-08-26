@@ -8,7 +8,8 @@ export const useStudyMutations = () => {
         mutationFn: uploadStudy,
         onSuccess: async (study, variables, context) => {
             await queryClient.invalidateQueries({ queryKey: ['studiesByUserId'] });
-            // await queryClient.invalidateQueries({ queryKey: ['allUltraSoundImages'] });
+            await queryClient.invalidateQueries({ queryKey: ['allUltraSoundImages'] });
+            await queryClient.invalidateQueries({ queryKey: ['getStudiesUrlByUserId'] });
             console.log("Study created", study, variables, context);
 
         },
@@ -22,7 +23,8 @@ export const useStudyMutations = () => {
         mutationFn: (id: number) => deleteStudy(id),
         onSuccess: (patient, variables, context) => {
             queryClient.invalidateQueries({ queryKey: ['studiesByUserId'] })
-            // queryClient.invalidateQueries({ queryKey: ['allUltraSoundImages'] });
+            queryClient.invalidateQueries({ queryKey: ['allUltraSoundImages'] });
+            queryClient.invalidateQueries({ queryKey: ['getStudiesUrlByUserId'] });
             console.log("Study deleted", patient, variables, context);
         },
         onError: (error, variables, context) => {

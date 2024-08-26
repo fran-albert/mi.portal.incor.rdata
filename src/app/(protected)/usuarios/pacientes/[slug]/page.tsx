@@ -28,20 +28,22 @@ const PatientPage = () => {
     fetchStudiesByUserId: true,
   });
 
-  const { data: urls = {}, isLoading: isLoadingUrls } = useStudyUrls(
+  const { data: urls = {}, isFetching: isFetchingUrls } = useStudyUrls(
     id,
     studiesByUserId
   );
 
-  const { data: ultraSoundImages = {}, isLoading: isLoadingUltraSoundImages } =
-    useAllUltraSoundImages(id, studiesByUserId);
+  const {
+    data: ultraSoundImages = {},
+    isFetching: isFetchingUltraSoundImages,
+  } = useAllUltraSoundImages(id, studiesByUserId);
 
   return (
     <>
       {error && <div>Hubo un error al cargar los pacientes.</div>}
       {isLoading ||
-      isLoadingUltraSoundImages ||
-      isLoadingUrls ||
+      isFetchingUltraSoundImages ||
+      isFetchingUrls ||
       isLoadingStudiesByUserId ||
       isLoadingAuth ? (
         <Loading isLoading={true} />
