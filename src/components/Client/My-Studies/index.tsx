@@ -25,7 +25,7 @@ function ClientMyStudiesComponent({ session }: { session: Session }) {
   );
 
   const { data: ultraSoundImages = {}, isLoading: isLoadingUltraSoundImages } =
-    useAllUltraSoundImages(userId, studiesByUserId, isLoadingStudiesByUserId);
+    useAllUltraSoundImages(userId, studiesByUserId);
 
   useEffect(() => {
     if (studiesByUserId) {

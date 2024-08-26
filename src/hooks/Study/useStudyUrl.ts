@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export const useStudyUrls = (idUser: number | undefined, studies: Study[]) => {
     return useQuery({
-        queryKey: ["urlsByUserId", { idUser }],
+        queryKey: ["studiesByUserId", { idUser }],
         queryFn: async () => {
             if (!idUser) return {};
             const urls: { [key: number]: string } = {};
