@@ -7,7 +7,6 @@ import useAuth from "@/hooks/Auth/useAuth";
 import { useParams } from "next/navigation";
 import React, { useEffect } from "react";
 import { useStudy } from "@/hooks/Study/useStudy";
-import { useStudyUrls } from "@/hooks/Study/useStudyUrl";
 import { useAllUltraSoundImages } from "@/hooks/Ultra-Sound-Images/useAllUtraSoundImages";
 import { useStudyAndImageUrls } from "@/hooks/Study/useStudyAndImageUrls";
 import { useLoadingStore } from "@/stores/useLoading";
