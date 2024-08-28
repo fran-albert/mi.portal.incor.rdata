@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FaRegFilePdf } from "react-icons/fa";
 import { formatDate } from "@/common/helpers/helpers";
 import useRoles from "@/hooks/useRoles";
-import { useStudyUrls } from "@/hooks/Study/useStudyUrl";
 import { useStudy } from "@/hooks/Study/useStudy";
 import Loading from "@/app/loading";
 import { ScrollArea } from "@/components/ui/scroll-area";
