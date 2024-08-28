@@ -1,97 +1,161 @@
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FaRegFilePdf } from "react-icons/fa";
+import React, { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { FaRegFilePdf, FaRegImage } from "react-icons/fa";
 import { formatDate } from "@/common/helpers/helpers";
-import useRoles from "@/hooks/useRoles";
-import { useStudyUrls } from "@/hooks/Study/useStudyUrl";
-import { useStudy } from "@/hooks/Study/useStudy";
-import Loading from "@/app/loading";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { ViewButton } from "@/components/Button/View/button";
-import { BsFillFileTextFill } from "react-icons/bs";
 import { Button } from "@/components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
 import { Study } from "@/types/Study/Study";
-const MyStudiesCardComponent = ({ idUser }: { idUser: number }) => {
-  const { isSecretary, isDoctor } = useRoles();
-  const { studiesByUserId = [], isLoadingStudiesByUserId } = useStudy({
-    idUser: idUser,
-    fetchStudiesByUserId: true,
-  });
+import { Search } from "@/components/ui/search";
 
-  const { data: urls = {}, isLoading: isLoadingUrls } = useStudyUrls(
-    idUser,
-    studiesByUserId
+const MyStudiesCardComponent = ({
+  studiesByUserId,
+  urls,
+}: {
+  studiesByUserId: Study[];
+  urls: any;
+}) => {
+  const [expandedStudies, setExpandedStudies] = useState<Set<number>>(
+    new Set()
   );
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const groupStudiesByType = (studiesByUserId: Study[]) => {
-    return studiesByUserId.reduce((acc, study) => {
-      const name = study.studyType?.name;
-      if (!name) return acc;
-      if (!acc[name]) {
-        acc[name] = [];
+  const toggleExpand = (studyId: number) => {
+    setExpandedStudies((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(studyId)) {
+        newSet.delete(studyId);
+      } else {
+        newSet.add(studyId);
       }
-      acc[name].push(study);
-      return acc;
-    }, {} as Record<string, Study[]>);
+      return newSet;
+    });
   };
 
-  const groupedStudies = groupStudiesByType(studiesByUserId);
-  const hasStudies = Object.keys(groupedStudies).length > 0;
-  if (isLoadingStudiesByUserId || isLoadingUrls) {
-    return <Loading isLoading={true} />;
-  }
+  const filteredStudies = studiesByUserId.filter(
+    (study) =>
+      study.studyType?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      study.note?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <div className="container mt-2">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center text-incor">
-            <BsFillFileTextFill className="mr-2" />
-            Mis Estudios Médicos
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ScrollArea className="w-full">
-            {hasStudies ? (
-              Object.entries(groupedStudies).map(
-                ([studyType, studiesOfType]) => (
-                  <div key={studyType} className="mb-6">
-                    <h3 className="flex items-center text-lg font-semibold mb-2 text-incor">
-                      {studyType}
-                    </h3>
-                    {studiesOfType.map((study) => (
-                      <div
-                        key={study.id}
-                        className="grid grid-cols-[50px_1fr_auto] gap-4 items-center p-2 rounded hover:bg-gray-50 transition-colors duration-200"
+    <div className="container mx-auto p-4">
+      <h2 className="text-2xl font-bold text-center mb-6 text-incor">
+        Mis Estudios Médicos
+      </h2>
+      <div className="mb-6 flex items-center">
+        <Search
+          placeholder={"Buscar estudios..."}
+          className="w-full px-4 py-2 border rounded-md"
+          value={searchTerm}
+          color="#01A9A4"
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <AnimatePresence>
+          {filteredStudies.length > 0 ? (
+            filteredStudies.map((study) => (
+              <motion.div
+                key={study.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Card className="w-full h-full flex flex-col">
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      <span className="text-lg font-semibold text-incor">
+                        {study.studyType?.name}
+                      </span>
+                      <FaRegFilePdf className="text-red-500" size={24} />
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex-grow">
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Fecha: {formatDate(String(study.date))}
+                    </p>
+                    <p className="text-sm mb-4">{study.note}</p>
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        onClick={() =>
+                          window.open(urls[study.id]?.pdfUrl || "#", "_blank")
+                        }
+                        variant="outline"
+                        size="sm"
                       >
-                        <FaRegFilePdf
-                          className="w-6 h-6 text-red-600 cursor-pointer"
-                          onClick={() => window.open(urls[study.id], "_blank")}
-                        />
-                        <div className="grid gap-1">
-                          <span className="text-sm font-medium">
-                            {study?.note}
-                          </span>
-                          <div className="text-xs text-gray-500">
-                            {formatDate(String(study.date))}
-                          </div>
-                        </div>
-                        <div className="flex gap-2">
-                          <ViewButton url={urls[study.id]} text="Ver" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )
-              )
-            ) : (
-              <div className="flex justify-center items-center h-full text-gray-500">
-                No hay estudios cargados.
-              </div>
-            )}
-          </ScrollArea>
-        </CardContent>
-      </Card>
+                        Ver PDF
+                      </Button>
+                      {study.studyType?.id === 2 &&
+                        urls?.[study.id]?.imageUrls?.length > 0 && (
+                          <Button
+                            onClick={() => toggleExpand(study.id)}
+                            variant="outline"
+                            size="sm"
+                          >
+                            {expandedStudies.has(study.id)
+                              ? "Ocultar imágenes"
+                              : "Ver imágenes"}
+                          </Button>
+                        )}
+                    </div>
+                  </CardContent>
+                  <AnimatePresence>
+                    {expandedStudies.has(study.id) && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <CardFooter className="flex flex-col items-start gap-2 pt-4 border-t">
+                          {urls[study.id]?.imageUrls?.map(
+                            (image: string, idx: number) => (
+                              <div
+                                key={`${study.id}-${idx}`}
+                                className="flex items-center gap-2 w-full"
+                              >
+                                <FaRegImage
+                                  className="text-blue-500 flex-shrink-0"
+                                  size={20}
+                                />
+                                <span className="text-sm flex-grow">
+                                  Imagen de Ecografía {idx + 1}
+                                </span>
+                                <Button
+                                  onClick={() => window.open(image, "_blank")}
+                                  variant="outline"
+                                  size="sm"
+                                >
+                                  Ver
+                                </Button>
+                              </div>
+                            )
+                          )}
+                        </CardFooter>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </Card>
+              </motion.div>
+            ))
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="col-span-full text-center py-8 text-muted-foreground"
+            >
+              No se encontraron estudios que coincidan con la búsqueda.
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 };

@@ -10,11 +10,9 @@ export function DoctorComponent({
   doctor,
   urls,
   studiesByUserId,
-  ultraSoundImages,
 }: {
   doctor: Doctor | undefined;
-  ultraSoundImages: { [key: number]: string[] };
-  urls: Record<string, string>;
+  urls: any;
   studiesByUserId: Study[];
 }) {
   const registerByText =
@@ -43,9 +41,8 @@ export function DoctorComponent({
         <div className="md:grid md:gap-6 space-y-4">
           <StudiesComponent
             idUser={Number(doctor?.userId)}
-            ultraSoundImages={ultraSoundImages}
-            role="medicos"
             studiesByUserId={studiesByUserId}
+            role="pacientes"
             urls={urls}
             slug={String(doctor?.slug)}
           />

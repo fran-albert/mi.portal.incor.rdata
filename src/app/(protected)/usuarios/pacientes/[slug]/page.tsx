@@ -4,11 +4,11 @@ import { Role } from "@/common/enums/role.enum";
 import { ClientPatientComponent } from "@/components/Client/Patient";
 import { usePatient } from "@/hooks/Patient/usePatient";
 import useAuth from "@/hooks/Auth/useAuth";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import React, { useEffect } from "react";
 import { useStudy } from "@/hooks/Study/useStudy";
-import { useStudyUrls } from "@/hooks/Study/useStudyUrl";
-import { useAllUltraSoundImages } from "@/hooks/Ultra-Sound-Images/useAllUtraSoundImages";
+import { useStudyAndImageUrls } from "@/hooks/Study/useStudyAndImageUrls";
+import { useLoadingStore } from "@/stores/useLoading";
 
 const PatientPage = () => {
   const params = useParams();
@@ -28,31 +28,45 @@ const PatientPage = () => {
     fetchStudiesByUserId: true,
   });
 
-  const { data: urls = {}, isFetching: isFetchingUrls } = useStudyUrls(
+  const { data: allUrls = {}, isLoading: isLoadingUrls } = useStudyAndImageUrls(
     id,
     studiesByUserId
   );
 
-  const {
-    data: ultraSoundImages = {},
-    isFetching: isFetchingUltraSoundImages,
-  } = useAllUltraSoundImages(id, studiesByUserId);
+  const initialLoadComplete = useLoadingStore(
+    (state) => state.initialLoadComplete
+  );
+  const setInitialLoadComplete = useLoadingStore(
+    (state) => state.setInitialLoadComplete
+  );
+
+  useEffect(() => {
+    if (
+      !isLoading &&
+      !isLoadingStudiesByUserId &&
+      !isLoadingUrls &&
+      !isLoadingAuth
+    ) {
+      setInitialLoadComplete(true);
+    }
+  }, [
+    isLoading,
+    isLoadingStudiesByUserId,
+    isLoadingUrls,
+    isLoadingAuth,
+    setInitialLoadComplete,
+  ]);
 
   return (
     <>
       {error && <div>Hubo un error al cargar los pacientes.</div>}
-      {isLoading ||
-      isFetchingUltraSoundImages ||
-      isFetchingUrls ||
-      isLoadingStudiesByUserId ||
-      isLoadingAuth ? (
+      {!initialLoadComplete ? (
         <Loading isLoading={true} />
       ) : (
         <ClientPatientComponent
           patient={patient}
-          urls={urls}
+          urls={allUrls}
           studiesByUserId={studiesByUserId}
-          ultraSoundImages={ultraSoundImages}
         />
       )}
     </>

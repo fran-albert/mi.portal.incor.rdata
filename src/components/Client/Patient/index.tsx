@@ -11,12 +11,10 @@ export function ClientPatientComponent({
   patient,
   studiesByUserId,
   urls,
-  ultraSoundImages,
 }: {
   patient: Patient | undefined;
   studiesByUserId: Study[];
-  ultraSoundImages: { [key: number]: string[] };
-  urls: Record<string, string>;
+  urls: any;
 }) {
   const { isDoctor } = useRoles();
   const registerByText =
@@ -47,7 +45,6 @@ export function ClientPatientComponent({
           {/* <StudiesCardComponent idUser={Number(patient?.userId)} /> */}
           <StudiesComponent
             idUser={Number(patient?.userId)}
-            ultraSoundImages={ultraSoundImages}
             studiesByUserId={studiesByUserId}
             role="pacientes"
             urls={urls}

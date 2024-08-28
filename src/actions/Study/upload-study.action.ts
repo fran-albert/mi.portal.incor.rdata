@@ -1,12 +1,16 @@
 import { sleep } from "@/common/helpers/helpers";
 import axiosInstance from "@/services/axiosConfig";
-import axios from "axios";
+import { Study } from "@/types/Study/Study";
 
-export const uploadStudy = async (formData: FormData) => {
+interface UploadStudyProps {
+    idUser: number;
+    formData: FormData;
+}
+export const uploadStudy = async (values: UploadStudyProps) => {
     await sleep(2);
-    const { data } = await axiosInstance.post(
+    const { data } = await axiosInstance.post<Study>(
         `/Study/upload-study`,
-        formData, {
+        values.formData, {
         headers: {
             "Content-Type": "multipart/form-data",
         },

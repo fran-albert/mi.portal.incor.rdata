@@ -1,6 +1,6 @@
 "use client";
 
-import React, { use, useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,7 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { FaCalendar, FaCamera, FaFilePdf, FaUpload } from "react-icons/fa";
+import { FaTrash, FaUpload } from "react-icons/fa";
 import axios from "axios";
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
@@ -27,7 +27,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { StudyTypeSelect } from "@/components/Select/Study/select";
 import { useStudyMutations } from "@/hooks/Study/useStudyMutations";
 interface AddStudyProps {
-  idUser: number | null;
+  idUser: number;
 }
 
 export default function StudyDialog({ idUser }: AddStudyProps) {
@@ -39,6 +39,7 @@ export default function StudyDialog({ idUser }: AddStudyProps) {
     handleSubmit,
     control,
     formState: { errors },
+    reset,
     setValue,
   } = useForm();
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -63,17 +64,17 @@ export default function StudyDialog({ idUser }: AddStudyProps) {
     formData.append("Note", data.Note);
 
     try {
-      toast.promise(uploadStudyMutation.mutateAsync(formData), {
+      toast.promise(uploadStudyMutation.mutateAsync({ formData, idUser }), {
         loading: "Subiendo estudio...",
         success: "Estudio subido con éxito!",
         error: "Error al agregar el estudio",
       });
+      reset();
+      setSelectedFiles([]);
       setIsOpen(false);
     } catch (error) {
       console.error("Error al agregar el estudio", error);
       toast.error("Error al agregar el estudio");
-    } finally {
-      setIsOpen(false);
     }
   };
 
@@ -86,6 +87,13 @@ export default function StudyDialog({ idUser }: AddStudyProps) {
     if (e.target.files) {
       setSelectedFiles(Array.from(e.target.files));
     }
+  };
+
+  const handleFileRemove = (index: number) => {
+    setSelectedFiles((prevFiles) => {
+      const updatedFiles = prevFiles.filter((_, i) => i !== index);
+      return updatedFiles;
+    });
   };
 
   return (
@@ -122,6 +130,20 @@ export default function StudyDialog({ idUser }: AddStudyProps) {
                 multiple
                 onChange={handleFileChange}
               />
+              {selectedFiles.length > 0 && (
+                <div className="mt-2">
+                  <ul className="list-disc pl-5 space-y-1">
+                    {selectedFiles.map((file, index) => (
+                      <li
+                        key={index}
+                        className="flex justify-between items-center text-sm text-gray-700"
+                      >
+                        {file.name}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
             <div className="space-y-2">
               <Label
@@ -151,7 +173,11 @@ export default function StudyDialog({ idUser }: AddStudyProps) {
             <Button variant="outline" type="button" onClick={toggleDialog}>
               Cancelar
             </Button>
-            <Button type="submit" variant="incor">
+            <Button
+              type="submit"
+              variant="incor"
+              disabled={uploadStudyMutation.isPending}
+            >
               Agregar Estudio
             </Button>
           </DialogFooter>

@@ -5,10 +5,12 @@ import { DoctorComponent } from "@/components/Client/Doctor/page";
 import { useDoctor } from "@/hooks/Doctor/useDoctor";
 import useAuth from "@/hooks/Auth/useAuth";
 import { useParams } from "next/navigation";
-import React from "react";
+import React, { useEffect } from "react";
 import { useStudy } from "@/hooks/Study/useStudy";
 import { useStudyUrls } from "@/hooks/Study/useStudyUrl";
 import { useAllUltraSoundImages } from "@/hooks/Ultra-Sound-Images/useAllUtraSoundImages";
+import { useStudyAndImageUrls } from "@/hooks/Study/useStudyAndImageUrls";
+import { useLoadingStore } from "@/stores/useLoading";
 
 function DoctorPage() {
   const params = useParams();
@@ -27,13 +29,34 @@ function DoctorPage() {
     fetchStudiesByUserId: true,
   });
 
-  const { data: urls = {}, isLoading: isLoadingUrls } = useStudyUrls(
+  const { data: allUrls = {}, isLoading: isLoadingUrls } = useStudyAndImageUrls(
     id,
     studiesByUserId
   );
 
-  const { data: ultraSoundImages = {}, isLoading: isLoadingUltraSoundImages } =
-    useAllUltraSoundImages(id, studiesByUserId);
+  const initialLoadComplete = useLoadingStore(
+    (state) => state.initialLoadComplete
+  );
+  const setInitialLoadComplete = useLoadingStore(
+    (state) => state.setInitialLoadComplete
+  );
+
+  useEffect(() => {
+    if (
+      !isLoading &&
+      !isLoadingStudiesByUserId &&
+      !isLoadingUrls &&
+      !isLoadingAuth
+    ) {
+      setInitialLoadComplete(true);
+    }
+  }, [
+    isLoading,
+    isLoadingStudiesByUserId,
+    isLoadingUrls,
+    isLoadingAuth,
+    setInitialLoadComplete,
+  ]);
 
   return (
     <>
@@ -42,17 +65,12 @@ function DoctorPage() {
           Hubo un error al cargos los datos del Doctor.
         </div>
       )}
-      {isLoading ||
-      isLoadingUltraSoundImages ||
-      isLoadingUrls ||
-      isLoadingStudiesByUserId ||
-      isLoadingAuth ? (
+      {!initialLoadComplete ? (
         <Loading isLoading={true} />
       ) : (
         <DoctorComponent
           doctor={doctor}
-          ultraSoundImages={ultraSoundImages}
-          urls={urls}
+          urls={allUrls}
           studiesByUserId={studiesByUserId}
         />
       )}

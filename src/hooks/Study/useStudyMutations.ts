@@ -1,30 +1,57 @@
 import { deleteStudy } from "@/actions/Study/delete-study.action";
 import { uploadStudy } from "@/actions/Study/upload-study.action";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Study } from "@/types/Study/Study";
 
 export const useStudyMutations = () => {
     const queryClient = useQueryClient();
+
     const uploadStudyMutation = useMutation({
         mutationFn: uploadStudy,
-        onSuccess: async (study, variables, context) => {
-            await queryClient.invalidateQueries({ queryKey: ['studiesByUserId'] });
-            await queryClient.invalidateQueries({ queryKey: ['allUltraSoundImages'] });
-            await queryClient.invalidateQueries({ queryKey: ['getStudiesUrlByUserId'] });
-            console.log("Study created", study, variables, context);
+        onMutate: async (variables) => {
+            await queryClient.cancelQueries({ queryKey: ['studiesByUserId', variables.idUser] });
 
+            const previousStudies = queryClient.getQueryData<Study[]>(['studiesByUserId', variables.idUser]);
+
+            const optimisticStudy: Study = {
+                id: Math.random(),
+                studyType: {
+                    id: variables.formData.get('StudyTypeId') as string,
+                    name: "Ecografía"
+                },
+                locationS3: "temp-location.pdf",
+                note: variables.formData.get('Note') as string,
+                date: variables.formData.get('Date') as string,
+                ultrasoundImages: [],
+                isOptimistic: true,
+                isUpdating: true,
+            };
+
+            queryClient.setQueryData<Study[]>(['studiesByUserId', variables.idUser], (oldStudies) => [
+                ...(oldStudies || []),
+                optimisticStudy,
+            ]);
+
+            return { previousStudies };
         },
 
         onError: (error, variables, context) => {
-            console.log("Error creating Study", error, variables, context);
+            if (context?.previousStudies) {
+                queryClient.setQueryData(['studiesByUserId', variables.idUser], context.previousStudies);
+            }
+            console.error("Error creating study", error);
+        },
+        onSettled: (data, error, variables, context) => {
+            queryClient.invalidateQueries({ queryKey: ['studiesByUserId', variables.idUser] });
+            queryClient.invalidateQueries({ queryKey: ['studyAndImageUrls', variables.idUser] });
+
         },
     });
 
     const deleteStudyMutation = useMutation({
         mutationFn: (id: number) => deleteStudy(id),
         onSuccess: (patient, variables, context) => {
-            queryClient.invalidateQueries({ queryKey: ['studiesByUserId'] })
-            queryClient.invalidateQueries({ queryKey: ['allUltraSoundImages'] });
-            queryClient.invalidateQueries({ queryKey: ['getStudiesUrlByUserId'] });
+            queryClient.invalidateQueries({ queryKey: ['studiesByUserId'] });
             console.log("Study deleted", patient, variables, context);
         },
         onError: (error, variables, context) => {

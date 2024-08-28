@@ -27,15 +27,13 @@ const StudiesComponent = ({
   idUser,
   urls,
   slug,
-  ultraSoundImages,
   role,
 }: {
   studiesByUserId: Study[];
   idUser?: number;
   slug?: string;
-  ultraSoundImages: { [key: number]: string[] };
   role?: string;
-  urls: Record<string, string>;
+  urls: any;
 }) => {
   const { isDoctor } = useRoles();
   const [selectedStudyType, setSelectedStudyType] = useState<string | null>(
@@ -132,7 +130,6 @@ const StudiesComponent = ({
         <StudiesTable
           studiesByUserId={filteredStudies}
           idUser={Number(idUser)}
-          ultraSoundImages={ultraSoundImages}
           urls={urls}
         />
       </CardContent>

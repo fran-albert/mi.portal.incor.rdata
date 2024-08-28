@@ -7,7 +7,6 @@ import {
   Table,
   TableHeader,
   TableBody,
-  TableFooter,
   TableRow,
   TableHead,
   TableCell,
@@ -29,12 +28,10 @@ const StudiesTable = ({
   studiesByUserId,
   idUser,
   urls,
-  ultraSoundImages,
 }: {
   studiesByUserId: Study[];
   idUser: number;
-  urls: Record<string, string>;
-  ultraSoundImages: { [key: number]: string[] };
+  urls: { [key: number]: { pdfUrl: string; imageUrls: string[] } };
 }) => {
   const { isSecretary } = useRoles();
 
@@ -49,6 +46,9 @@ const StudiesTable = ({
   const [expandedStudies, setExpandedStudies] = useState<Set<number>>(
     new Set()
   );
+
+  console.log("Estudios recibidos por el componente:", studiesByUserId);
+  console.log("URLs procesadas para los estudios:", urls);
 
   const toggleExpand = (studyId: number) => {
     setExpandedStudies((prev) => {
@@ -108,55 +108,65 @@ const StudiesTable = ({
             currentRows.map((study, index) => (
               <React.Fragment key={study.id}>
                 {/* Fila principal para el estudio, PDF o imagen principal */}
-                <TableRow className="hover:bg-gray-50">
-                  <TableCell className="font-medium text-center align-middle">
-                    {index + 1}
-                  </TableCell>
+                <TableRow className={`hover:bg-gray-50`}>
+                  {study.isUpdating ? (
+                    <TableCell
+                      colSpan={6}
+                      className="text-center align-middle italic text-gray-500"
+                    >
+                      Actualizando estudios del paciente...
+                    </TableCell>
+                  ) : (
+                    <>
+                      <TableCell className="font-medium text-center align-middle">
+                        {index + 1}
+                      </TableCell>
+                      <TableCell className="text-center align-middle">
+                        <FaRegFilePdf className="text-red-500" size={20} />
+                      </TableCell>
+                      <TableCell className="text-base">
+                        <span>{study.studyType?.name}</span>
+                      </TableCell>
+                      <TableCell className="items-center align-middle text-base">
+                        <span>{study.note}</span>
+                      </TableCell>
+                      <TableCell className="align-middle text-base">
+                        <span>{formatDate(String(study.date))}</span>
+                      </TableCell>
+                      <TableCell className="align-middle text-base">
+                        <div className="flex items-center justify-center gap-2">
+                          <ViewButton
+                            url={urls[study.id]?.pdfUrl || "#"}
+                            text="Ver PDF"
+                          />
+                          {study &&
+                            study.studyType?.id === 2 &&
+                            urls?.[study.id]?.imageUrls?.length > 0 && (
+                              <Button
+                                onClick={() => toggleExpand(study.id)}
+                                variant={"ghost"}
+                                className="text-gray-600"
+                                style={{ minWidth: "24px" }}
+                              >
+                                {expandedStudies.has(study.id) ? "-" : "+"}
+                              </Button>
+                            )}
 
-                  <TableCell className="text-center align-middle">
-                    {study.locationS3?.endsWith(".pdf") && (
-                      <FaRegFilePdf className="text-red-500" size={20} />
-                    )}
-                    {[".jpg", ".jpeg", ".png"].some((ext) =>
-                      study.locationS3?.endsWith(ext)
-                    ) && <FaRegImage className="text-blue-500" size={20} />}
-                  </TableCell>
-                  <TableCell className="text-base">
-                    <span>{study.studyType?.name}</span>
-                  </TableCell>
-                  <TableCell className="items-center align-middle text-base">
-                    <span>{study.note}</span>
-                  </TableCell>
-                  <TableCell className="align-middle text-base">
-                    <span>{formatDate(String(study.date))}</span>
-                  </TableCell>
-                  <TableCell className="align-middle text-base">
-                    <div className="flex items-center justify-center gap-2">
-                      {study.studyType?.id === 2 ? (
-                        <Button
-                          onClick={() => toggleExpand(study.id)}
-                          variant={"ghost"}
-                          className="text-gray-600"
-                          style={{ minWidth: "24px" }}
-                        >
-                          {expandedStudies.has(study.id) ? "-" : "+"}
-                        </Button>
-                      ) : (
-                        <span style={{ width: "40px" }}></span> // Espacio para alinear botones
-                      )}
-                      <ViewButton url={urls[study.id]} text="Ver" />
-                      {isSecretary && (
-                        <DeleteStudyDialog
-                          studies={studiesByUserId}
-                          idStudy={study.id}
-                        />
-                      )}
-                    </div>
-                  </TableCell>
+                          {isSecretary && !study.isOptimistic && (
+                            <DeleteStudyDialog
+                              studies={studiesByUserId}
+                              idStudy={study.id}
+                            />
+                          )}
+                        </div>
+                      </TableCell>
+                    </>
+                  )}
                 </TableRow>
+
+                {/* Expansión para mostrar imágenes de ultrasonido si hay */}
                 {expandedStudies.has(study.id) &&
-                  Array.isArray(ultraSoundImages[study.id]) &&
-                  ultraSoundImages[study.id]?.map((image, idx) => (
+                  urls[study.id]?.imageUrls?.map((image, idx) => (
                     <TableRow
                       key={`${study.id}-${idx}`}
                       className="hover:bg-gray-50"
@@ -189,8 +199,6 @@ const StudiesTable = ({
           )}
         </TableBody>
       </Table>
-
-      {/* Mostrar paginación solo si hay estudios */}
       {filteredStudies.length > 0 && (
         <>
           <div className="text-gray-500 mt-4 text-xs">
@@ -224,8 +232,6 @@ const StudiesTable = ({
           </Pagination>
         </>
       )}
-
-      {/* Mostrar el StudyDialog debajo de la paginación */}
       {isSecretary && (
         <div className="text-center mt-4">
           <StudyDialog idUser={idUser} />
