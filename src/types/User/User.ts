@@ -28,6 +28,7 @@ export interface User {
   confirmPassword: string;
   gender: string;
   registeredById: number;
+  registeredByName: string;
   maritalStatus: string;
   rhFactor: string;
   observations: string;

@@ -28,6 +28,7 @@ import Image from "next/image";
 import {
   calculateAge,
   formatDate,
+  formatDateWithTime,
   formatDni,
   getInitials,
 } from "@/common/helpers/helpers";
@@ -35,14 +36,13 @@ import useRoles from "@/hooks/useRoles";
 import { EditButtonIcon } from "@/components/Button/Edit/button";
 import { Button } from "@/components/ui/button";
 import ResetDefaultPasswordDialog from "@/components/Button/Reset-Default-Password";
-const PatientCardComponent = ({
-  patient,
-  registerBy,
-}: {
-  patient: Patient | null;
-  registerBy: undefined | string;
-}) => {
+const PatientCardComponent = ({ patient }: { patient: Patient | null }) => {
   const { isPatient, isSecretary } = useRoles();
+  const registerByText =
+    patient?.registeredByName +
+    " " +
+    "- " +
+    formatDateWithTime(String(patient?.registrationDate));
   const patientImageUrl = patient?.photo
     ? `https://incor-healthcare.s3.us-east-1.amazonaws.com/photos/${patient.photo}`
     : "https://incor-ranking.s3.us-east-1.amazonaws.com/storage/avatar/default.png";
@@ -60,7 +60,7 @@ const PatientCardComponent = ({
             {patient?.firstName} {patient?.lastName}
           </CardTitle>
           <CardDescription>
-            Creado por {registerBy || "Desconocido"}
+            Creado por {registerByText || "Desconocido"}
           </CardDescription>
           {isSecretary && (
             <div className="flex justify-center gap-4">

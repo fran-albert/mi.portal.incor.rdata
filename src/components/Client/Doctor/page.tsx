@@ -15,14 +15,6 @@ export function DoctorComponent({
   urls: any;
   studiesByUserId: Study[];
 }) {
-  const registerByText =
-    doctor?.registerBy?.firstName +
-    " " +
-    doctor?.registerBy?.lastName +
-    " " +
-    "- " +
-    formatDateWithTime(String(doctor?.registrationDate));
-
   const breadcrumbItems = [
     { label: "Inicio", href: "/inicio" },
     { label: "Médicos", href: "/usuarios/medicos" },
@@ -35,14 +27,12 @@ export function DoctorComponent({
     <div className="container space-y-2 mt-2">
       <BreadcrumbComponent items={breadcrumbItems} />
       <div className="md:grid md:grid-cols-[320px_1fr] gap-6">
-        {doctor && (
-          <DoctorCardComponent doctor={doctor} registerBy={registerByText} />
-        )}
+        {doctor && <DoctorCardComponent doctor={doctor} />}
         <div className="md:grid md:gap-6 space-y-4">
           <StudiesComponent
             idUser={Number(doctor?.userId)}
             studiesByUserId={studiesByUserId}
-            role="pacientes"
+            role="medicos"
             urls={urls}
             slug={String(doctor?.slug)}
           />

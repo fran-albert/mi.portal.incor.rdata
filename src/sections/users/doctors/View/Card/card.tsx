@@ -18,20 +18,24 @@ import {
 } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
 import { Doctor } from "@/types/Doctor/Doctor";
-import { calculateAge, formatDate, formatDni } from "@/common/helpers/helpers";
+import {
+  calculateAge,
+  formatDate,
+  formatDateWithTime,
+  formatDni,
+} from "@/common/helpers/helpers";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MdDateRange } from "react-icons/md";
 import { EditButtonIcon } from "@/components/Button/Edit/button";
 import useRoles from "@/hooks/useRoles";
 import ResetDefaultPasswordDialog from "@/components/Button/Reset-Default-Password";
-const DoctorCardComponent = ({
-  doctor,
-  registerBy,
-}: {
-  doctor: Doctor | null;
-  registerBy: undefined | string;
-}) => {
+const DoctorCardComponent = ({ doctor }: { doctor: Doctor | null }) => {
   const { isSecretary } = useRoles();
+  const registerByText =
+    doctor?.registeredByName +
+    " " +
+    "- " +
+    formatDateWithTime(String(doctor?.registrationDate));
   return (
     <Card>
       <CardHeader>
@@ -41,7 +45,7 @@ const DoctorCardComponent = ({
             {doctor?.firstName} {doctor?.lastName}
           </CardTitle>
           <CardDescription>
-            Creado por {registerBy || "Desconocido"}
+            Creado por {registerByText || "Desconocido"}
           </CardDescription>
           {isSecretary && (
             <div className="flex justify-center gap-4">

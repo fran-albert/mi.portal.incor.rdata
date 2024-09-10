@@ -1,27 +1,29 @@
 import { getLabsDetail } from "@/actions/Study/Lab/get-labs-detailts.action";
-import { useQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query";
 
 interface Props {
-    auth?: boolean;
-    idUser?: number;
     fetchLabsDetails?: boolean;
-    idStudy?: number;
+    idStudy: number[];
 }
 
-export const useLab = ({ auth = true, idUser, fetchLabsDetails = false }: Props) => {
+export const useLab = ({ fetchLabsDetails = false, idStudy }: Props) => {
 
-    const { isLoading: isLoadingLabsDetails, isError: isErrorLabsDetails, error: errorLabsDetails, data: labsDetails } = useQuery({
-        queryKey: ["labsDetail", idUser],
-        queryFn: () => getLabsDetail(Number(idUser)),
+    const {
+        isLoading: isLoadingLabsDetails,
+        isError: isErrorLabsDetails,
+        error: errorLabsDetails,
+        data: labsDetails
+    } = useQuery({
+        queryKey: ["labsDetail", idStudy],
+        queryFn: () => getLabsDetail(idStudy),
         staleTime: 1000 * 60,
-        enabled: !!idUser && fetchLabsDetails
+        enabled: !!idStudy.length && fetchLabsDetails
     });
 
-
     return {
-
-        isLoadingLabsDetails, isErrorLabsDetails, errorLabsDetails, labsDetails
+        isLoadingLabsDetails,
+        isErrorLabsDetails,
+        errorLabsDetails,
+        labsDetails
     }
-
 }
-

@@ -1,6 +1,7 @@
 export interface Lab {
   id?: number;
   date?: string;
+  idStudy?: number;
   globulosRojos: string;
   globulosBlancos: string;
   hemoglobina: string;

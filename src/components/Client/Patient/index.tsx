@@ -17,13 +17,6 @@ export function ClientPatientComponent({
   urls: any;
 }) {
   const { isDoctor } = useRoles();
-  const registerByText =
-    patient?.registerBy?.firstName +
-    " " +
-    patient?.registerBy?.lastName +
-    " " +
-    "- " +
-    formatDateWithTime(String(patient?.registrationDate));
 
   const breadcrumbItems = [
     { label: "Inicio", href: "/inicio" },
@@ -39,7 +32,7 @@ export function ClientPatientComponent({
       <BreadcrumbComponent items={breadcrumbItems} />
       <div className="md:grid md:grid-cols-[320px_1fr] gap-6">
         {patient && (
-          <PatientCardComponent patient={patient} registerBy={registerByText} />
+          <PatientCardComponent patient={patient} />
         )}
         <div className="md:grid md:gap-6 space-y-4">
           {/* <StudiesCardComponent idUser={Number(patient?.userId)} /> */}

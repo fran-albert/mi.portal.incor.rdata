@@ -21,6 +21,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Search } from "@/components/ui/search";
+import { formatDate } from "@/common/helpers/helpers";
 
 interface LabData {
   testName: string;
@@ -29,22 +30,37 @@ interface LabData {
 
 const analysisNames = Object.keys(referenceValues);
 
-const transformLabData = (labsDetails: any[]): LabData[] => {
+const transformLabData = (
+  labsDetails: Lab[],
+  studiesByUser: any[]
+): LabData[] => {
   const groupedData: { [testName: string]: LabData } = {};
 
-  labsDetails.forEach(({ date, ...tests }) => {
-    Object.entries(tests).forEach(([testName, value]) => {
-      if (!groupedData[testName]) {
-        groupedData[testName] = { testName };
-      }
-      groupedData[testName][date] = value?.toString();
-    });
+  labsDetails.forEach((lab) => {
+    const study = studiesByUser.find((study) => study.id === lab.idStudy);
+
+    if (study && study.date) {
+      const formattedDate = formatDate(study.date);
+
+      Object.entries(lab).forEach(([testName, value]) => {
+        if (!groupedData[testName]) {
+          groupedData[testName] = { testName };
+        }
+        groupedData[testName][formattedDate] = value?.toString();
+      });
+    }
   });
 
   return Object.values(groupedData);
 };
 
-export const LabPatientTable = ({ labsDetails }: { labsDetails: Lab[] }) => {
+export const LabPatientTable = ({
+  labsDetails,
+  studiesByUser,
+}: {
+  labsDetails: Lab[];
+  studiesByUser: any[];
+}) => {
   const [rowsPerPage, setRowsPerPage] = useState(8);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -54,18 +70,23 @@ export const LabPatientTable = ({ labsDetails }: { labsDetails: Lab[] }) => {
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
-
   useEffect(() => {
-    if (labsDetails && labsDetails.length > 0) {
-      const transformed = transformLabData(labsDetails);
+    if (
+      labsDetails &&
+      labsDetails.length > 0 &&
+      studiesByUser &&
+      studiesByUser.length > 0
+    ) {
+      const transformed = transformLabData(labsDetails, studiesByUser);
       setTransformedLabs(transformed);
 
-      const datesFromLabs = labsDetails.map((lab) => lab.date).filter(
-        (date): date is string => date !== undefined
-      );
-      setDates(datesFromLabs);
+      const datesFromStudies = studiesByUser
+        .map((study) => formatDate(study.date))
+        .filter((date, index, self) => self.indexOf(date) === index);
+
+      setDates(datesFromStudies);
     }
-  }, [labsDetails]);
+  }, [labsDetails, studiesByUser]);
 
   const filteredAnalysisNames = analysisNames.filter((name) => {
     const columnName = columNames[name as keyof Lab];
@@ -74,7 +95,6 @@ export const LabPatientTable = ({ labsDetails }: { labsDetails: Lab[] }) => {
       : false;
   });
 
-  // Paginación
   const totalPages = Math.ceil(filteredAnalysisNames.length / rowsPerPage);
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
@@ -115,7 +135,7 @@ export const LabPatientTable = ({ labsDetails }: { labsDetails: Lab[] }) => {
               <TableHead className="whitespace-nowrap w-10">Unidad</TableHead>
               {dates.map((date) => (
                 <TableHead key={date} className="whitespace-nowrap w-10">
-                  {new Date(date).toLocaleDateString()}
+                  {date}
                 </TableHead>
               ))}
             </TableRow>
